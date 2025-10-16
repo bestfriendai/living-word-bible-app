@@ -9,6 +9,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Platform,
+  Modal,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -17,6 +18,7 @@ import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { geminiService, VerseExplanation } from "@/services/geminiService";
 
 export default function Scripture() {
   const insets = useSafeAreaInsets();
@@ -26,6 +28,11 @@ export default function Scripture() {
   const borderColor = useThemeColor(theme.color.border);
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [selectedVerse, setSelectedVerse] = useState<any>(null);
+  const [explanation, setExplanation] = useState<VerseExplanation | null>(null);
+  const [isExplaining, setIsExplaining] = useState(false);
+
   const searchResults = useBibleStore((state) => state.searchResults);
   const isSearching = useBibleStore((state) => state.isSearching);
   const searchVerses = useBibleStore((state) => state.searchVerses);
@@ -39,6 +46,27 @@ export default function Scripture() {
 
   const handleSaveVerse = (verse: any) => {
     saveVerse(verse);
+  };
+
+  const handleExplainVerse = async (verse: any) => {
+    setSelectedVerse(verse);
+    setShowExplanation(true);
+    setIsExplaining(true);
+
+    try {
+      const verseExplanation = await geminiService.explainVerse(verse.reference, verse.text);
+      setExplanation(verseExplanation);
+    } catch (error) {
+      console.error("Error explaining verse:", error);
+    } finally {
+      setIsExplaining(false);
+    }
+  };
+
+  const closeExplanation = () => {
+    setShowExplanation(false);
+    setExplanation(null);
+    setSelectedVerse(null);
   };
 
   return (
@@ -166,12 +194,147 @@ export default function Scripture() {
                       </Text>
                     </View>
                   )}
+                  <TouchableOpacity
+                    style={styles.explainButton}
+                    onPress={() => handleExplainVerse(verse)}
+                  >
+                    <LinearGradient
+                      colors={["#3b82f6", "#2563eb"]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={styles.explainButtonGradient}
+                    >
+                      <MaterialCommunityIcons name="brain" size={18} color="#fff" />
+                      <Text style={styles.explainButtonText}>Deep Dive Explanation</Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
                 </View>
               </Animated.View>
             ))}
           </View>
         )}
       </ScrollView>
+
+      {/* Verse Explanation Modal */}
+      <Modal
+        visible={showExplanation}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={closeExplanation}
+      >
+        <View style={[styles.modalContainer, { backgroundColor }]}>
+          <View style={[styles.modalHeader, { paddingTop: insets.top + 20 }]}>
+            <TouchableOpacity onPress={closeExplanation}>
+              <MaterialCommunityIcons name="close" size={28} color={textColor} />
+            </TouchableOpacity>
+            <Text style={[styles.modalTitle, { color: textColor }]}>Deep Dive</Text>
+            <View style={{ width: 50 }} />
+          </View>
+
+          <ScrollView
+            style={styles.modalScroll}
+            contentContainerStyle={styles.modalContent}
+          >
+            {selectedVerse && (
+              <View style={styles.modalVerseHeader}>
+                <LinearGradient
+                  colors={["#3b82f6", "#2563eb"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.modalVerseGradient}
+                >
+                  <Text style={styles.modalVerseReference}>{selectedVerse.reference}</Text>
+                  <Text style={styles.modalVerseText}>"{selectedVerse.text}"</Text>
+                </LinearGradient>
+              </View>
+            )}
+
+            {isExplaining ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#3b82f6" />
+                <Text style={[styles.loadingText, { color: textColor }]}>
+                  Analyzing scripture...
+                </Text>
+              </View>
+            ) : explanation ? (
+              <>
+                <View style={[styles.explanationSection, { backgroundColor: cardBg }]}>
+                  <View style={styles.explanationHeader}>
+                    <MaterialCommunityIcons name="history" size={24} color="#f59e0b" />
+                    <Text style={[styles.explanationTitle, { color: textColor }]}>
+                      Historical Context
+                    </Text>
+                  </View>
+                  <Text style={[styles.explanationText, { color: textColor + "D0" }]}>
+                    {explanation.historicalContext}
+                  </Text>
+                </View>
+
+                <View style={[styles.explanationSection, { backgroundColor: cardBg }]}>
+                  <View style={styles.explanationHeader}>
+                    <MaterialCommunityIcons name="heart" size={24} color="#ec4899" />
+                    <Text style={[styles.explanationTitle, { color: textColor }]}>
+                      Spiritual Meaning
+                    </Text>
+                  </View>
+                  <Text style={[styles.explanationText, { color: textColor + "D0" }]}>
+                    {explanation.spiritualMeaning}
+                  </Text>
+                </View>
+
+                <View style={[styles.explanationSection, { backgroundColor: cardBg }]}>
+                  <View style={styles.explanationHeader}>
+                    <MaterialCommunityIcons name="lightbulb-on" size={24} color="#10b981" />
+                    <Text style={[styles.explanationTitle, { color: textColor }]}>
+                      Practical Application
+                    </Text>
+                  </View>
+                  <Text style={[styles.explanationText, { color: textColor + "D0" }]}>
+                    {explanation.practicalApplication}
+                  </Text>
+                </View>
+
+                {explanation.keyThemes && explanation.keyThemes.length > 0 && (
+                  <View style={[styles.explanationSection, { backgroundColor: cardBg }]}>
+                    <View style={styles.explanationHeader}>
+                      <MaterialCommunityIcons name="tag-multiple" size={24} color="#a855f7" />
+                      <Text style={[styles.explanationTitle, { color: textColor }]}>
+                        Key Themes
+                      </Text>
+                    </View>
+                    <View style={styles.themesList}>
+                      {explanation.keyThemes.map((theme, idx) => (
+                        <View key={idx} style={[styles.themeTag, { backgroundColor: "#a855f720" }]}>
+                          <Text style={[styles.themeText, { color: "#a855f7" }]}>{theme}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                )}
+
+                {explanation.relatedVerses && explanation.relatedVerses.length > 0 && (
+                  <View style={[styles.explanationSection, { backgroundColor: cardBg }]}>
+                    <View style={styles.explanationHeader}>
+                      <MaterialCommunityIcons name="book-open-variant" size={24} color="#3b82f6" />
+                      <Text style={[styles.explanationTitle, { color: textColor }]}>
+                        Related Verses
+                      </Text>
+                    </View>
+                    <View style={styles.relatedVersesList}>
+                      {explanation.relatedVerses.map((verse, idx) => (
+                        <View key={idx} style={[styles.relatedVerseTag, { backgroundColor: "#3b82f620" }]}>
+                          <MaterialCommunityIcons name="link-variant" size={16} color="#3b82f6" />
+                          <Text style={[styles.relatedVerseText, { color: "#3b82f6" }]}>{verse}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                )}
+              </>
+            ) : null}
+          </ScrollView>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -319,5 +482,134 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     lineHeight: 20,
+  },
+  explainButton: {
+    borderRadius: 12,
+    overflow: "hidden",
+    marginTop: 12,
+  },
+  explainButtonGradient: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  explainButtonText: {
+    color: "#fff",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  modalContainer: {
+    flex: 1,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  modalScroll: {
+    flex: 1,
+  },
+  modalContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+  },
+  modalVerseHeader: {
+    marginBottom: 24,
+    borderRadius: 20,
+    overflow: "hidden",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#3b82f6",
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.3,
+        shadowRadius: 16,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
+  },
+  modalVerseGradient: {
+    padding: 24,
+  },
+  modalVerseReference: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 12,
+    opacity: 0.9,
+  },
+  modalVerseText: {
+    color: "#fff",
+    fontSize: 18,
+    lineHeight: 28,
+    fontWeight: "500",
+  },
+  loadingContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 64,
+    gap: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  explanationSection: {
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+  },
+  explanationHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+    gap: 12,
+  },
+  explanationTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  explanationText: {
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  themesList: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  themeTag: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  themeText: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  relatedVersesList: {
+    gap: 8,
+  },
+  relatedVerseTag: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 8,
+    gap: 8,
+  },
+  relatedVerseText: {
+    fontSize: 14,
+    fontWeight: "600",
   },
 });

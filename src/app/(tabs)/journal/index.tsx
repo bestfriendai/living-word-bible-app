@@ -10,13 +10,16 @@ import {
   Alert,
   Platform,
   Modal,
+  ActivityIndicator,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBibleStore } from "@/store/bibleStore";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { geminiService } from "@/services/geminiService";
 
 export default function Journal() {
   const insets = useSafeAreaInsets();
@@ -27,6 +30,10 @@ export default function Journal() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newPrayerTitle, setNewPrayerTitle] = useState("");
   const [newPrayerContent, setNewPrayerContent] = useState("");
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [aiSituation, setAISituation] = useState("");
+  const [generatedPrayer, setGeneratedPrayer] = useState<any>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const journalEntries = useBibleStore((state) => state.journalEntries);
   const addJournalEntry = useBibleStore((state) => state.addJournalEntry);
@@ -68,6 +75,43 @@ export default function Journal() {
     });
   };
 
+  const handleGeneratePrayer = async () => {
+    if (!aiSituation.trim()) {
+      Alert.alert("Required", "Please describe your situation.");
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const prayer = await geminiService.generatePrayer(aiSituation);
+      setGeneratedPrayer(prayer);
+    } catch (error) {
+      Alert.alert("Error", "Failed to generate prayer. Please try again.");
+      console.error(error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleSaveGeneratedPrayer = () => {
+    if (generatedPrayer) {
+      addJournalEntry({
+        title: generatedPrayer.title,
+        content: generatedPrayer.prayer,
+        category: generatedPrayer.category,
+      });
+      setShowAIModal(false);
+      setAISituation("");
+      setGeneratedPrayer(null);
+      Alert.alert("Saved", "Prayer has been saved to your journal!");
+    }
+  };
+
+  const handleResetAI = () => {
+    setAISituation("");
+    setGeneratedPrayer(null);
+  };
+
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <Stack.Screen
@@ -89,12 +133,20 @@ export default function Journal() {
             <Text style={[styles.subtitle, { color: textColor + "90" }]}>Prayer tracker</Text>
             <Text style={[styles.title, { color: textColor }]}>Journal</Text>
           </View>
-          <TouchableOpacity
-            style={[styles.addButton, { backgroundColor: theme.color.reactBlue.dark }]}
-            onPress={() => setShowAddModal(true)}
-          >
-            <MaterialCommunityIcons name="plus" size={28} color="#fff" />
-          </TouchableOpacity>
+          <View style={styles.headerButtons}>
+            <TouchableOpacity
+              style={[styles.aiButton, { backgroundColor: "#a855f7" }]}
+              onPress={() => setShowAIModal(true)}
+            >
+              <MaterialCommunityIcons name="star-shimmer" size={24} color="#fff" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.addButton, { backgroundColor: theme.color.reactBlue.dark }]}
+              onPress={() => setShowAddModal(true)}
+            >
+              <MaterialCommunityIcons name="plus" size={28} color="#fff" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Journal Entries */}
@@ -195,6 +247,127 @@ export default function Journal() {
               numberOfLines={10}
               textAlignVertical="top"
             />
+          </ScrollView>
+        </View>
+      </Modal>
+
+      {/* AI Prayer Generator Modal */}
+      <Modal
+        visible={showAIModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowAIModal(false)}
+      >
+        <View style={[styles.modalContainer, { backgroundColor }]}>
+          <View style={[styles.modalHeader, { paddingTop: insets.top + 20 }]}>
+            <TouchableOpacity onPress={() => { setShowAIModal(false); handleResetAI(); }}>
+              <MaterialCommunityIcons name="close" size={28} color={textColor} />
+            </TouchableOpacity>
+            <Text style={[styles.modalTitle, { color: textColor }]}>AI Prayer</Text>
+            {generatedPrayer ? (
+              <TouchableOpacity onPress={handleSaveGeneratedPrayer}>
+                <Text style={[styles.saveButton, { color: "#a855f7" }]}>
+                  Save
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={{ width: 50 }} />
+            )}
+          </View>
+
+          <ScrollView
+            style={styles.modalScroll}
+            contentContainerStyle={styles.modalContent}
+            keyboardShouldPersistTaps="handled"
+          >
+            {!generatedPrayer ? (
+              <>
+                <View style={styles.aiHeader}>
+                  <LinearGradient
+                    colors={["#a855f7", "#ec4899"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.aiIconGradient}
+                  >
+                    <MaterialCommunityIcons name="star-shimmer" size={32} color="#fff" />
+                  </LinearGradient>
+                  <Text style={[styles.aiTitle, { color: textColor }]}>AI Prayer Generator</Text>
+                  <Text style={[styles.aiSubtitle, { color: textColor + "70" }]}>
+                    Describe your situation and let AI help you pray
+                  </Text>
+                </View>
+
+                <TextInput
+                  style={[styles.aiInput, { color: textColor, borderColor: cardBg, backgroundColor: cardBg }]}
+                  placeholder="What's on your heart? (e.g., 'I'm feeling anxious about my job interview')"
+                  placeholderTextColor={textColor + "50"}
+                  value={aiSituation}
+                  onChangeText={setAISituation}
+                  multiline
+                  numberOfLines={6}
+                  textAlignVertical="top"
+                />
+
+                <TouchableOpacity
+                  style={[styles.generateButton, isGenerating && styles.generateButtonDisabled]}
+                  onPress={handleGeneratePrayer}
+                  disabled={isGenerating}
+                >
+                  <LinearGradient
+                    colors={isGenerating ? ["#9333ea80", "#db278080"] : ["#9333ea", "#db2777"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.generateGradient}
+                  >
+                    {isGenerating ? (
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <>
+                        <MaterialCommunityIcons name="auto-fix" size={20} color="#fff" />
+                        <Text style={styles.generateButtonText}>Generate Prayer</Text>
+                      </>
+                    )}
+                  </LinearGradient>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <View style={[styles.prayerResult, { backgroundColor: cardBg }]}>
+                  <View style={styles.prayerBadge}>
+                    <Text style={styles.prayerBadgeText}>{generatedPrayer.category.toUpperCase()}</Text>
+                  </View>
+                  <Text style={[styles.prayerTitle, { color: textColor }]}>
+                    {generatedPrayer.title}
+                  </Text>
+                  <Text style={[styles.prayerText, { color: textColor + "D0" }]}>
+                    {generatedPrayer.prayer}
+                  </Text>
+                  {generatedPrayer.suggestedVerses && generatedPrayer.suggestedVerses.length > 0 && (
+                    <View style={styles.versesSection}>
+                      <Text style={[styles.versesSectionTitle, { color: textColor }]}>
+                        Suggested Verses
+                      </Text>
+                      {generatedPrayer.suggestedVerses.map((verse: string, idx: number) => (
+                        <View key={idx} style={[styles.verseTag, { backgroundColor: "#a855f720" }]}>
+                          <MaterialCommunityIcons name="book-open-variant" size={14} color="#a855f7" />
+                          <Text style={[styles.verseTagText, { color: "#a855f7" }]}>{verse}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                </View>
+
+                <TouchableOpacity
+                  style={styles.regenerateButton}
+                  onPress={handleResetAI}
+                >
+                  <MaterialCommunityIcons name="refresh" size={20} color={textColor + "70"} />
+                  <Text style={[styles.regenerateButtonText, { color: textColor + "70" }]}>
+                    Generate Another Prayer
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
           </ScrollView>
         </View>
       </Modal>
@@ -360,5 +533,160 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     minHeight: 200,
     textAlignVertical: "top",
+  },
+  headerButtons: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  aiButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#a855f7",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.4,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+  aiHeader: {
+    alignItems: "center",
+    marginBottom: 32,
+  },
+  aiIconGradient: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#a855f7",
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.4,
+        shadowRadius: 16,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
+  },
+  aiTitle: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  aiSubtitle: {
+    fontSize: 16,
+    textAlign: "center",
+    maxWidth: 300,
+  },
+  aiInput: {
+    fontSize: 17,
+    padding: 16,
+    borderRadius: 12,
+    minHeight: 150,
+    textAlignVertical: "top",
+    marginBottom: 20,
+  },
+  generateButton: {
+    borderRadius: 16,
+    overflow: "hidden",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#9333ea",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+  generateButtonDisabled: {
+    opacity: 0.6,
+  },
+  generateGradient: {
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  generateButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  prayerResult: {
+    borderRadius: 20,
+    padding: 24,
+    marginBottom: 20,
+  },
+  prayerBadge: {
+    alignSelf: "flex-start",
+    backgroundColor: "#a855f7",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  prayerBadgeText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "700",
+    letterSpacing: 1,
+  },
+  prayerTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+  prayerText: {
+    fontSize: 17,
+    lineHeight: 26,
+    marginBottom: 20,
+  },
+  versesSection: {
+    marginTop: 8,
+  },
+  versesSectionTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 12,
+  },
+  verseTag: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginBottom: 8,
+    gap: 8,
+  },
+  verseTagText: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  regenerateButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 16,
+    gap: 8,
+  },
+  regenerateButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
