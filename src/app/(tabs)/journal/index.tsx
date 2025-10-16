@@ -34,6 +34,9 @@ export default function Journal() {
   const [aiSituation, setAISituation] = useState("");
   const [generatedPrayer, setGeneratedPrayer] = useState<any>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showInsights, setShowInsights] = useState(false);
+  const [insights, setInsights] = useState<any>(null);
+  const [isLoadingInsights, setIsLoadingInsights] = useState(false);
 
   const journalEntries = useBibleStore((state) => state.journalEntries);
   const addJournalEntry = useBibleStore((state) => state.addJournalEntry);
@@ -112,6 +115,22 @@ export default function Journal() {
     setGeneratedPrayer(null);
   };
 
+  const handleLoadInsights = async () => {
+    if (journalEntries.length === 0) return;
+
+    setShowInsights(true);
+    setIsLoadingInsights(true);
+
+    try {
+      const prayerInsights = await geminiService.analyzePrayerJournal(journalEntries);
+      setInsights(prayerInsights);
+    } catch (error) {
+      console.error("Error loading insights:", error);
+    } finally {
+      setIsLoadingInsights(false);
+    }
+  };
+
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <Stack.Screen
@@ -148,6 +167,32 @@ export default function Journal() {
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Prayer Insights Card */}
+        {journalEntries.length >= 3 && (
+          <TouchableOpacity
+            style={styles.insightsCard}
+            onPress={handleLoadInsights}
+          >
+            <LinearGradient
+              colors={["#10b981", "#059669"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.insightsGradient}
+            >
+              <View style={styles.insightsContent}>
+                <MaterialCommunityIcons name="chart-arc" size={32} color="#fff" />
+                <View style={styles.insightsTextContainer}>
+                  <Text style={styles.insightsTitle}>Prayer Insights</Text>
+                  <Text style={styles.insightsSubtitle}>
+                    View AI analysis of your prayer journey
+                  </Text>
+                </View>
+              </View>
+              <MaterialCommunityIcons name="arrow-right" size={24} color="#fff" />
+            </LinearGradient>
+          </TouchableOpacity>
+        )}
 
         {/* Journal Entries */}
         {journalEntries.length === 0 ? (
@@ -368,6 +413,127 @@ export default function Journal() {
                 </TouchableOpacity>
               </>
             )}
+          </ScrollView>
+        </View>
+      </Modal>
+
+      {/* Prayer Insights Modal */}
+      <Modal
+        visible={showInsights}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowInsights(false)}
+      >
+        <View style={[styles.modalContainer, { backgroundColor }]}>
+          <View style={[styles.modalHeader, { paddingTop: insets.top + 20 }]}>
+            <TouchableOpacity onPress={() => setShowInsights(false)}>
+              <MaterialCommunityIcons name="close" size={28} color={textColor} />
+            </TouchableOpacity>
+            <Text style={[styles.modalTitle, { color: textColor }]}>Prayer Insights</Text>
+            <View style={{ width: 50 }} />
+          </View>
+
+          <ScrollView
+            style={styles.modalScroll}
+            contentContainerStyle={styles.modalContent}
+          >
+            {isLoadingInsights ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#10b981" />
+                <Text style={[styles.loadingText, { color: textColor }]}>
+                  Analyzing your prayers...
+                </Text>
+              </View>
+            ) : insights ? (
+              <>
+                <View style={styles.insightStatsRow}>
+                  <LinearGradient
+                    colors={["#3b82f6", "#2563eb"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.statCard}
+                  >
+                    <Text style={styles.statNumber}>{insights.totalPrayers}</Text>
+                    <Text style={styles.statLabel}>Total Prayers</Text>
+                  </LinearGradient>
+
+                  <LinearGradient
+                    colors={["#10b981", "#059669"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.statCard}
+                  >
+                    <Text style={styles.statNumber}>{insights.answeredPrayers}</Text>
+                    <Text style={styles.statLabel}>Answered</Text>
+                  </LinearGradient>
+                </View>
+
+                {insights.commonThemes && insights.commonThemes.length > 0 && (
+                  <View style={[styles.insightSection, { backgroundColor: cardBg }]}>
+                    <View style={styles.insightHeader}>
+                      <MaterialCommunityIcons name="tag-multiple" size={24} color="#a855f7" />
+                      <Text style={[styles.insightTitle, { color: textColor }]}>
+                        Common Themes
+                      </Text>
+                    </View>
+                    <View style={styles.themesList}>
+                      {insights.commonThemes.map((theme: string, idx: number) => (
+                        <View key={idx} style={[styles.themeTag, { backgroundColor: "#a855f720" }]}>
+                          <Text style={[styles.themeText, { color: "#a855f7" }]}>{theme}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                )}
+
+                {insights.encouragement && (
+                  <View style={[styles.insightSection, { backgroundColor: cardBg }]}>
+                    <View style={styles.insightHeader}>
+                      <MaterialCommunityIcons name="heart" size={24} color="#ec4899" />
+                      <Text style={[styles.insightTitle, { color: textColor }]}>
+                        Encouragement
+                      </Text>
+                    </View>
+                    <Text style={[styles.insightText, { color: textColor + "D0" }]}>
+                      {insights.encouragement}
+                    </Text>
+                  </View>
+                )}
+
+                {insights.suggestedFocus && (
+                  <View style={[styles.insightSection, { backgroundColor: cardBg }]}>
+                    <View style={styles.insightHeader}>
+                      <MaterialCommunityIcons name="target" size={24} color="#f59e0b" />
+                      <Text style={[styles.insightTitle, { color: textColor }]}>
+                        Suggested Focus
+                      </Text>
+                    </View>
+                    <Text style={[styles.insightText, { color: textColor + "D0" }]}>
+                      {insights.suggestedFocus}
+                    </Text>
+                  </View>
+                )}
+
+                {insights.growthAreas && insights.growthAreas.length > 0 && (
+                  <View style={[styles.insightSection, { backgroundColor: cardBg }]}>
+                    <View style={styles.insightHeader}>
+                      <MaterialCommunityIcons name="chart-line" size={24} color="#10b981" />
+                      <Text style={[styles.insightTitle, { color: textColor }]}>
+                        Growth Areas
+                      </Text>
+                    </View>
+                    <View style={styles.growthList}>
+                      {insights.growthAreas.map((area: string, idx: number) => (
+                        <View key={idx} style={styles.growthItem}>
+                          <MaterialCommunityIcons name="chevron-right" size={20} color="#10b981" />
+                          <Text style={[styles.growthText, { color: textColor + "D0" }]}>{area}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                )}
+              </>
+            ) : null}
           </ScrollView>
         </View>
       </Modal>
@@ -688,5 +854,127 @@ const styles = StyleSheet.create({
   regenerateButtonText: {
     fontSize: 16,
     fontWeight: "600",
+  },
+  insightsCard: {
+    borderRadius: 20,
+    overflow: "hidden",
+    marginBottom: 24,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#10b981",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+  insightsGradient: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 20,
+  },
+  insightsContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    gap: 16,
+  },
+  insightsTextContainer: {
+    flex: 1,
+  },
+  insightsTitle: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  insightsSubtitle: {
+    color: "#ffffff90",
+    fontSize: 14,
+  },
+  loadingContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 64,
+    gap: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  insightStatsRow: {
+    flexDirection: "row",
+    gap: 16,
+    marginBottom: 24,
+  },
+  statCard: {
+    flex: 1,
+    borderRadius: 16,
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+  statNumber: {
+    color: "#fff",
+    fontSize: 32,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  statLabel: {
+    color: "#ffffff90",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  insightSection: {
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+  },
+  insightHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+    gap: 12,
+  },
+  insightTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  insightText: {
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  themesList: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  growthList: {
+    gap: 12,
+  },
+  growthItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  growthText: {
+    fontSize: 16,
+    lineHeight: 22,
+    flex: 1,
   },
 });

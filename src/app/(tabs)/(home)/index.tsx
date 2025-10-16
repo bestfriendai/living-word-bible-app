@@ -110,6 +110,36 @@ export default function Home() {
           </TouchableOpacity>
         </View>
 
+        {/* AI Features Section */}
+        <View style={styles.dailySection}>
+          <Text style={[styles.sectionTitle, { color: textColor }]}>AI Assistant</Text>
+
+          <TouchableOpacity
+            style={[styles.dailyCard, { backgroundColor: cardBg }]}
+            onPress={() => router.push("/prayer-buddy")}
+          >
+            <LinearGradient
+              colors={["#a855f7", "#ec4899"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.dailyIcon}
+            >
+              <Text style={styles.dailyEmoji}>💬</Text>
+            </LinearGradient>
+            <View style={styles.dailyContent}>
+              <Text style={[styles.dailyTitle, { color: textColor }]}>Prayer Buddy</Text>
+              <Text style={[styles.dailySubtitle, { color: textColor + "70" }]}>
+                Chat with your AI spiritual companion
+              </Text>
+            </View>
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={24}
+              color={textColor + "40"}
+            />
+          </TouchableOpacity>
+        </View>
+
         {/* Daily Section */}
         <View style={styles.dailySection}>
           <Text style={[styles.sectionTitle, { color: textColor }]}>Daily</Text>
