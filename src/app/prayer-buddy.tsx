@@ -140,7 +140,7 @@ export default function PrayerBuddy() {
                   end={{ x: 1, y: 1 }}
                   style={styles.avatar}
                 >
-                  <MaterialCommunityIcons name="hand-heart" size={20} color="#fff" />
+                  <MaterialCommunityIcons name="hand-peace" size={20} color="#fff" />
                 </LinearGradient>
               </View>
             )}

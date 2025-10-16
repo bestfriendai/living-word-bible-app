@@ -157,7 +157,7 @@ export default function Journal() {
               style={[styles.aiButton, { backgroundColor: "#a855f7" }]}
               onPress={() => setShowAIModal(true)}
             >
-              <MaterialCommunityIcons name="star-shimmer" size={24} color="#fff" />
+              <MaterialCommunityIcons name="auto-fix" size={24} color="#fff" />
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.addButton, { backgroundColor: theme.color.reactBlue.dark }]}
@@ -334,7 +334,7 @@ export default function Journal() {
                     end={{ x: 1, y: 1 }}
                     style={styles.aiIconGradient}
                   >
-                    <MaterialCommunityIcons name="star-shimmer" size={32} color="#fff" />
+                    <MaterialCommunityIcons name="auto-fix" size={32} color="#fff" />
                   </LinearGradient>
                   <Text style={[styles.aiTitle, { color: textColor }]}>AI Prayer Generator</Text>
                   <Text style={[styles.aiSubtitle, { color: textColor + "70" }]}>
