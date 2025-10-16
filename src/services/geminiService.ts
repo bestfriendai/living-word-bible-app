@@ -20,6 +20,19 @@ export interface VerseOfTheDay {
 export class GeminiService {
   private model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
+  private cleanJsonString(text: string): string {
+    // Remove markdown code blocks
+    let cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+
+    // Remove control characters (U+0000 through U+001F except tab, newline, carriage return)
+    cleaned = cleaned.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+
+    // Normalize line breaks
+    cleaned = cleaned.replace(/\r\n/g, '\n');
+
+    return cleaned;
+  }
+
   async findRelevantVerses(userInput: string): Promise<BibleVerse[]> {
     try {
       const prompt = `You are a compassionate Bible study assistant. A person is going through something and needs spiritual guidance.
@@ -28,7 +41,7 @@ User's situation: "${userInput}"
 
 Please provide 3-5 relevant Bible verses that would offer comfort, guidance, or wisdom for this situation.
 
-Respond ONLY with a valid JSON array in this exact format:
+Respond ONLY with a valid JSON array in this exact format (NO markdown, NO code blocks, JUST the JSON):
 [
   {
     "reference": "Book Chapter:Verse",
@@ -42,7 +55,7 @@ Important:
 - Use accurate Bible verse references and text
 - Be compassionate and understanding
 - Focus on hope, comfort, and practical wisdom
-- Return ONLY the JSON array, no other text`;
+- Return ONLY valid JSON, no markdown formatting`;
 
       const result = await this.model.generateContent(prompt);
       const response = result.response;
@@ -54,9 +67,8 @@ Important:
         throw new Error("Invalid response format");
       }
 
-      // Clean the JSON string by removing markdown code blocks and fixing control characters
-      let jsonString = jsonMatch[0];
-      jsonString = jsonString.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+      // Clean the JSON string
+      const jsonString = this.cleanJsonString(jsonMatch[0]);
 
       const verses = JSON.parse(jsonString) as BibleVerse[];
       return verses;
@@ -79,7 +91,7 @@ Important:
       const today = new Date().toLocaleDateString();
       const prompt = `Generate a meaningful verse of the day for ${today}.
 
-Respond ONLY with a valid JSON object in this exact format:
+Respond ONLY with a valid JSON object in this exact format (NO markdown, NO code blocks, JUST the JSON):
 {
   "title": "A meaningful title for the devotional (4-6 words)",
   "reference": "Book Chapter:Verse",
@@ -90,7 +102,7 @@ Respond ONLY with a valid JSON object in this exact format:
 Important:
 - Choose verses that are uplifting and relevant to daily life
 - The reflection should be warm, encouraging, and actionable
-- Return ONLY the JSON object, no other text`;
+- Return ONLY valid JSON, no markdown formatting`;
 
       const result = await this.model.generateContent(prompt);
       const response = result.response;
@@ -102,9 +114,8 @@ Important:
         throw new Error("Invalid response format");
       }
 
-      // Clean the JSON string by removing markdown code blocks
-      let jsonString = jsonMatch[0];
-      jsonString = jsonString.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+      // Clean the JSON string
+      const jsonString = this.cleanJsonString(jsonMatch[0]);
 
       const verseOfDay = JSON.parse(jsonString) as VerseOfTheDay;
       return verseOfDay;
