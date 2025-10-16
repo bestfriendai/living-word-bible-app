@@ -1,70 +1,160 @@
-# Conference App for React Conf 2025
+# Living Word Bible App 📖
 
-This is the source code for the React Conf 2025 app. Download it from stores: [Google Play](https://play.google.com/store/apps/details?id=com.reactconf.app), [App Store](https://apps.apple.com/gb/app/react-conf/id6499559897).
+A beautiful, AI-powered Bible application built with React Native and Expo Router. Get personalized verse recommendations, daily devotionals, and track your prayer journey.
 
-To run the app locally, clone the repo and install dependencies with [Bun](https://bun.sh/) `bun install`. Next, either [compile and run it locally](#compile-and-run-locally) or [build and run it with EAS](#build-and-run-with-eas).
+![Living Word](https://img.shields.io/badge/Status-Active-success)
+![React Native](https://img.shields.io/badge/React%20Native-Expo-blue)
+![AI Powered](https://img.shields.io/badge/AI-Gemini%202.0-purple)
 
-## Compile and run locally
+## ✨ Features
 
-To compile the app locally, you will need to have Xcode ([learn more](https://docs.expo.dev/guides/local-app-development/#ios)) and/or Android ([learn more](https://docs.expo.dev/guides/local-app-development/#android)) toolchains installed and configured.
+### 🏠 Home Screen
+- Beautiful "Living Word" branding with gradient design
+- Daily verse of the day with purple/blue gradients
+- Quick access to Scripture search and Journal
+- Morning devotional links
 
-> [!NOTE]
-> In order to be able to sign the app for an iOS device with a development certificate, you need a unique bundle identifier. Change the `APP_ID_PREFIX` in **app.config.js** to a unique ID, such as `yourname.reactconf`. Run `npx expo prebuild --clean` when you've updated the value to sync it to the native project.
+### 📖 AI-Powered Scripture Search
+Tell the app what you're going through, and get relevant Bible verses:
+- Share your situation in natural language
+- Receive 3-5 relevant verses powered by Gemini AI 2.0 Flash
+- Each verse includes:
+  - Full reference (e.g., "Jeremiah 29:11")
+  - Complete verse text
+  - Context about the passage
+  - Personalized relevance explanation
+- Save verses for later reference
 
-### Android
+### ☀️ Daily Devotional
+- AI-generated verse of the day
+- Thoughtful title (e.g., "Strength in the Midst of Trials")
+- 2-3 paragraph reflection to help you apply the verse
+- Beautiful orange gradient card design
+- Refresh to get a new devotional
 
-```sh
-# Generate the `android/` directory
-npx expo prebuild -p android
+### 📝 Prayer Journal
+- Track your prayers and witness God's faithfulness
+- Add, view, and delete journal entries
+- Beautiful empty state to encourage journaling
+- Persistent storage so your prayers are never lost
 
-# Compile with Gradle
-npx expo run:android
-# Alternatively, start the dev server and manually open in Android Studio and build
+## 🎨 Design
+
+- **Liquid Glass Theme** - Modern iOS 18+ glass effects where available
+- **Gradient Cards** - Purple, blue, and orange gradients throughout
+- **Dark Mode** - Full dark mode support
+- **Smooth Animations** - React Native Reanimated for buttery smooth transitions
+- **Platform-Specific** - Native feel on both iOS and Android
+
+## 🤖 AI Integration
+
+Powered by **Gemini 2.0 Flash**, the app provides:
+- Intelligent verse recommendations based on your situation
+- Daily devotionals with meaningful reflections
+- Fallback verses if the API is unavailable
+
+## 🛠 Tech Stack
+
+- **React Native** with **Expo Router** (file-based routing)
+- **Zustand** for state management with AsyncStorage persistence
+- **Reanimated** for smooth animations
+- **Gemini AI 2.0 Flash** for AI-powered features
+- **Expo Glass Effect** for iOS 18+ liquid glass UI
+- **Linear Gradient** for beautiful card designs
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- npm or yarn
+- Expo CLI
+- iOS Simulator or Android Emulator (or Expo Go app)
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/bestfriendai/living-word-bible-app.git
+cd living-word-bible-app
+```
+
+2. Install dependencies
+```bash
+npm install
+```
+
+3. Start the development server
+```bash
 npx expo start
 ```
 
-### iOS
+4. Run on your device
+- Press `i` for iOS simulator
+- Press `a` for Android emulator
+- Scan the QR code with Expo Go app
 
-```sh
-# Generate the `ios/` directory
-npx expo prebuild -p ios
+## 📱 Screens
 
-# Compile with xcodebuild and run on simulator.
-npx expo run:ios
-# Alternatively, start the dev server and manually open Xcode and build
-npx expo start
+### Tab Navigation
+- 🏠 **Home** - Verse of the day and quick actions
+- 📖 **Scripture** - AI-powered verse search
+- ☀️ **Devotional** - Daily devotional with reflections
+- 📝 **Journal** - Prayer tracking and journaling
+
+## 🔧 Configuration
+
+The app is configured with:
+- **App Name:** Living Word
+- **Bundle ID:** com.livingword.app
+- **Scheme:** livingword
+
+Update `app.config.ts` to customize:
+```typescript
+const APP_ID_PREFIX = "com.livingword";
 ```
 
-For development on the Android Emulator / iOS Simulator:
+## 📦 Key Dependencies
 
-## Build and run with EAS
-
-### Initial configuration
-
-In order to run a build with EAS, you will need to update the EAS owner and project ID fields in **app.config.js**. Change the `EAS_APP_OWNER`, `EAS_PROJECT_ID`, and `EAS_UPDATE_URL` to empty strings, then run `eas init` and `eas update:configure` to get the new values for your username (never used EAS before? [look at this guide](https://docs.expo.dev/build/setup/)).
-
-### Android
-
-```sh
-# Create a development build. When it's completed, you will be prompted to install it
-eas build --platform android --profile localdev
-# Create a preview build. This is like a production build, but intended to be
-# installed directly to your device
-eas build --platform android --profile preview
+```json
+{
+  "@google/generative-ai": "^0.x.x",
+  "expo-router": "latest",
+  "zustand": "latest",
+  "react-native-reanimated": "latest",
+  "expo-linear-gradient": "latest",
+  "@react-native-async-storage/async-storage": "latest"
+}
 ```
 
-### iOS
+## 🎯 Future Enhancements
 
-```sh
-# Create a development build. When it's completed, you will be prompted to install it
-eas build --platform ios --profile localdev
-# Create a preview build. This is like a production build, but intended to be
-# installed directly to your device
-eas build --platform ios --profile preview
-```
+- [ ] Search by book, chapter, verse
+- [ ] Share verses to social media
+- [ ] Prayer reminders/notifications
+- [ ] Community prayer requests
+- [ ] Audio Bible integration
+- [ ] Reading plans
+- [ ] Highlight and annotate verses
 
-## Learn more
+## 🤝 Contributing
 
-- [Get started with Expo](https://docs.expo.dev/get-started/introduction/).
-- Check out the [Expo "Getting Started" tutorial](https://docs.expo.dev/tutorial/introduction/).
-- Check out the [EAS Tutorial](https://docs.expo.dev/tutorial/eas/introduction/) or the [EggHead course](https://egghead.io/courses/build-and-deploy-react-native-apps-with-expo-eas-85ab521e).
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [Claude Code](https://claude.com/claude-code)
+- Powered by [Gemini AI](https://deepmind.google/technologies/gemini/)
+- UI inspired by modern iOS design patterns
+- Original React Conference app template
+
+## 📧 Contact
+
+For questions or feedback, please open an issue on GitHub.
+
+---
+
+**Made with ❤️ and AI**
