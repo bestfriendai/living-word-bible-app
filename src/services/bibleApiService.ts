@@ -58,11 +58,15 @@ export class BibleApiService {
       const response = await fetch(url, { headers: this.getHeaders() });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`API request failed: ${response.status}`, errorText);
         throw new Error(`API request failed: ${response.status}`);
       }
 
       const data = await response.json();
+      console.log("Bible API search response:", JSON.stringify(data, null, 2));
 
+      // API.Bible search returns: { data: { verses: [...] } }
       if (data.data?.verses && data.data.verses.length > 0) {
         return this.cleanVerseText(data.data.verses[0].text);
       }
