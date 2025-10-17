@@ -1,27 +1,67 @@
 import { Stack, useRouter } from "expo-router";
-import React, { useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Platform,
+  RefreshControl,
+  Pressable,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBibleStore } from "@/store/bibleStore";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { MotiView } from "moti";
+import { hapticPatterns } from "@/utils/haptics";
+import { FeaturedVerseSkeleton } from "@/components/SkeletonLoader";
 
 export default function Home() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const backgroundColor = useThemeColor(theme.color.background);
   const textColor = useThemeColor(theme.color.text);
+  const textSecondary = useThemeColor(theme.color.textSecondary);
+  const textTertiary = useThemeColor(theme.color.textTertiary);
   const cardBg = useThemeColor(theme.color.backgroundSecondary);
+
+  const [refreshing, setRefreshing] = useState(false);
+  const [isLoadingVerse, setIsLoadingVerse] = useState(true);
 
   const verseOfTheDay = useBibleStore((state) => state.verseOfTheDay);
   const fetchVerseOfTheDay = useBibleStore((state) => state.fetchVerseOfTheDay);
-  const journalEntries = useBibleStore((state) => state.journalEntries);
 
   useEffect(() => {
-    fetchVerseOfTheDay();
+    const loadVerse = async () => {
+      setIsLoadingVerse(true);
+      await fetchVerseOfTheDay();
+      setIsLoadingVerse(false);
+    };
+    loadVerse();
   }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await fetchVerseOfTheDay();
+    } catch (error) {
+      console.error("Error refreshing:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const currentDate = new Date();
+  const timeOfDay =
+    currentDate.getHours() < 12
+      ? "Morning"
+      : currentDate.getHours() < 18
+        ? "Afternoon"
+        : "Evening";
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
@@ -34,155 +74,372 @@ export default function Home() {
         style={styles.scrollView}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 20 },
+          {
+            paddingTop: insets.top + 16,
+            paddingBottom: insets.bottom + 20,
+          },
         ]}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={textSecondary}
+            colors={["#667eea"]}
+          />
+        }
       >
         {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <View style={[styles.logo, { backgroundColor: theme.color.reactBlue.dark }]}>
-              <Text style={styles.logoText}>📖</Text>
+        <MotiView
+          from={{ opacity: 0, translateY: -20 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: "timing", duration: 600 }}
+          style={styles.header}
+        >
+          <View style={styles.headerContent}>
+            <View>
+              <Text style={[styles.greeting, { color: textTertiary }]}>
+                Good {timeOfDay}
+              </Text>
+              <Text style={[styles.title, { color: textColor }]}>
+                Living Word
+              </Text>
             </View>
-            <Text style={styles.brandText}>Vibecode</Text>
+            <Pressable
+              onPress={() => hapticPatterns.buttonPress()}
+              style={({ pressed }) => [
+                styles.profileButton,
+                { backgroundColor: cardBg },
+                pressed && { opacity: 0.7 },
+              ]}
+            >
+              <MaterialCommunityIcons
+                name="account-circle-outline"
+                size={28}
+                color={textColor}
+              />
+            </Pressable>
           </View>
-          <View style={styles.greeting}>
-            <Text style={[styles.greetingText, { color: textColor + "90" }]}>Good morning</Text>
-            <Text style={[styles.title, { color: textColor }]}>Living Word</Text>
+        </MotiView>
+
+        {/* Today's Verse - Featured Card */}
+        {isLoadingVerse ? (
+          <FeaturedVerseSkeleton />
+        ) : verseOfTheDay ? (
+          <MotiView
+            from={{ opacity: 0, scale: 0.95, translateY: 20 }}
+            animate={{ opacity: 1, scale: 1, translateY: 0 }}
+            transition={{ type: "spring", damping: 15, delay: 150 }}
+          >
+            <Pressable
+              onPress={() => {
+                hapticPatterns.buttonPress();
+                router.push("/devotional");
+              }}
+              style={({ pressed }) => [
+                styles.featuredCard,
+                pressed && { opacity: 0.9 },
+              ]}
+            >
+              <LinearGradient
+                colors={["#667eea", "#764ba2"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.featuredGradient}
+              >
+                <View style={styles.featuredHeader}>
+                  <View style={styles.featuredBadge}>
+                    <MaterialCommunityIcons
+                      name="star-four-points"
+                      size={12}
+                      color="#FFFFFF"
+                    />
+                    <Text style={styles.featuredBadgeText}>TODAY</Text>
+                  </View>
+                  <MaterialCommunityIcons
+                    name="chevron-right"
+                    size={20}
+                    color="rgba(255,255,255,0.6)"
+                  />
+                </View>
+                <Text style={styles.featuredVerse} numberOfLines={3}>
+                  {verseOfTheDay.text}
+                </Text>
+                <Text style={styles.featuredReference}>
+                  {verseOfTheDay.reference}
+                </Text>
+              </LinearGradient>
+            </Pressable>
+          </MotiView>
+        ) : null}
+
+        {/* Quick Access - Bento Grid */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: textColor }]}>
+            Quick Access
+          </Text>
+
+          <View style={styles.bentoGrid}>
+            {/* Scripture - Wide Card (2x1) */}
+            <MotiView
+              from={{ opacity: 0, translateY: 20 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: "spring", damping: 18, delay: 250 }}
+              style={styles.bentoWide}
+            >
+              <Pressable
+                onPress={() => {
+                  hapticPatterns.buttonPress();
+                  router.push("/scripture");
+                }}
+                style={({ pressed }) => [
+                  styles.bentoCard,
+                  styles.bentoCardWide,
+                  { backgroundColor: cardBg },
+                  pressed && { opacity: 0.85 },
+                ]}
+              >
+                <LinearGradient
+                  colors={[
+                    "rgba(59, 130, 246, 0.15)",
+                    "rgba(59, 130, 246, 0.05)",
+                  ]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.bentoCardGradient}
+                >
+                  <View
+                    style={[styles.bentoIcon, { backgroundColor: "#3b82f620" }]}
+                  >
+                    <MaterialCommunityIcons
+                      name="book-search"
+                      size={28}
+                      color="#3b82f6"
+                    />
+                  </View>
+                  <Text style={[styles.bentoTitle, { color: textColor }]}>
+                    Scripture Search
+                  </Text>
+                  <Text
+                    style={[styles.bentoSubtitle, { color: textSecondary }]}
+                  >
+                    Find verses for any situation
+                  </Text>
+                </LinearGradient>
+              </Pressable>
+            </MotiView>
+
+            {/* Row 2 - Three small cards */}
+            <View style={styles.bentoRow}>
+              {/* Reading Plans */}
+              <MotiView
+                from={{ opacity: 0, translateY: 20 }}
+                animate={{ opacity: 1, translateY: 0 }}
+                transition={{ type: "spring", damping: 18, delay: 300 }}
+                style={styles.bentoSmall}
+              >
+                <Pressable
+                  onPress={() => {
+                    hapticPatterns.buttonPress();
+                    router.push("/reading-plans");
+                  }}
+                  style={({ pressed }) => [
+                    styles.bentoCard,
+                    styles.bentoCardSmall,
+                    { backgroundColor: cardBg },
+                    pressed && { opacity: 0.85 },
+                  ]}
+                >
+                  <View
+                    style={[
+                      styles.bentoIconSmall,
+                      { backgroundColor: "#10b98120" },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name="calendar-check"
+                      size={24}
+                      color="#10b981"
+                    />
+                  </View>
+                  <Text style={[styles.bentoTitleSmall, { color: textColor }]}>
+                    Plans
+                  </Text>
+                </Pressable>
+              </MotiView>
+
+              {/* Prayer Journal */}
+              <MotiView
+                from={{ opacity: 0, translateY: 20 }}
+                animate={{ opacity: 1, translateY: 0 }}
+                transition={{ type: "spring", damping: 18, delay: 350 }}
+                style={styles.bentoSmall}
+              >
+                <Pressable
+                  onPress={() => {
+                    hapticPatterns.buttonPress();
+                    router.push("/journal");
+                  }}
+                  style={({ pressed }) => [
+                    styles.bentoCard,
+                    styles.bentoCardSmall,
+                    { backgroundColor: cardBg },
+                    pressed && { opacity: 0.85 },
+                  ]}
+                >
+                  <View
+                    style={[
+                      styles.bentoIconSmall,
+                      { backgroundColor: "#a855f720" },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name="hand-heart"
+                      size={24}
+                      color="#a855f7"
+                    />
+                  </View>
+                  <Text style={[styles.bentoTitleSmall, { color: textColor }]}>
+                    Prayer
+                  </Text>
+                </Pressable>
+              </MotiView>
+
+              {/* Memorization */}
+              <MotiView
+                from={{ opacity: 0, translateY: 20 }}
+                animate={{ opacity: 1, translateY: 0 }}
+                transition={{ type: "spring", damping: 18, delay: 400 }}
+                style={styles.bentoSmall}
+              >
+                <Pressable
+                  onPress={() => {
+                    hapticPatterns.buttonPress();
+                    router.push("/memorization");
+                  }}
+                  style={({ pressed }) => [
+                    styles.bentoCard,
+                    styles.bentoCardSmall,
+                    { backgroundColor: cardBg },
+                    pressed && { opacity: 0.85 },
+                  ]}
+                >
+                  <View
+                    style={[
+                      styles.bentoIconSmall,
+                      { backgroundColor: "#8b5cf620" },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name="brain"
+                      size={24}
+                      color="#8b5cf6"
+                    />
+                  </View>
+                  <Text style={[styles.bentoTitleSmall, { color: textColor }]}>
+                    Memory
+                  </Text>
+                </Pressable>
+              </MotiView>
+            </View>
           </View>
         </View>
 
-        {/* Verse of the Day Card */}
-        {verseOfTheDay && (
-          <TouchableOpacity
-            activeOpacity={0.9}
-            onPress={() => router.push("/devotional")}
-            style={styles.verseCard}
+        {/* Featured Tools */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: textColor }]}>
+            AI Tools
+          </Text>
+
+          <MotiView
+            from={{ opacity: 0, translateY: 20 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={{ type: "spring", damping: 20, delay: 450 }}
           >
-            <LinearGradient
-              colors={["#667eea", "#764ba2"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.verseGradient}
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={[styles.featureCard, { backgroundColor: cardBg }]}
+              onPress={() => router.push("/prayer-buddy")}
             >
-              <View style={styles.verseBadge}>
-                <Text style={styles.verseBadgeText}>VERSE OF THE DAY</Text>
-              </View>
-              <Text style={styles.verseText} numberOfLines={3}>
-                "{verseOfTheDay.text.substring(0, 100)}..."
-              </Text>
-              <View style={styles.verseFooter}>
-                <Text style={styles.verseReference}>{verseOfTheDay.reference}</Text>
-                <View style={styles.arrowCircle}>
-                  <Text style={styles.arrow}>→</Text>
+              <View style={styles.featureCardLeft}>
+                <View
+                  style={[
+                    styles.featureIcon,
+                    { backgroundColor: "rgba(236, 72, 153, 0.1)" },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name="robot-love"
+                    size={24}
+                    color="#ec4899"
+                  />
+                </View>
+                <View style={styles.featureCardText}>
+                  <Text style={[styles.featureCardTitle, { color: textColor }]}>
+                    Prayer Companion
+                  </Text>
+                  <Text
+                    style={[
+                      styles.featureCardSubtitle,
+                      { color: textSecondary },
+                    ]}
+                  >
+                    AI-powered spiritual guidance
+                  </Text>
                 </View>
               </View>
-            </LinearGradient>
-          </TouchableOpacity>
-        )}
+              <MaterialCommunityIcons
+                name="chevron-right"
+                size={20}
+                color={textTertiary}
+              />
+            </TouchableOpacity>
+          </MotiView>
 
-        {/* Quick Actions */}
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity
-            style={[styles.actionCard, { backgroundColor: cardBg }]}
-            onPress={() => router.push("/scripture")}
+          <MotiView
+            from={{ opacity: 0, translateY: 20 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={{ type: "spring", damping: 20, delay: 500 }}
           >
-            <View style={[styles.actionIcon, { backgroundColor: "#3b82f620" }]}>
-              <MaterialCommunityIcons name="book-search" size={32} color="#3b82f6" />
-            </View>
-            <Text style={[styles.actionTitle, { color: textColor }]}>Scripture</Text>
-            <Text style={[styles.actionSubtitle, { color: textColor + "70" }]}>
-              Find guidance
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.actionCard, { backgroundColor: cardBg }]}
-            onPress={() => router.push("/journal")}
-          >
-            <View style={[styles.actionIcon, { backgroundColor: "#a855f720" }]}>
-              <MaterialCommunityIcons name="notebook-edit" size={32} color="#a855f7" />
-            </View>
-            <Text style={[styles.actionTitle, { color: textColor }]}>Journal</Text>
-            <Text style={[styles.actionSubtitle, { color: textColor + "70" }]}>
-              Track prayers
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* AI Features Section */}
-        <View style={styles.dailySection}>
-          <Text style={[styles.sectionTitle, { color: textColor }]}>AI Assistant</Text>
-
-          <TouchableOpacity
-            style={[styles.dailyCard, { backgroundColor: cardBg }]}
-            onPress={() => router.push("/prayer-buddy")}
-          >
-            <LinearGradient
-              colors={["#a855f7", "#ec4899"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.dailyIcon}
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={[styles.featureCard, { backgroundColor: cardBg }]}
+              onPress={() => router.push("/devotional")}
             >
-              <Text style={styles.dailyEmoji}>💬</Text>
-            </LinearGradient>
-            <View style={styles.dailyContent}>
-              <Text style={[styles.dailyTitle, { color: textColor }]}>Prayer Buddy</Text>
-              <Text style={[styles.dailySubtitle, { color: textColor + "70" }]}>
-                Chat with your AI spiritual companion
-              </Text>
-            </View>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={24}
-              color={textColor + "40"}
-            />
-          </TouchableOpacity>
-        </View>
-
-        {/* Daily Section */}
-        <View style={styles.dailySection}>
-          <Text style={[styles.sectionTitle, { color: textColor }]}>Daily</Text>
-
-          <TouchableOpacity
-            style={[styles.dailyCard, { backgroundColor: cardBg }]}
-            onPress={() => router.push("/devotional")}
-          >
-            <View style={[styles.dailyIcon, { backgroundColor: "#fbbf2420" }]}>
-              <Text style={styles.dailyEmoji}>☀️</Text>
-            </View>
-            <View style={styles.dailyContent}>
-              <Text style={[styles.dailyTitle, { color: textColor }]}>Morning Devotional</Text>
-              <Text style={[styles.dailySubtitle, { color: textColor + "70" }]}>
-                Start your day with reflection
-              </Text>
-            </View>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={24}
-              color={textColor + "40"}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.dailyCard, { backgroundColor: cardBg }]}
-            onPress={() => router.push("/devotional")}
-          >
-            <View style={[styles.dailyIcon, { backgroundColor: "#ec489920" }]}>
-              <Text style={styles.dailyEmoji}>❤️</Text>
-            </View>
-            <View style={styles.dailyContent}>
-              <Text style={[styles.dailyTitle, { color: textColor }]}>Today's Verse</Text>
-              <Text style={[styles.dailySubtitle, { color: textColor + "70" }]}>
-                Daily inspiration from scripture
-              </Text>
-            </View>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={24}
-              color={textColor + "40"}
-            />
-          </TouchableOpacity>
+              <View style={styles.featureCardLeft}>
+                <View
+                  style={[
+                    styles.featureIcon,
+                    { backgroundColor: "rgba(251, 146, 60, 0.1)" },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name="meditation"
+                    size={24}
+                    color="#fb923c"
+                  />
+                </View>
+                <View style={styles.featureCardText}>
+                  <Text style={[styles.featureCardTitle, { color: textColor }]}>
+                    Daily Devotional
+                  </Text>
+                  <Text
+                    style={[
+                      styles.featureCardSubtitle,
+                      { color: textSecondary },
+                    ]}
+                  >
+                    Verse of the day with insights
+                  </Text>
+                </View>
+              </View>
+              <MaterialCommunityIcons
+                name="chevron-right"
+                size={20}
+                color={textTertiary}
+              />
+            </TouchableOpacity>
+          </MotiView>
         </View>
       </ScrollView>
     </View>
@@ -200,49 +457,51 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   header: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
-  logoContainer: {
+  headerContent: {
+    alignItems: "center",
     flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  logo: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 8,
-  },
-  logoText: {
-    fontSize: 16,
-  },
-  brandText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "600",
-    letterSpacing: 0.5,
+    justifyContent: "space-between",
   },
   greeting: {
-    marginBottom: 8,
-  },
-  greetingText: {
-    fontSize: 16,
-    marginBottom: 4,
+    fontFamily: "Montserrat-Medium",
+    fontSize: 13,
+    letterSpacing: 0.3,
+    marginBottom: 2,
   },
   title: {
-    fontSize: 42,
-    fontWeight: "bold",
-    letterSpacing: -1,
+    fontFamily: "Montserrat-Bold",
+    fontSize: 26,
+    letterSpacing: -0.5,
   },
-  verseCard: {
-    marginBottom: 24,
-    borderRadius: 20,
-    overflow: "hidden",
+  profileButton: {
+    alignItems: "center",
+    borderRadius: 22,
+    height: 44,
+    justifyContent: "center",
+    width: 44,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
+  },
+
+  // Featured Verse Card
+  featuredCard: {
+    borderRadius: 20,
+    marginBottom: 24,
+    overflow: "hidden",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#667eea",
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.3,
         shadowRadius: 16,
@@ -252,117 +511,174 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  verseGradient: {
-    padding: 24,
-    minHeight: 200,
-    justifyContent: "space-between",
-  },
-  verseBadge: {
-    alignSelf: "flex-start",
-    backgroundColor: "rgba(255,255,255,0.25)",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginBottom: 16,
-  },
-  verseBadgeText: {
-    color: "#fff",
-    fontSize: 12,
-    fontWeight: "700",
-    letterSpacing: 1,
-  },
-  verseText: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "600",
-    lineHeight: 28,
-    marginBottom: 16,
-  },
-  verseFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  verseReference: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  arrowCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "rgba(255,255,255,0.25)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  arrow: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  actionsContainer: {
-    flexDirection: "row",
-    gap: 16,
-    marginBottom: 32,
-  },
-  actionCard: {
-    flex: 1,
+  featuredGradient: {
+    minHeight: 140,
     padding: 20,
-    borderRadius: 16,
-    minHeight: 160,
   },
-  actionIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 12,
+  featuredHeader: {
     alignItems: "center",
-    justifyContent: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 12,
   },
-  actionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 4,
+  featuredBadge: {
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    borderRadius: 12,
+    flexDirection: "row",
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
   },
-  actionSubtitle: {
-    fontSize: 14,
+  featuredBadgeText: {
+    color: "#FFFFFF",
+    fontFamily: "Montserrat-Bold",
+    fontSize: 11,
+    letterSpacing: 0.8,
   },
-  dailySection: {
-    marginBottom: 32,
+  featuredVerse: {
+    color: "#FFFFFF",
+    fontFamily: "Montserrat-Medium",
+    fontSize: 15,
+    lineHeight: 22,
+    marginBottom: 10,
+  },
+  featuredReference: {
+    color: "rgba(255, 255, 255, 0.85)",
+    fontFamily: "Montserrat-SemiBold",
+    fontSize: 13,
+  },
+
+  // Section
+  section: {
+    marginBottom: 28,
   },
   sectionTitle: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 16,
+    fontFamily: "Montserrat-Bold",
+    fontSize: 17,
+    letterSpacing: -0.3,
+    marginBottom: 14,
   },
-  dailyCard: {
+
+  // Bento Grid (2025 Design Pattern)
+  bentoGrid: {
+    gap: 12,
+  },
+  bentoRow: {
     flexDirection: "row",
-    alignItems: "center",
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 12,
+    gap: 12,
   },
-  dailyIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 16,
+  bentoWide: {
+    width: "100%",
   },
-  dailyEmoji: {
-    fontSize: 28,
-  },
-  dailyContent: {
+  bentoSmall: {
     flex: 1,
   },
-  dailyTitle: {
+  bentoCard: {
+    borderRadius: 20,
+    overflow: "hidden",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.06,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  bentoCardWide: {
+    minHeight: 140,
+  },
+  bentoCardSmall: {
+    minHeight: 120,
+    padding: 16,
+  },
+  bentoCardGradient: {
+    borderRadius: 20,
+    gap: 8,
+    padding: 20,
+  },
+  bentoIcon: {
+    alignItems: "center",
+    borderRadius: 16,
+    height: 56,
+    justifyContent: "center",
+    marginBottom: 4,
+    width: 56,
+  },
+  bentoIconSmall: {
+    alignItems: "center",
+    borderRadius: 14,
+    height: 48,
+    justifyContent: "center",
+    marginBottom: 8,
+    width: 48,
+  },
+  bentoTitle: {
+    fontFamily: "Montserrat-Bold",
     fontSize: 18,
-    fontWeight: "600",
+    letterSpacing: -0.3,
     marginBottom: 4,
   },
-  dailySubtitle: {
+  bentoTitleSmall: {
+    fontFamily: "Montserrat-Bold",
     fontSize: 14,
+    letterSpacing: -0.2,
+  },
+  bentoSubtitle: {
+    fontFamily: "Montserrat-Medium",
+    fontSize: 13,
+    opacity: 0.8,
+  },
+
+  // Feature Cards
+  featureCard: {
+    alignItems: "center",
+    borderRadius: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    padding: 16,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.04,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
+  },
+  featureCardLeft: {
+    alignItems: "center",
+    flexDirection: "row",
+    flex: 1,
+    gap: 12,
+  },
+  featureIcon: {
+    alignItems: "center",
+    borderRadius: 14,
+    height: 48,
+    justifyContent: "center",
+    width: 48,
+  },
+  featureCardText: {
+    flex: 1,
+  },
+  featureCardTitle: {
+    fontFamily: "Montserrat-SemiBold",
+    fontSize: 15,
+    letterSpacing: -0.2,
+    marginBottom: 2,
+  },
+  featureCardSubtitle: {
+    fontFamily: "Montserrat-Regular",
+    fontSize: 13,
+    lineHeight: 18,
   },
 });

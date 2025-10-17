@@ -3,7 +3,6 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { differenceInMinutes } from "date-fns";
 import { usePathname, useRouter } from "expo-router";
 import { Stack } from "expo-router/stack";
 import { StatusBar } from "expo-status-bar";
@@ -19,9 +18,11 @@ import * as SplashScreen from "expo-splash-screen";
 
 import { theme } from "../theme";
 
-import { ThemedText, useThemeColor } from "@/components/Themed";
-import { useReactConfStore } from "@/store/reactConfStore";
+import { useThemeColor } from "@/components/Themed";
 import { osName } from "expo-device";
+import { bibleDatabase } from "@/services/bibleDatabase";
+import { bibleApiService } from "@/services/bibleApiService";
+import { logEnvValidation } from "@/utils/validateEnv";
 
 SplashScreen.setOptions({
   duration: 200,
@@ -42,8 +43,6 @@ export default function Layout() {
   const router = useRouter();
   const pathName = usePathname();
   const colorScheme = useColorScheme() || "light";
-
-  const { refreshData, lastRefreshed } = useReactConfStore();
 
   const tabBarBackgroundColor = useThemeColor(theme.color.background);
 
@@ -83,18 +82,24 @@ export default function Layout() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastNotificationResponse]);
 
+  // Validate environment variables and initialize Bible database on app start
   useEffect(() => {
-    const fetchData = async () => {
-      if (
-        !lastRefreshed ||
-        differenceInMinutes(new Date(), new Date(lastRefreshed)) > 5
-      ) {
-        await refreshData();
+    // Validate environment variables
+    logEnvValidation();
+
+    const initializeBible = async () => {
+      try {
+        await bibleDatabase.initialize();
+        // Seed popular verses for offline access
+        await bibleApiService.seedPopularVerses();
+        console.log("✅ Bible database ready");
+      } catch (error) {
+        console.error("❌ Failed to initialize Bible database:", error);
       }
     };
 
-    fetchData();
-  }, [lastRefreshed, refreshData]);
+    initializeBible();
+  }, []);
 
   return (
     <GestureHandlerRootView style={styles.container}>
@@ -109,66 +114,6 @@ export default function Layout() {
               name="(tabs)"
               options={{
                 headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="talk/[talkId]"
-              options={{
-                headerTransparent: Platform.OS === "ios" ? true : false,
-                headerLargeTitle: false,
-                title: "",
-                presentation:
-                  Platform.OS === "ios"
-                    ? isLiquidGlassAvailable() && osName !== "iPadOS"
-                      ? "formSheet"
-                      : "modal"
-                    : "modal",
-                sheetGrabberVisible: true,
-                sheetAllowedDetents: [0.8],
-                sheetInitialDetentIndex: 0,
-                contentStyle: {
-                  backgroundColor: isLiquidGlassAvailable()
-                    ? "transparent"
-                    : tabBarBackgroundColor,
-                },
-                headerStyle: {
-                  backgroundColor:
-                    Platform.OS === "ios"
-                      ? "transparent"
-                      : tabBarBackgroundColor,
-                },
-                headerBlurEffect: isLiquidGlassAvailable()
-                  ? undefined
-                  : colorScheme === "dark"
-                    ? "dark"
-                    : "light",
-              }}
-            />
-            <Stack.Screen
-              name="speaker/[speakerId]"
-              options={{
-                presentation: "modal",
-                headerStyle: {
-                  backgroundColor:
-                    Platform.OS === "ios"
-                      ? "transparent"
-                      : tabBarBackgroundColor,
-                },
-                headerTransparent: Platform.OS === "ios" ? true : false,
-                headerTitleAlign: "center",
-                headerBlurEffect: isLiquidGlassAvailable()
-                  ? undefined
-                  : colorScheme === "dark"
-                    ? "dark"
-                    : "light",
-                headerTitle: Platform.select({
-                  android: (props) => (
-                    <ThemedText fontSize={theme.fontSize24} fontWeight="bold">
-                      {props.children}
-                    </ThemedText>
-                  ),
-                  default: undefined,
-                }),
               }}
             />
           </Stack>

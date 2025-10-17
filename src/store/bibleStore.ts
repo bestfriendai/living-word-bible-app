@@ -1,7 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { geminiService, BibleVerse, VerseOfTheDay } from "@/services/geminiService";
+import {
+  geminiService,
+  BibleVerse,
+  VerseOfTheDay,
+} from "@/services/geminiService";
 
 export interface JournalEntry {
   id: string;
@@ -10,7 +14,7 @@ export interface JournalEntry {
   createdAt: string;
   updatedAt: string;
   tags?: string[];
-  category?: 'prayer' | 'praise' | 'reflection' | 'request' | 'answered';
+  category?: "prayer" | "praise" | "reflection" | "request" | "answered";
   isAnswered?: boolean;
   answeredAt?: string;
 }
@@ -53,6 +57,7 @@ export interface ReadingPlan {
 export interface ReadingDay {
   day: number;
   reference: string;
+  title?: string;
   isCompleted: boolean;
   completedAt?: string;
 }
@@ -75,6 +80,7 @@ type BibleState = {
   readingStreak: ReadingStreak;
   readingPlans: ReadingPlan[];
   activeReadingPlan: string | null;
+  preferredTranslation: string;
 
   // Actions
   fetchVerseOfTheDay: () => Promise<void>;
@@ -83,17 +89,24 @@ type BibleState = {
   removeSavedVerse: (verseId: string) => void;
   toggleVerseFavorite: (verseId: string) => void;
   updateVerseNotes: (verseId: string, notes: string) => void;
-  addJournalEntry: (entry: Omit<JournalEntry, "id" | "createdAt" | "updatedAt">) => void;
+  addJournalEntry: (
+    entry: Omit<JournalEntry, "id" | "createdAt" | "updatedAt">,
+  ) => void;
   updateJournalEntry: (id: string, entry: Partial<JournalEntry>) => void;
   deleteJournalEntry: (id: string) => void;
   markPrayerAnswered: (id: string) => void;
   clearSearchResults: () => void;
   clearSearchHistory: () => void;
   updateReadingStreak: () => void;
-  createReadingPlan: (name: string, description: string, readings: Omit<ReadingDay, "isCompleted" | "completedAt">[]) => void;
+  createReadingPlan: (
+    name: string,
+    description: string,
+    readings: Omit<ReadingDay, "isCompleted" | "completedAt">[],
+  ) => string;
   markReadingComplete: (planId: string, day: number) => void;
   deleteReadingPlan: (planId: string) => void;
   setActiveReadingPlan: (planId: string | null) => void;
+  setPreferredTranslation: (translation: string) => void;
 };
 
 export const useBibleStore = create(
@@ -110,11 +123,12 @@ export const useBibleStore = create(
       readingStreak: {
         currentStreak: 0,
         longestStreak: 0,
-        lastReadDate: '',
+        lastReadDate: "",
         totalDaysRead: 0,
       },
       readingPlans: [],
       activeReadingPlan: null,
+      preferredTranslation: "NIV",
 
       fetchVerseOfTheDay: async () => {
         const { lastVerseUpdate, verseHistory } = get();
@@ -214,7 +228,7 @@ export const useBibleStore = create(
         const { savedVerses } = get();
         set({
           savedVerses: savedVerses.map((v) =>
-            v.id === verseId ? { ...v, isFavorite: !v.isFavorite } : v
+            v.id === verseId ? { ...v, isFavorite: !v.isFavorite } : v,
           ),
         });
       },
@@ -223,7 +237,7 @@ export const useBibleStore = create(
         const { savedVerses } = get();
         set({
           savedVerses: savedVerses.map((v) =>
-            v.id === verseId ? { ...v, notes } : v
+            v.id === verseId ? { ...v, notes } : v,
           ),
         });
       },
@@ -245,7 +259,7 @@ export const useBibleStore = create(
           journalEntries: journalEntries.map((entry) =>
             entry.id === id
               ? { ...entry, ...updates, updatedAt: new Date().toISOString() }
-              : entry
+              : entry,
           ),
         });
       },
@@ -264,10 +278,10 @@ export const useBibleStore = create(
                   ...entry,
                   isAnswered: true,
                   answeredAt: new Date().toISOString(),
-                  category: 'answered' as const,
+                  category: "answered" as const,
                   updatedAt: new Date().toISOString(),
                 }
-              : entry
+              : entry,
           ),
         });
       },
@@ -342,6 +356,7 @@ export const useBibleStore = create(
           })),
         };
         set({ readingPlans: [newPlan, ...readingPlans] });
+        return newPlan.id;
       },
 
       markReadingComplete: (planId, day) => {
@@ -352,8 +367,12 @@ export const useBibleStore = create(
 
             const updatedReadings = plan.readings.map((reading) =>
               reading.day === day
-                ? { ...reading, isCompleted: true, completedAt: new Date().toISOString() }
-                : reading
+                ? {
+                    ...reading,
+                    isCompleted: true,
+                    completedAt: new Date().toISOString(),
+                  }
+                : reading,
             );
 
             const allCompleted = updatedReadings.every((r) => r.isCompleted);
@@ -372,21 +391,22 @@ export const useBibleStore = create(
         const { readingPlans, activeReadingPlan } = get();
         set({
           readingPlans: readingPlans.filter((p) => p.id !== planId),
-          activeReadingPlan: activeReadingPlan === planId ? null : activeReadingPlan,
+          activeReadingPlan:
+            activeReadingPlan === planId ? null : activeReadingPlan,
         });
       },
 
       setActiveReadingPlan: (planId) => {
         set({ activeReadingPlan: planId });
       },
+
+      setPreferredTranslation: (translation) => {
+        set({ preferredTranslation: translation });
+      },
     }),
     {
       name: "living-word-bible-store",
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: (state) => {
-        const { isSearching: _, ...dataToPersist } = state;
-        return dataToPersist;
-      },
-    }
-  )
+    },
+  ),
 );

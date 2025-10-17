@@ -1,6 +1,5 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import {
-  Badge,
   Icon,
   Label,
   NativeTabs,
@@ -31,112 +30,119 @@ type VectorIconFamily = {
 export default function TabLayout() {
   const tintColor = useThemeColor(theme.color.reactBlue);
   const inactiveTintColor = useThemeColor({
-    light: "#00000090",
-    dark: "#FFFFFF90",
+    light: "#8E8E93",
+    dark: "#8E8E93",
   });
 
+  // Individual colors for each tab
+  const homeColor = "#667eea";
+  const scriptureColor = "#3b82f6";
+  const devotionalColor = "#fb923c";
+  const prayerColor = "#ec4899";
+
   const labelSelectedStyle =
-    Platform.OS === "ios" ? { color: tintColor } : undefined;
+    Platform.OS === "ios"
+      ? { fontSize: 12, fontWeight: "600" as const }
+      : { fontSize: 14 };
+
+  const labelStyle = {
+    color: inactiveTintColor,
+    fontSize: 11,
+    fontWeight: "500" as const,
+  };
 
   return (
     <NativeTabs
       badgeBackgroundColor={tintColor}
-      labelStyle={{
-        color:
-          Platform.OS === "ios" && isLiquidGlassAvailable()
-            ? DynamicColorIOS({
-                light: theme.colorBlack,
-                dark: theme.colorWhite,
-              })
-            : inactiveTintColor,
-      }}
-      iconColor={
-        Platform.OS === "ios" && isLiquidGlassAvailable()
-          ? DynamicColorIOS({
-              light: theme.colorBlack,
-              dark: theme.colorWhite,
-            })
-          : inactiveTintColor
-      }
-      tintColor={
-        Platform.OS === "ios"
-          ? DynamicColorIOS(theme.color.reactBlue)
-          : inactiveTintColor
-      }
+      labelStyle={labelStyle}
+      iconColor={inactiveTintColor}
+      tintColor={inactiveTintColor}
       labelVisibilityMode="labeled"
-      indicatorColor={tintColor + "25"}
+      indicatorColor="transparent"
       disableTransparentOnScrollEdge={true}
     >
       <NativeTabs.Trigger name="(home)">
         {Platform.select({
-          ios: <Icon sf="house.fill" />,
+          ios: <Icon sf="house" selectedColor={homeColor} />,
           android: (
             <Icon
               src={
                 <VectorIcon
                   family={MaterialCommunityIcons as VectorIconFamily}
-                  name="home"
+                  name="home-heart-outline"
                 />
               }
-              selectedColor={tintColor}
+              selectedColor={homeColor}
             />
           ),
         })}
-        <Label selectedStyle={labelSelectedStyle}>Home</Label>
+        <Label selectedStyle={{ ...labelSelectedStyle, color: homeColor }}>
+          Home
+        </Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger
         name="scripture"
         role={isLiquidGlassAvailable() ? "search" : undefined}
       >
         {Platform.select({
-          ios: <Icon sf="book.fill" selectedColor={tintColor} />,
+          ios: <Icon sf="book" selectedColor={scriptureColor} />,
           android: (
             <Icon
               src={
                 <VectorIcon
                   family={MaterialCommunityIcons as VectorIconFamily}
-                  name="book-open-variant"
+                  name="book-open-outline"
                 />
               }
-              selectedColor={tintColor}
+              selectedColor={scriptureColor}
             />
           ),
         })}
-        <Label selectedStyle={labelSelectedStyle}>Scripture</Label>
+        <Label
+          selectedStyle={{ ...labelSelectedStyle, color: scriptureColor }}
+        >
+          Scripture
+        </Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="devotional">
         {Platform.select({
-          ios: <Icon sf="sun.max.fill" />,
+          ios: <Icon sf="heart.circle" selectedColor={devotionalColor} />,
           android: (
             <Icon
               src={
                 <VectorIcon
                   family={MaterialCommunityIcons as VectorIconFamily}
-                  name="white-balance-sunny"
+                  name="meditation"
                 />
               }
-              selectedColor={tintColor}
+              selectedColor={devotionalColor}
             />
           ),
         })}
-        <Label selectedStyle={labelSelectedStyle}>Devotional</Label>
+        <Label
+          selectedStyle={{ ...labelSelectedStyle, color: devotionalColor }}
+        >
+          Devotional
+        </Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="journal">
         {Platform.select({
-          ios: <Icon sf="note.text" selectedColor={tintColor} />,
+          ios: <Icon sf="hand.raised" selectedColor={prayerColor} />,
           android: (
             <Icon
               src={
                 <VectorIcon
                   family={MaterialCommunityIcons as VectorIconFamily}
-                  name="notebook"
+                  name="hand-heart-outline"
                 />
               }
-              selectedColor={tintColor}
+              selectedColor={prayerColor}
             />
           ),
         })}
-        <Label selectedStyle={labelSelectedStyle}>Journal</Label>
+        <Label selectedStyle={{ ...labelSelectedStyle, color: prayerColor }}>
+          Prayer
+        </Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );

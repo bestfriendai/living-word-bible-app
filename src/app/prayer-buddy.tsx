@@ -30,7 +30,8 @@ export default function PrayerBuddy() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
-      content: "Hello! I'm your Prayer Buddy. I'm here to support you in your spiritual journey, answer questions about faith, help you pray, or simply listen. How can I help you today?",
+      content:
+        "Hello! I'm your Prayer Buddy. I'm here to support you in your spiritual journey, answer questions about faith, help you pray, or simply listen. How can I help you today?",
       timestamp: new Date().toISOString(),
     },
   ]);
@@ -57,7 +58,7 @@ export default function PrayerBuddy() {
     try {
       const response = await geminiService.chatWithPrayerBuddy(
         userMessage.content,
-        messages
+        messages,
       );
 
       const assistantMessage: ChatMessage = {
@@ -71,7 +72,8 @@ export default function PrayerBuddy() {
       console.error("Error in chat:", error);
       const errorMessage: ChatMessage = {
         role: "assistant",
-        content: "I'm having trouble connecting right now. Please try again in a moment.",
+        content:
+          "I'm having trouble connecting right now. Please try again in a moment.",
         timestamp: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -104,8 +106,15 @@ export default function PrayerBuddy() {
           headerTintColor: textColor,
           headerShadowVisible: false,
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <MaterialCommunityIcons name="arrow-left" size={24} color={textColor} />
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={{ padding: 8, marginLeft: -8 }}
+            >
+              <MaterialCommunityIcons
+                name="arrow-left"
+                size={28}
+                color={textColor}
+              />
             </TouchableOpacity>
           ),
         }}
@@ -134,14 +143,13 @@ export default function PrayerBuddy() {
           >
             {message.role === "assistant" && (
               <View style={styles.avatarContainer}>
-                <LinearGradient
-                  colors={["#a855f7", "#ec4899"]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.avatar}
-                >
-                  <MaterialCommunityIcons name="hand-peace" size={20} color="#fff" />
-                </LinearGradient>
+                <View style={[styles.avatar, { backgroundColor: "#a855f7" }]}>
+                  <MaterialCommunityIcons
+                    name="hand-peace"
+                    size={24}
+                    color="#fff"
+                  />
+                </View>
               </View>
             )}
             <View
@@ -175,8 +183,17 @@ export default function PrayerBuddy() {
             </View>
             {message.role === "user" && (
               <View style={styles.avatarContainer}>
-                <View style={[styles.avatar, { backgroundColor: theme.color.reactBlue.dark }]}>
-                  <MaterialCommunityIcons name="account" size={20} color="#fff" />
+                <View
+                  style={[
+                    styles.avatar,
+                    { backgroundColor: theme.color.reactBlue.dark },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name="account"
+                    size={24}
+                    color="#fff"
+                  />
                 </View>
               </View>
             )}
@@ -186,20 +203,34 @@ export default function PrayerBuddy() {
         {isTyping && (
           <View style={styles.typingIndicator}>
             <View style={styles.avatarContainer}>
-              <LinearGradient
-                colors={["#a855f7", "#ec4899"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.avatar}
-              >
-                <MaterialCommunityIcons name="hand-heart" size={20} color="#fff" />
-              </LinearGradient>
+              <View style={[styles.avatar, { backgroundColor: "#a855f7" }]}>
+                <MaterialCommunityIcons
+                  name="hand-heart"
+                  size={24}
+                  color="#fff"
+                />
+              </View>
             </View>
             <View style={[styles.typingBubble, { backgroundColor: cardBg }]}>
               <View style={styles.typingDots}>
-                <View style={[styles.typingDot, { backgroundColor: textColor + "40" }]} />
-                <View style={[styles.typingDot, { backgroundColor: textColor + "40" }]} />
-                <View style={[styles.typingDot, { backgroundColor: textColor + "40" }]} />
+                <View
+                  style={[
+                    styles.typingDot,
+                    { backgroundColor: textColor + "40" },
+                  ]}
+                />
+                <View
+                  style={[
+                    styles.typingDot,
+                    { backgroundColor: textColor + "40" },
+                  ]}
+                />
+                <View
+                  style={[
+                    styles.typingDot,
+                    { backgroundColor: textColor + "40" },
+                  ]}
+                />
               </View>
             </View>
           </View>
@@ -226,22 +257,17 @@ export default function PrayerBuddy() {
             onPress={handleSend}
             disabled={!inputText.trim() || isTyping}
           >
-            <LinearGradient
-              colors={
-                !inputText.trim() || isTyping
-                  ? ["#a855f780", "#ec489980"]
-                  : ["#a855f7", "#ec4899"]
-              }
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.sendButtonGradient}
+            <View
+              style={[
+                styles.sendButtonGradient,
+                {
+                  backgroundColor:
+                    !inputText.trim() || isTyping ? "#a855f780" : "#a855f7",
+                },
+              ]}
             >
-              <MaterialCommunityIcons
-                name="send"
-                size={20}
-                color="#fff"
-              />
-            </LinearGradient>
+              <MaterialCommunityIcons name="send" size={28} color="#fff" />
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -250,118 +276,119 @@ export default function PrayerBuddy() {
 }
 
 const styles = StyleSheet.create({
+  assistantBubble: {
+    borderBottomLeftRadius: 4,
+  },
+  assistantMessageWrapper: {
+    justifyContent: "flex-start",
+  },
+  avatar: {
+    alignItems: "center",
+    borderRadius: 20,
+    height: 40,
+    justifyContent: "center",
+    width: 40,
+  },
+  avatarContainer: {
+    marginHorizontal: 10,
+  },
   container: {
     flex: 1,
+  },
+  input: {
+    flex: 1,
+    fontSize: 18,
+    maxHeight: 120,
+    minHeight: 56,
+    paddingVertical: 12,
+  },
+  inputContainer: {
+    borderTopColor: "#00000010",
+    borderTopWidth: 1,
+    bottom: 0,
+    left: 0,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    position: "absolute",
+    right: 0,
+  },
+  inputWrapper: {
+    alignItems: "flex-end",
+    borderRadius: 28,
+    flexDirection: "row",
+    gap: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  messageBubble: {
+    borderRadius: 20,
+    maxWidth: "70%",
+    padding: 20,
+  },
+  messageText: {
+    fontSize: 18,
+    lineHeight: 26,
+    marginBottom: 4,
+  },
+  messageWrapper: {
+    alignItems: "flex-end",
+    flexDirection: "row",
+    marginBottom: 20,
   },
   messagesContainer: {
     flex: 1,
   },
   messagesContent: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-  },
-  messageWrapper: {
-    flexDirection: "row",
-    marginBottom: 16,
-    alignItems: "flex-end",
-  },
-  userMessageWrapper: {
-    justifyContent: "flex-end",
-  },
-  assistantMessageWrapper: {
-    justifyContent: "flex-start",
-  },
-  avatarContainer: {
-    marginHorizontal: 8,
-  },
-  avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  messageBubble: {
-    maxWidth: "70%",
-    borderRadius: 20,
-    padding: 12,
-  },
-  userBubble: {
-    backgroundColor: "#3b82f6",
-    borderBottomRightRadius: 4,
-  },
-  assistantBubble: {
-    borderBottomLeftRadius: 4,
-  },
-  messageText: {
-    fontSize: 16,
-    lineHeight: 22,
-    marginBottom: 4,
-  },
-  userMessageText: {
-    color: "#fff",
-  },
-  timeText: {
-    fontSize: 11,
-  },
-  userTimeText: {
-    color: "#ffffff90",
-  },
-  typingIndicator: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    marginBottom: 16,
-  },
-  typingBubble: {
-    borderRadius: 20,
-    borderBottomLeftRadius: 4,
-    padding: 12,
-    paddingVertical: 16,
-  },
-  typingDots: {
-    flexDirection: "row",
-    gap: 6,
-  },
-  typingDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  inputContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: "#00000010",
-  },
-  inputWrapper: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    gap: 8,
-    borderRadius: 24,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    maxHeight: 100,
-    paddingVertical: 8,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   sendButton: {
-    borderRadius: 20,
+    borderRadius: 30,
     overflow: "hidden",
   },
   sendButtonDisabled: {
     opacity: 0.5,
   },
   sendButtonGradient: {
-    width: 40,
-    height: 40,
     alignItems: "center",
+    height: 60,
     justifyContent: "center",
+    width: 60,
+  },
+  timeText: {
+    fontSize: 13,
+  },
+  typingBubble: {
+    borderBottomLeftRadius: 4,
+    borderRadius: 20,
+    padding: 20,
+    paddingVertical: 20,
+  },
+  typingDot: {
+    borderRadius: 5,
+    height: 10,
+    width: 10,
+  },
+  typingDots: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  typingIndicator: {
+    alignItems: "flex-end",
+    flexDirection: "row",
+    marginBottom: 20,
+  },
+  userBubble: {
+    backgroundColor: "#3b82f6",
+    borderBottomRightRadius: 4,
+  },
+  userMessageText: {
+    color: "#fff",
+  },
+  userMessageWrapper: {
+    justifyContent: "flex-end",
+  },
+  userTimeText: {
+    color: "#ffffff90",
   },
 });

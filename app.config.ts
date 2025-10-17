@@ -75,6 +75,8 @@ const config: ExpoConfig = {
     eas: {
       projectId: EAS_PROJECT_ID,
     },
+    geminiApiKey: process.env.GEMINI_API_KEY || "",
+    bibleApiKey: process.env.BIBLE_API_KEY || "",
   },
   owner: EAS_APP_OWNER,
   plugins: [
