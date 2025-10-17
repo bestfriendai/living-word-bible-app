@@ -11,6 +11,7 @@ import {
   Platform,
   Modal,
   ActivityIndicator,
+  KeyboardAvoidingView,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBibleStore } from "@/store/bibleStore";
@@ -321,7 +322,11 @@ export default function Journal() {
         presentationStyle="pageSheet"
         onRequestClose={() => setShowAddModal(false)}
       >
-        <View style={[styles.modalContainer, { backgroundColor }]}>
+        <KeyboardAvoidingView
+          style={[styles.modalContainer, { backgroundColor }]}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? insets.top : 0}
+        >
           <View style={[styles.modalHeader, { paddingTop: insets.top + 20 }]}>
             <TouchableOpacity
               onPress={() => setShowAddModal(false)}
@@ -421,7 +426,7 @@ export default function Journal() {
               </View>
             )}
           </ScrollView>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* AI Prayer Generator Modal */}
@@ -431,7 +436,11 @@ export default function Journal() {
         presentationStyle="pageSheet"
         onRequestClose={() => setShowAIModal(false)}
       >
-        <View style={[styles.modalContainer, { backgroundColor }]}>
+        <KeyboardAvoidingView
+          style={[styles.modalContainer, { backgroundColor }]}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? insets.top : 0}
+        >
           <View style={[styles.modalHeader, { paddingTop: insets.top + 20 }]}>
             <TouchableOpacity
               onPress={() => {
@@ -601,7 +610,7 @@ export default function Journal() {
               </>
             )}
           </ScrollView>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Prayer Insights Modal */}
@@ -611,7 +620,11 @@ export default function Journal() {
         presentationStyle="pageSheet"
         onRequestClose={() => setShowInsights(false)}
       >
-        <View style={[styles.modalContainer, { backgroundColor }]}>
+        <KeyboardAvoidingView
+          style={[styles.modalContainer, { backgroundColor }]}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? insets.top : 0}
+        >
           <View style={[styles.modalHeader, { paddingTop: insets.top + 20 }]}>
             <TouchableOpacity
               onPress={() => setShowInsights(false)}
@@ -715,7 +728,7 @@ export default function Journal() {
               </>
             ) : null}
           </ScrollView>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </View>
   );

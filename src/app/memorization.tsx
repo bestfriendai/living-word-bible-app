@@ -9,6 +9,7 @@ import {
   TextInput,
   Alert,
   Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeColor } from "@/components/Themed";
@@ -272,7 +273,11 @@ export default function Memorization() {
         </ScrollView>
       ) : (
         // Review Mode
-        <View style={styles.reviewContainer}>
+        <KeyboardAvoidingView
+          style={styles.reviewContainer}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? insets.top : 0}
+        >
           <View style={styles.reviewHeader}>
             <TouchableOpacity
               onPress={() => {
@@ -367,7 +372,7 @@ export default function Memorization() {
               </View>
             </View>
           </ScrollView>
-        </View>
+        </KeyboardAvoidingView>
       )}
     </View>
   );
