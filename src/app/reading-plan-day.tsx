@@ -72,7 +72,7 @@ export default function ReadingPlanDay() {
     };
 
     loadVerseContent();
-  }, [currentReading?.reference, preferredTranslation]);
+  }, [currentReading, preferredTranslation]);
 
   const handleMarkComplete = async () => {
     if (!readingPlan || !currentReading) return;
@@ -376,133 +376,6 @@ export default function ReadingPlanDay() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 20,
-  },
-  centerContent: {
-    alignItems: "center",
-    flex: 1,
-    gap: 12,
-    justifyContent: "center",
-  },
-  errorText: {
-    fontFamily: "Montserrat-Medium",
-    fontSize: 14,
-  },
-
-  // Progress Section
-  progressSection: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  progressInfo: {
-    flex: 1,
-    marginRight: 16,
-  },
-  planName: {
-    fontFamily: "Montserrat-Bold",
-    fontSize: 15,
-    letterSpacing: -0.2,
-    marginBottom: 4,
-  },
-  dayInfo: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 8,
-  },
-  dayText: {
-    fontFamily: "Montserrat-Medium",
-    fontSize: 13,
-  },
-  dot: {
-    backgroundColor: "#9ca3af",
-    borderRadius: 1.5,
-    height: 3,
-    width: 3,
-  },
-  progressBar: {
-    marginBottom: 24,
-  },
-
-  // Title Section
-  titleSection: {
-    marginBottom: 20,
-  },
-  readingTitle: {
-    fontFamily: "Montserrat-Bold",
-    fontSize: 22,
-    letterSpacing: -0.5,
-    lineHeight: 30,
-    marginBottom: 12,
-  },
-  referenceChip: {
-    alignItems: "center",
-    alignSelf: "flex-start",
-    borderRadius: 16,
-    flexDirection: "row",
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  referenceText: {
-    color: "#667eea",
-    fontFamily: "Montserrat-SemiBold",
-    fontSize: 13,
-  },
-
-  // Content Card
-  contentCard: {
-    borderRadius: 16,
-    marginBottom: 16,
-    minHeight: 300,
-    padding: 20,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.04,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 1,
-      },
-    }),
-  },
-  loadingContainer: {
-    alignItems: "center",
-    flex: 1,
-    gap: 12,
-    justifyContent: "center",
-    padding: 40,
-  },
-  loadingText: {
-    fontFamily: "Montserrat-Medium",
-    fontSize: 13,
-  },
-  verseScrollView: {
-    maxHeight: 400,
-  },
-  verseContent: {
-    fontFamily: "Montserrat-Regular",
-    fontSize: 16,
-    letterSpacing: 0.2,
-    lineHeight: 26,
-  },
-
-  // Actions Grid
-  actionsGrid: {
-    flexDirection: "row",
-    gap: 10,
-    marginBottom: 16,
-  },
   actionButton: {
     alignItems: "center",
     borderRadius: 12,
@@ -527,8 +400,11 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-SemiBold",
     fontSize: 13,
   },
-
-  // Bottom Bar
+  actionsGrid: {
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 16,
+  },
   bottomBar: {
     borderTopColor: "rgba(0,0,0,0.05)",
     borderTopWidth: 1,
@@ -549,6 +425,40 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  celebrationContent: {
+    alignItems: "center",
+    borderRadius: 100,
+    gap: 12,
+    height: 200,
+    justifyContent: "center",
+    width: 200,
+  },
+  celebrationOverlay: {
+    alignItems: "center",
+    bottom: 0,
+    justifyContent: "center",
+    left: 0,
+    position: "absolute",
+    right: 0,
+    top: 0,
+    zIndex: 1000,
+  },
+  celebrationSubtext: {
+    color: "rgba(255,255,255,0.9)",
+    fontFamily: "Montserrat-Medium",
+    fontSize: 14,
+  },
+  celebrationText: {
+    color: "#FFFFFF",
+    fontFamily: "Montserrat-Bold",
+    fontSize: 20,
+  },
+  centerContent: {
+    alignItems: "center",
+    flex: 1,
+    gap: 12,
+    justifyContent: "center",
+  },
   completeButton: {
     borderRadius: 14,
     overflow: "hidden",
@@ -565,21 +475,71 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-Bold",
     fontSize: 15,
   },
+  completedBadge: {
+    alignItems: "center",
+    flex: 1,
+    flexDirection: "row",
+    gap: 8,
+  },
   completedContainer: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  completedBadge: {
-    alignItems: "center",
-    flexDirection: "row",
-    flex: 1,
-    gap: 8,
-  },
   completedText: {
     color: "#10b981",
     fontFamily: "Montserrat-SemiBold",
     fontSize: 15,
+  },
+  container: {
+    flex: 1,
+  },
+  contentCard: {
+    borderRadius: 16,
+    marginBottom: 16,
+    minHeight: 300,
+    padding: 20,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.04,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
+  },
+  dayInfo: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 8,
+  },
+  dayText: {
+    fontFamily: "Montserrat-Medium",
+    fontSize: 13,
+  },
+  dot: {
+    backgroundColor: "#9ca3af",
+    borderRadius: 1.5,
+    height: 3,
+    width: 3,
+  },
+  errorText: {
+    fontFamily: "Montserrat-Medium",
+    fontSize: 14,
+  },
+  loadingContainer: {
+    alignItems: "center",
+    flex: 1,
+    gap: 12,
+    justifyContent: "center",
+    padding: 40,
+  },
+  loadingText: {
+    fontFamily: "Montserrat-Medium",
+    fontSize: 13,
   },
   nextDayButton: {
     borderRadius: 12,
@@ -597,34 +557,62 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-Bold",
     fontSize: 14,
   },
-
-  // Celebration
-  celebrationOverlay: {
-    alignItems: "center",
-    bottom: 0,
-    justifyContent: "center",
-    left: 0,
-    position: "absolute",
-    right: 0,
-    top: 0,
-    zIndex: 1000,
-  },
-  celebrationContent: {
-    alignItems: "center",
-    borderRadius: 100,
-    gap: 12,
-    height: 200,
-    justifyContent: "center",
-    width: 200,
-  },
-  celebrationText: {
-    color: "#FFFFFF",
+  planName: {
     fontFamily: "Montserrat-Bold",
-    fontSize: 20,
+    fontSize: 15,
+    letterSpacing: -0.2,
+    marginBottom: 4,
   },
-  celebrationSubtext: {
-    color: "rgba(255,255,255,0.9)",
-    fontFamily: "Montserrat-Medium",
-    fontSize: 14,
+  progressBar: {
+    marginBottom: 24,
+  },
+  progressInfo: {
+    flex: 1,
+    marginRight: 16,
+  },
+  progressSection: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  readingTitle: {
+    fontFamily: "Montserrat-Bold",
+    fontSize: 22,
+    letterSpacing: -0.5,
+    lineHeight: 30,
+    marginBottom: 12,
+  },
+  referenceChip: {
+    alignItems: "center",
+    alignSelf: "flex-start",
+    borderRadius: 16,
+    flexDirection: "row",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  referenceText: {
+    color: "#667eea",
+    fontFamily: "Montserrat-SemiBold",
+    fontSize: 13,
+  },
+  scrollContent: {
+    padding: 20,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  titleSection: {
+    marginBottom: 20,
+  },
+  verseContent: {
+    fontFamily: "Montserrat-Regular",
+    fontSize: 16,
+    letterSpacing: 0.2,
+    lineHeight: 26,
+  },
+  verseScrollView: {
+    maxHeight: 400,
   },
 });

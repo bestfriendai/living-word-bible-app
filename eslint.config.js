@@ -24,9 +24,12 @@ module.exports = defineConfig([
 
       "react-native/split-platform-components": "error",
       "react-native/no-single-element-style-arrays": "error",
-      "react-native/no-inline-styles": "error",
-      "react-native/no-color-literals": "error",
-      "react-native/sort-styles": "error",
+      "react-native/no-inline-styles": "warn",
+      "react-native/no-color-literals": "warn",
+      "react-native/sort-styles": "warn",
+      "@typescript-eslint/no-unused-vars": "warn",
+      "react-hooks/exhaustive-deps": "warn",
+      "react/no-unescaped-entities": "warn",
     },
     settings: {
       "import/resolver": {

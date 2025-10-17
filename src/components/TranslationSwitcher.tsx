@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -11,7 +11,6 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { bibleDatabase, BibleTranslation } from "@/services/bibleDatabase";
-import { theme } from "@/theme";
 
 interface TranslationSwitcherProps {
   currentTranslation: string;
@@ -29,24 +28,18 @@ export function TranslationSwitcher({
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
 
-  useEffect(() => {
-    loadTranslations();
-  }, []);
-
-  const loadTranslations = async () => {
+  const loadTranslations = useCallback(async () => {
     try {
       const allTranslations = await bibleDatabase.getTranslations();
       setTranslations(allTranslations);
     } catch (error) {
       console.error("Error loading translations:", error);
-      // If database not initialized yet, retry after a short delay
-      if (error instanceof Error && error.message.includes("not initialized")) {
-        setTimeout(() => {
-          loadTranslations();
-        }, 500);
-      }
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadTranslations();
+  }, [loadTranslations]);
 
   const handleSelect = (translation: BibleTranslation) => {
     if (translation.isPremium && !isPremium) {
@@ -224,6 +217,16 @@ export function TranslationSwitcher({
 }
 
 const styles = StyleSheet.create({
+  // Modal styles
+  backdrop: {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    bottom: 0,
+    left: 0,
+    position: "absolute",
+    right: 0,
+    top: 0,
+  },
+
   // Button styles
   button: {
     alignItems: "center",
@@ -238,18 +241,17 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  // Modal styles
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "flex-end",
+  // Footer styles
+  footer: {
+    alignItems: "center",
+    borderTopColor: "#E0E0E5",
+    borderTopWidth: 1,
+    gap: 12,
+    marginTop: 20,
+    paddingTop: 20,
   },
-  backdrop: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    bottom: 0,
-    left: 0,
-    position: "absolute",
-    right: 0,
-    top: 0,
+  footerText: {
+    fontSize: 14,
   },
   modalContent: {
     borderTopLeftRadius: 24,
@@ -257,56 +259,25 @@ const styles = StyleSheet.create({
     maxHeight: "80%",
     overflow: "hidden",
   },
-  modalInner: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 24,
-    paddingBottom: 40,
-  },
   modalHeader: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 28,
   },
+  modalInner: {
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 24,
+    paddingBottom: 40,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "flex-end",
+  },
   modalTitle: {
     fontSize: 22,
     fontWeight: "bold",
-  },
-
-  // Translation item styles
-  translationItem: {
-    alignItems: "center",
-    borderBottomWidth: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    minHeight: 56,
-    paddingVertical: 16,
-  },
-  selectedItem: {
-    backgroundColor: "rgba(76, 175, 80, 0.1)",
-    borderRadius: 12,
-    marginHorizontal: -12,
-    paddingHorizontal: 12,
-  },
-  translationInfo: {
-    flex: 1,
-  },
-  translationHeader: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 10,
-    marginBottom: 6,
-  },
-  translationAbbr: {
-    fontSize: 17,
-    fontWeight: "700",
-  },
-  selectedText: {
-    color: "#4CAF50",
-  },
-  translationName: {
-    fontSize: 15,
   },
 
   // Premium badge styles
@@ -324,18 +295,40 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
   },
-
-  // Footer styles
-  footer: {
-    alignItems: "center",
-    borderTopColor: "#E0E0E5",
-    borderTopWidth: 1,
-    gap: 12,
-    marginTop: 20,
-    paddingTop: 20,
+  selectedItem: {
+    backgroundColor: "rgba(76, 175, 80, 0.1)",
+    borderRadius: 12,
+    marginHorizontal: -12,
+    paddingHorizontal: 12,
   },
-  footerText: {
-    fontSize: 14,
+  selectedText: {
+    color: "#4CAF50",
+  },
+
+  // Translation item styles
+  translationAbbr: {
+    fontSize: 17,
+    fontWeight: "700",
+  },
+  translationHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 6,
+  },
+  translationInfo: {
+    flex: 1,
+  },
+  translationItem: {
+    alignItems: "center",
+    borderBottomWidth: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    minHeight: 56,
+    paddingVertical: 16,
+  },
+  translationName: {
+    fontSize: 15,
   },
   upgradeButton: {
     alignItems: "center",

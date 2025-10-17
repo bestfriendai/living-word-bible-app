@@ -206,7 +206,7 @@ export function VerseActionsSheet({
                   ]}
                   numberOfLines={2}
                 >
-                  "{verse.text}"
+                  &quot;{verse.text}&quot;
                 </Text>
               </View>
 

@@ -62,7 +62,7 @@ export default function Memorization() {
             );
             loadVerses();
             Alert.alert("Success", "Verse added for memorization!");
-          } catch (error) {
+          } catch {
             Alert.alert("Error", "Failed to add verse");
           }
         }
@@ -99,7 +99,7 @@ export default function Memorization() {
       setIsReviewing(false);
       setSelectedVerse(null);
       loadVerses();
-    } catch (error) {
+    } catch {
       Alert.alert("Error", "Failed to record review");
     }
   };

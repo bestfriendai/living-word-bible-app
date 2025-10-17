@@ -1,14 +1,33 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import Constants from "expo-constants";
+import { secureEnv } from "../utils/secureEnv";
 
-// Read API key from environment variables (configured in app.config.ts)
-const API_KEY = Constants.expoConfig?.extra?.geminiApiKey || "";
+// API key will be loaded securely at runtime
+let genAI: GoogleGenerativeAI | null = null;
+let isInitialized = false;
 
-if (!API_KEY) {
-  console.warn("⚠️ GEMINI_API_KEY not found. Please set it in your .env file.");
+/**
+ * Initialize Gemini service with secure API key
+ */
+async function initializeGemini(): Promise<void> {
+  if (isInitialized) return;
+
+  try {
+    const apiKey = await secureEnv.getApiKey("gemini");
+
+    if (!apiKey) {
+      console.warn(
+        "⚠️ GEMINI_API_KEY not found. Please set it in your .env file.",
+      );
+      return;
+    }
+
+    genAI = new GoogleGenerativeAI(apiKey);
+    isInitialized = true;
+    console.log("✅ Gemini service initialized securely");
+  } catch (error) {
+    console.error("❌ Failed to initialize Gemini service:", error);
+  }
 }
-
-const genAI = new GoogleGenerativeAI(API_KEY);
 
 export interface BibleVerse {
   reference: string;
@@ -95,14 +114,36 @@ export type SupportedLanguage =
   | "Chinese";
 
 export class GeminiService {
-  // Upgraded to Gemini 2.5 Flash for improved performance and capabilities
-  // Falls back to 2.0 Flash if 2.5 is not available in Google AI Studio yet
-  private model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
-    // Fallback models: gemini-2.0-flash-exp, gemini-1.5-flash
-  });
-
+  // Model will be initialized securely after API key is loaded
+  private model: any = null;
   private defaultLanguage: SupportedLanguage = "English";
+
+  /**
+   * Initialize the service with secure API key
+   */
+  async initialize(): Promise<void> {
+    await initializeGemini();
+
+    if (!genAI) {
+      throw new Error("Failed to initialize Gemini service");
+    }
+
+    // Upgraded to Gemini 2.5 Flash for improved performance and capabilities
+    // Falls back to 2.0 Flash if 2.5 is not available in Google AI Studio yet
+    this.model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+      // Fallback models: gemini-2.0-flash-exp, gemini-1.5-flash
+    });
+  }
+
+  /**
+   * Ensure the service is initialized before use
+   */
+  private async ensureInitialized(): Promise<void> {
+    if (!this.model) {
+      await this.initialize();
+    }
+  }
 
   private cleanJsonString(text: string): string {
     // Remove markdown code blocks
@@ -119,6 +160,7 @@ export class GeminiService {
 
   async findRelevantVerses(userInput: string): Promise<BibleVerse[]> {
     try {
+      await this.ensureInitialized();
       const prompt = `You are a compassionate Bible study assistant. A person is going through something and needs spiritual guidance.
 
 User's situation: "${userInput}"

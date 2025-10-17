@@ -13,15 +13,13 @@ import { setBackgroundColorAsync } from "expo-system-ui";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as Notifications from "expo-notifications";
-import { isLiquidGlassAvailable } from "expo-glass-effect";
 import * as SplashScreen from "expo-splash-screen";
 
 import { theme } from "../theme";
 
-import { useThemeColor } from "@/components/Themed";
-import { osName } from "expo-device";
 import { bibleDatabase } from "@/services/bibleDatabase";
 import { bibleApiService } from "@/services/bibleApiService";
+import { geminiService } from "@/services/geminiService";
 import { logEnvValidation } from "@/utils/validateEnv";
 
 SplashScreen.setOptions({
@@ -43,8 +41,6 @@ export default function Layout() {
   const router = useRouter();
   const pathName = usePathname();
   const colorScheme = useColorScheme() || "light";
-
-  const tabBarBackgroundColor = useThemeColor(theme.color.background);
 
   useEffect(() => {
     if (Platform.OS === "android") {
@@ -84,21 +80,46 @@ export default function Layout() {
 
   // Validate environment variables and initialize Bible database on app start
   useEffect(() => {
-    // Validate environment variables
-    logEnvValidation();
-
-    const initializeBible = async () => {
+    // Validate environment variables securely
+    const validateAndInitialize = async () => {
       try {
+        // Validate environment variables securely
+        await logEnvValidation();
+
+        // Initialize Bible database first (doesn't require API keys)
         await bibleDatabase.initialize();
+        console.log("✅ Bible database initialized");
+
+        // Initialize services with secure API keys (non-blocking)
+        try {
+          await bibleApiService.initialize();
+          console.log("✅ Bible API service initialized");
+        } catch (error) {
+          console.warn("⚠️ Bible API service initialization failed:", error);
+        }
+
+        try {
+          await geminiService.initialize();
+          console.log("✅ Gemini service initialized");
+        } catch (error) {
+          console.warn("⚠️ Gemini service initialization failed:", error);
+        }
+
         // Seed popular verses for offline access
-        await bibleApiService.seedPopularVerses();
-        console.log("✅ Bible database ready");
+        try {
+          await bibleApiService.seedPopularVerses();
+          console.log("✅ Popular verses seeded");
+        } catch (error) {
+          console.warn("⚠️ Failed to seed popular verses:", error);
+        }
+
+        console.log("✅ App initialized");
       } catch (error) {
-        console.error("❌ Failed to initialize Bible database:", error);
+        console.error("❌ Failed to initialize app:", error);
       }
     };
 
-    initializeBible();
+    validateAndInitialize();
   }, []);
 
   return (

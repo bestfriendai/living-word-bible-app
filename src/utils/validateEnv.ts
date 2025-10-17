@@ -1,4 +1,4 @@
-import Constants from "expo-constants";
+import { secureEnv } from "./secureEnv";
 
 export interface EnvValidationResult {
   isValid: boolean;
@@ -7,51 +7,61 @@ export interface EnvValidationResult {
 }
 
 /**
- * Validates that required environment variables are set
- * @returns EnvValidationResult with validation status and missing keys
+ * Validates that required environment variables are set securely
+ * @returns Promise<EnvValidationResult> with validation status and missing keys
  */
-export function validateEnvironmentVariables(): EnvValidationResult {
+export async function validateEnvironmentVariables(): Promise<EnvValidationResult> {
   const missingKeys: string[] = [];
   const warnings: string[] = [];
 
-  // Required keys
-  const geminiApiKey = Constants.expoConfig?.extra?.geminiApiKey;
+  try {
+    // Check API key availability using secure manager
+    const keyAvailability = await secureEnv.checkApiKeysAvailability();
 
-  if (!geminiApiKey || geminiApiKey === "") {
-    missingKeys.push("GEMINI_API_KEY");
-    warnings.push(
-      "⚠️ GEMINI_API_KEY is missing! AI features will not work. Get your key from: https://aistudio.google.com/app/apikey",
-    );
+    // Required keys - Gemini API
+    if (!keyAvailability.gemini) {
+      missingKeys.push("GEMINI_API_KEY");
+      warnings.push(
+        "⚠️ GEMINI_API_KEY is missing or invalid! AI features will not work. Get your key from: https://aistudio.google.com/app/apikey",
+      );
+    }
+
+    // Optional but recommended keys - Bible API
+    if (!keyAvailability.bible) {
+      warnings.push(
+        "💡 BIBLE_API_KEY is not set or invalid. Some Bible translations may not be available. Get your key from: https://scripture.api.bible/signup",
+      );
+    }
+
+    const isValid = missingKeys.length === 0;
+
+    return {
+      isValid,
+      missingKeys,
+      warnings,
+    };
+  } catch (error) {
+    console.error("❌ Error validating environment variables:", error);
+    return {
+      isValid: false,
+      missingKeys: ["GEMINI_API_KEY", "BIBLE_API_KEY"],
+      warnings: [
+        "⚠️ Failed to validate API keys securely. Please check your configuration.",
+      ],
+    };
   }
-
-  // Optional but recommended keys
-  const bibleApiKey = Constants.expoConfig?.extra?.bibleApiKey;
-
-  if (!bibleApiKey || bibleApiKey === "your_bible_api_key_here") {
-    warnings.push(
-      "💡 BIBLE_API_KEY is not set. Some Bible translations may not be available. Get your key from: https://scripture.api.bible/signup",
-    );
-  }
-
-  const isValid = missingKeys.length === 0;
-
-  return {
-    isValid,
-    missingKeys,
-    warnings,
-  };
 }
 
 /**
  * Logs environment validation results to console
  */
-export function logEnvValidation(): void {
+export async function logEnvValidation(): Promise<void> {
   console.log("\n🔍 Validating environment variables...\n");
 
-  const result = validateEnvironmentVariables();
+  const result = await validateEnvironmentVariables();
 
   if (result.isValid) {
-    console.log("✅ All required environment variables are set!\n");
+    console.log("✅ All required environment variables are set securely!\n");
   } else {
     console.error("❌ Environment validation failed!");
     console.error("Missing keys:", result.missingKeys.join(", "));
@@ -67,8 +77,8 @@ export function logEnvValidation(): void {
 /**
  * Gets a user-friendly error message for missing environment variables
  */
-export function getEnvErrorMessage(): string {
-  const result = validateEnvironmentVariables();
+export async function getEnvErrorMessage(): Promise<string> {
+  const result = await validateEnvironmentVariables();
 
   if (result.isValid && result.warnings.length === 0) {
     return "";

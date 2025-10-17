@@ -57,10 +57,16 @@ class TextToSpeechService {
           this.isSpeaking = false;
           this.currentText = "";
         },
-        onError: (error) => {
+        onError: (error: any) => {
           this.isSpeaking = false;
           this.currentText = "";
-          onError?.(new Error(error.error));
+          onError?.(
+            new Error(
+              typeof error === "object" && error.error
+                ? error.error
+                : "Speech error",
+            ),
+          );
         },
       };
 

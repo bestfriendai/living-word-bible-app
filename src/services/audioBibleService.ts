@@ -328,7 +328,7 @@ export class AudioBibleService {
     try {
       const state = await this.getState();
       return state === State.Playing;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

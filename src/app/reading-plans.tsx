@@ -293,17 +293,22 @@ export default function ReadingPlans() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-  },
-
   // Active Plan Card
+  activeBadge: {
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    borderRadius: 12,
+    flexDirection: "row",
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  activeBadgeText: {
+    color: "#FFFFFF",
+    fontFamily: "Montserrat-Bold",
+    fontSize: 11,
+    letterSpacing: 0.8,
+  },
   activeCard: {
     borderRadius: 20,
     marginBottom: 24,
@@ -329,21 +334,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 12,
   },
-  activeBadge: {
-    alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    borderRadius: 12,
-    flexDirection: "row",
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-  },
-  activeBadgeText: {
-    color: "#FFFFFF",
-    fontFamily: "Montserrat-Bold",
-    fontSize: 11,
-    letterSpacing: 0.8,
-  },
   activePlanName: {
     color: "#FFFFFF",
     fontFamily: "Montserrat-Bold",
@@ -359,61 +349,8 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-Medium",
     fontSize: 13,
   },
-
-  // Filter Section
-  filterSection: {
-    marginBottom: 20,
-  },
-  filterScroll: {
-    gap: 8,
-  },
-  filterChip: {
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.03,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 1,
-      },
-    }),
-  },
-  filterText: {
-    fontFamily: "Montserrat-SemiBold",
-    fontSize: 13,
-  },
-
-  // Plans List
-  plansList: {
-    gap: 14,
-  },
-  planCard: {
-    borderRadius: 16,
-    padding: 18,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.04,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 1,
-      },
-    }),
-  },
-  planHeader: {
-    marginBottom: 12,
-  },
-  planMeta: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 8,
+  container: {
+    flex: 1,
   },
   difficultyBadge: {
     alignItems: "center",
@@ -441,17 +378,79 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-Medium",
     fontSize: 12,
   },
-  planName: {
-    fontFamily: "Montserrat-Bold",
-    fontSize: 17,
-    letterSpacing: -0.3,
-    marginBottom: 8,
+
+  // Filter Section
+  filterChip: {
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.03,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
+  },
+  filterScroll: {
+    gap: 8,
+  },
+  filterSection: {
+    marginBottom: 20,
+  },
+  filterText: {
+    fontFamily: "Montserrat-SemiBold",
+    fontSize: 13,
+  },
+
+  // Plans List
+  planCard: {
+    borderRadius: 16,
+    padding: 18,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.04,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
   },
   planDescription: {
     fontFamily: "Montserrat-Regular",
     fontSize: 14,
     lineHeight: 20,
     marginBottom: 16,
+  },
+  planHeader: {
+    marginBottom: 12,
+  },
+  planMeta: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 8,
+  },
+  planName: {
+    fontFamily: "Montserrat-Bold",
+    fontSize: 17,
+    letterSpacing: -0.3,
+    marginBottom: 8,
+  },
+  plansList: {
+    gap: 14,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+  },
+  scrollView: {
+    flex: 1,
   },
   startButton: {
     alignItems: "center",

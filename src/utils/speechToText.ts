@@ -3,7 +3,7 @@ import {
   useSpeechRecognitionEvent,
 } from "expo-speech-recognition";
 import * as Haptics from "expo-haptics";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export interface STTOptions {
   lang?: string;
@@ -101,10 +101,9 @@ class SpeechToTextService {
    */
   async getSupportedLanguages(): Promise<string[]> {
     try {
-      const result =
-        await ExpoSpeechRecognitionModule.getSupportedLocales?.({
-          androidRecognitionServicePackage: undefined,
-        });
+      const result = await ExpoSpeechRecognitionModule.getSupportedLocales?.({
+        androidRecognitionServicePackage: undefined,
+      });
       return result?.locales || [];
     } catch (error) {
       console.error("Error getting supported languages:", error);
@@ -117,9 +116,10 @@ class SpeechToTextService {
    */
   async isAvailable(): Promise<boolean> {
     try {
-      const available =
-        await ExpoSpeechRecognitionModule.getStateAsync?.();
-      return available?.status !== "unavailable";
+      const available = await ExpoSpeechRecognitionModule.getStateAsync?.();
+      // The state can be "inactive", "starting", "recognizing", "stopping"
+      // If we get a state back, speech recognition is available
+      return available !== undefined;
     } catch {
       return false;
     }
@@ -133,8 +133,7 @@ class SpeechToTextService {
     canAskAgain: boolean;
   }> {
     try {
-      const result =
-        await ExpoSpeechRecognitionModule.getPermissionsAsync();
+      const result = await ExpoSpeechRecognitionModule.getPermissionsAsync();
       return result;
     } catch (error) {
       return { granted: false, canAskAgain: true };
@@ -152,12 +151,10 @@ export function useSpeechToText(options: STTOptions = {}) {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [interimTranscript, setInterimTranscript] = useState("");
-  const [error, setError] = useState<Error | null>(null);
 
   // Listen to speech recognition events
   useSpeechRecognitionEvent("start", () => {
     setIsListening(true);
-    setError(null);
   });
 
   useSpeechRecognitionEvent("end", () => {
@@ -170,7 +167,8 @@ export function useSpeechToText(options: STTOptions = {}) {
     if (results && results.length > 0) {
       const result = results[0];
       const transcriptText = result.transcript;
-      const isFinal = result.isFinal;
+      // Check if isFinal exists, default to false if not
+      const isFinal = "isFinal" in result ? result.isFinal : false;
 
       if (isFinal) {
         setTranscript(transcriptText);
@@ -185,7 +183,6 @@ export function useSpeechToText(options: STTOptions = {}) {
 
   useSpeechRecognitionEvent("error", (event) => {
     const errorObj = new Error(event.error || "Speech recognition error");
-    setError(errorObj);
     setIsListening(false);
     options.onError?.(errorObj);
   });
@@ -194,12 +191,10 @@ export function useSpeechToText(options: STTOptions = {}) {
     try {
       setTranscript("");
       setInterimTranscript("");
-      setError(null);
       await sttService.start(options);
     } catch (err) {
       const error =
         err instanceof Error ? err : new Error("Failed to start listening");
-      setError(error);
       options.onError?.(error);
     }
   };
@@ -217,7 +212,6 @@ export function useSpeechToText(options: STTOptions = {}) {
     isListening,
     transcript,
     interimTranscript,
-    error,
     startListening,
     stopListening,
     resetTranscript,

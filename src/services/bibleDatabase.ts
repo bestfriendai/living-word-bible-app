@@ -29,17 +29,40 @@ export interface BibleTranslation {
 export class BibleDatabaseService {
   private db: SQLite.SQLiteDatabase | null = null;
   private dbName = "bible.db";
+  private isInitialized = false;
+  private initializationPromise: Promise<void> | null = null;
 
   async initialize(): Promise<void> {
-    try {
-      this.db = await SQLite.openDatabaseAsync(this.dbName);
-      await this.createTables();
-      await this.seedInitialData();
-      console.log("✅ Bible database initialized successfully");
-    } catch (error) {
-      console.error("❌ Error initializing Bible database:", error);
-      throw error;
+    // If already initialized, return immediately
+    if (this.isInitialized) {
+      return;
     }
+
+    // If initialization is in progress, wait for it
+    if (this.initializationPromise) {
+      return this.initializationPromise;
+    }
+
+    // Start initialization
+    this.initializationPromise = (async () => {
+      try {
+        this.db = await SQLite.openDatabaseAsync(this.dbName);
+        await this.createTables();
+        await this.seedInitialData();
+        this.isInitialized = true;
+        console.log("✅ Bible database initialized successfully");
+      } catch (error) {
+        console.error("❌ Error initializing Bible database:", error);
+        this.initializationPromise = null; // Reset so it can be retried
+        throw error;
+      }
+    })();
+
+    return this.initializationPromise;
+  }
+
+  isReady(): boolean {
+    return this.isInitialized && this.db !== null;
   }
 
   private async createTables(): Promise<void> {
@@ -643,6 +666,11 @@ export class BibleDatabaseService {
 
   // Query methods
   async getTranslations(): Promise<BibleTranslation[]> {
+    // Wait for initialization if not ready
+    if (!this.isReady()) {
+      await this.initialize();
+    }
+
     if (!this.db) throw new Error("Database not initialized");
     const result = await this.db.getAllAsync<BibleTranslation>(`
       SELECT id, name, abbreviation, language, is_premium as isPremium
@@ -653,6 +681,7 @@ export class BibleDatabaseService {
   }
 
   async getBooks(testament?: "Old" | "New"): Promise<BibleBook[]> {
+    if (!this.isReady()) await this.initialize();
     if (!this.db) throw new Error("Database not initialized");
     const query = testament
       ? "SELECT * FROM books WHERE testament = ? ORDER BY id"
@@ -665,11 +694,24 @@ export class BibleDatabaseService {
     return result;
   }
 
+  async getBookByName(name: string): Promise<BibleBook | null> {
+    if (!this.isReady()) await this.initialize();
+    if (!this.db) throw new Error("Database not initialized");
+
+    const result = await this.db.getAllAsync<BibleBook>(
+      "SELECT * FROM books WHERE name = ? OR abbreviation = ? LIMIT 1",
+      [name, name],
+    );
+
+    return result.length > 0 ? result[0] : null;
+  }
+
   async getChapter(
     bookId: number,
     chapter: number,
     translation: string = "NIV",
   ): Promise<BibleVerse[]> {
+    if (!this.isReady()) await this.initialize();
     if (!this.db) throw new Error("Database not initialized");
 
     const result = await this.db.getAllAsync<any>(
@@ -700,6 +742,7 @@ export class BibleDatabaseService {
     verse: number,
     translation: string = "NIV",
   ): Promise<BibleVerse | null> {
+    if (!this.isReady()) await this.initialize();
     if (!this.db) throw new Error("Database not initialized");
 
     const result = await this.db.getAllAsync<any>(
@@ -732,6 +775,7 @@ export class BibleDatabaseService {
     translation: string = "NIV",
     limit: number = 50,
   ): Promise<BibleVerse[]> {
+    if (!this.isReady()) await this.initialize();
     if (!this.db) throw new Error("Database not initialized");
 
     const result = await this.db.getAllAsync<any>(
@@ -801,6 +845,7 @@ export class BibleDatabaseService {
   }
 
   async getVerseCount(translation: string = "NIV"): Promise<number> {
+    if (!this.isReady()) await this.initialize();
     if (!this.db) throw new Error("Database not initialized");
 
     const result = await this.db.getAllAsync<{ count: number }>(

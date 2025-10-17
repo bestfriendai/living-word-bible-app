@@ -1,5 +1,5 @@
 import { Stack, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,30 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { MotiView } from "moti";
 import { hapticPatterns } from "@/utils/haptics";
 import { FeaturedVerseSkeleton } from "@/components/SkeletonLoader";
+
+// Gradient and color constants
+const GRADIENT_PURPLE = {
+  colors: ["#667eea", "#764ba2"] as const,
+  start: { x: 0, y: 0 },
+  end: { x: 1, y: 1 },
+};
+
+const GRADIENT_BLUE_LIGHT = {
+  colors: ["rgba(59, 130, 246, 0.15)", "rgba(59, 130, 246, 0.05)"] as const,
+  start: { x: 0, y: 0 },
+  end: { x: 1, y: 1 },
+};
+
+const ICON_COLORS = {
+  blue: "#3b82f6",
+  green: "#10b981",
+  orange: "#fb923c",
+  pink: "#ec4899",
+  purpleAlt: "#a855f7",
+  violet: "#8b5cf6",
+  white: "#FFFFFF",
+  whiteTransparent: "rgba(255,255,255,0.6)",
+};
 
 export default function Home() {
   const insets = useSafeAreaInsets();
@@ -42,7 +66,7 @@ export default function Home() {
       setIsLoadingVerse(false);
     };
     loadVerse();
-  }, []);
+  }, [fetchVerseOfTheDay]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -85,7 +109,7 @@ export default function Home() {
             refreshing={refreshing}
             onRefresh={onRefresh}
             tintColor={textSecondary}
-            colors={["#667eea"]}
+            colors={[theme.color.reactBlue.dark]}
           />
         }
       >
@@ -110,7 +134,7 @@ export default function Home() {
               style={({ pressed }) => [
                 styles.profileButton,
                 { backgroundColor: cardBg },
-                pressed && { opacity: 0.7 },
+                pressed && styles.pressedOpacity,
               ]}
             >
               <MaterialCommunityIcons
@@ -138,13 +162,13 @@ export default function Home() {
               }}
               style={({ pressed }) => [
                 styles.featuredCard,
-                pressed && { opacity: 0.9 },
+                pressed && styles.pressedFeatured,
               ]}
             >
               <LinearGradient
-                colors={["#667eea", "#764ba2"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
+                colors={GRADIENT_PURPLE.colors}
+                start={GRADIENT_PURPLE.start}
+                end={GRADIENT_PURPLE.end}
                 style={styles.featuredGradient}
               >
                 <View style={styles.featuredHeader}>
@@ -152,14 +176,14 @@ export default function Home() {
                     <MaterialCommunityIcons
                       name="star-four-points"
                       size={12}
-                      color="#FFFFFF"
+                      color={ICON_COLORS.white}
                     />
                     <Text style={styles.featuredBadgeText}>TODAY</Text>
                   </View>
                   <MaterialCommunityIcons
                     name="chevron-right"
                     size={20}
-                    color="rgba(255,255,255,0.6)"
+                    color={ICON_COLORS.whiteTransparent}
                   />
                 </View>
                 <Text style={styles.featuredVerse} numberOfLines={3}>
@@ -196,25 +220,20 @@ export default function Home() {
                   styles.bentoCard,
                   styles.bentoCardWide,
                   { backgroundColor: cardBg },
-                  pressed && { opacity: 0.85 },
+                  pressed && styles.pressedBento,
                 ]}
               >
                 <LinearGradient
-                  colors={[
-                    "rgba(59, 130, 246, 0.15)",
-                    "rgba(59, 130, 246, 0.05)",
-                  ]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
+                  colors={GRADIENT_BLUE_LIGHT.colors}
+                  start={GRADIENT_BLUE_LIGHT.start}
+                  end={GRADIENT_BLUE_LIGHT.end}
                   style={styles.bentoCardGradient}
                 >
-                  <View
-                    style={[styles.bentoIcon, { backgroundColor: "#3b82f620" }]}
-                  >
+                  <View style={[styles.bentoIcon, styles.bentoIconBlue]}>
                     <MaterialCommunityIcons
                       name="book-search"
                       size={28}
-                      color="#3b82f6"
+                      color={ICON_COLORS.blue}
                     />
                   </View>
                   <Text style={[styles.bentoTitle, { color: textColor }]}>
@@ -247,19 +266,14 @@ export default function Home() {
                     styles.bentoCard,
                     styles.bentoCardSmall,
                     { backgroundColor: cardBg },
-                    pressed && { opacity: 0.85 },
+                    pressed && styles.pressedBento,
                   ]}
                 >
-                  <View
-                    style={[
-                      styles.bentoIconSmall,
-                      { backgroundColor: "#10b98120" },
-                    ]}
-                  >
+                  <View style={[styles.bentoIconSmall, styles.bentoIconGreen]}>
                     <MaterialCommunityIcons
                       name="calendar-check"
                       size={24}
-                      color="#10b981"
+                      color={ICON_COLORS.green}
                     />
                   </View>
                   <Text style={[styles.bentoTitleSmall, { color: textColor }]}>
@@ -284,19 +298,16 @@ export default function Home() {
                     styles.bentoCard,
                     styles.bentoCardSmall,
                     { backgroundColor: cardBg },
-                    pressed && { opacity: 0.85 },
+                    pressed && styles.pressedBento,
                   ]}
                 >
                   <View
-                    style={[
-                      styles.bentoIconSmall,
-                      { backgroundColor: "#a855f720" },
-                    ]}
+                    style={[styles.bentoIconSmall, styles.bentoIconPurpleAlt]}
                   >
                     <MaterialCommunityIcons
                       name="hand-heart"
                       size={24}
-                      color="#a855f7"
+                      color={ICON_COLORS.purpleAlt}
                     />
                   </View>
                   <Text style={[styles.bentoTitleSmall, { color: textColor }]}>
@@ -321,19 +332,14 @@ export default function Home() {
                     styles.bentoCard,
                     styles.bentoCardSmall,
                     { backgroundColor: cardBg },
-                    pressed && { opacity: 0.85 },
+                    pressed && styles.pressedBento,
                   ]}
                 >
-                  <View
-                    style={[
-                      styles.bentoIconSmall,
-                      { backgroundColor: "#8b5cf620" },
-                    ]}
-                  >
+                  <View style={[styles.bentoIconSmall, styles.bentoIconViolet]}>
                     <MaterialCommunityIcons
                       name="brain"
                       size={24}
-                      color="#8b5cf6"
+                      color={ICON_COLORS.violet}
                     />
                   </View>
                   <Text style={[styles.bentoTitleSmall, { color: textColor }]}>
@@ -362,16 +368,11 @@ export default function Home() {
               onPress={() => router.push("/prayer-buddy")}
             >
               <View style={styles.featureCardLeft}>
-                <View
-                  style={[
-                    styles.featureIcon,
-                    { backgroundColor: "rgba(236, 72, 153, 0.1)" },
-                  ]}
-                >
+                <View style={[styles.featureIcon, styles.featureIconPink]}>
                   <MaterialCommunityIcons
                     name="robot-love"
                     size={24}
-                    color="#ec4899"
+                    color={ICON_COLORS.pink}
                   />
                 </View>
                 <View style={styles.featureCardText}>
@@ -407,16 +408,11 @@ export default function Home() {
               onPress={() => router.push("/devotional")}
             >
               <View style={styles.featureCardLeft}>
-                <View
-                  style={[
-                    styles.featureIcon,
-                    { backgroundColor: "rgba(251, 146, 60, 0.1)" },
-                  ]}
-                >
+                <View style={[styles.featureIcon, styles.featureIconOrange]}>
                   <MaterialCommunityIcons
                     name="meditation"
                     size={24}
-                    color="#fb923c"
+                    color={ICON_COLORS.orange}
                   />
                 </View>
                 <View style={styles.featureCardText}>
@@ -447,54 +443,160 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
+  bentoCard: {
+    borderRadius: 20,
+    overflow: "hidden",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.06,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  bentoCardGradient: {
+    borderRadius: 20,
+    gap: 8,
+    padding: 20,
+  },
+  bentoCardSmall: {
+    minHeight: 120,
+    padding: 16,
+  },
+  bentoCardWide: {
+    minHeight: 140,
+  },
+  bentoGrid: {
+    gap: 12,
+  },
+  bentoIcon: {
+    alignItems: "center",
+    borderRadius: 16,
+    height: 56,
+    justifyContent: "center",
+    marginBottom: 4,
+    width: 56,
+  },
+  bentoIconBlue: {
+    backgroundColor: "#3b82f620",
+  },
+  bentoIconGreen: {
+    backgroundColor: "#10b98120",
+  },
+  bentoIconPurpleAlt: {
+    backgroundColor: "#a855f720",
+  },
+  bentoIconSmall: {
+    alignItems: "center",
+    borderRadius: 14,
+    height: 48,
+    justifyContent: "center",
+    marginBottom: 8,
+    width: 48,
+  },
+  bentoIconViolet: {
+    backgroundColor: "#8b5cf620",
+  },
+  bentoRow: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  bentoSmall: {
+    flex: 1,
+  },
+  bentoSubtitle: {
+    fontFamily: "Montserrat-Medium",
+    fontSize: 13,
+    opacity: 0.8,
+  },
+  bentoTitle: {
+    fontFamily: "Montserrat-Bold",
+    fontSize: 18,
+    letterSpacing: -0.3,
+    marginBottom: 4,
+  },
+  bentoTitleSmall: {
+    fontFamily: "Montserrat-Bold",
+    fontSize: 14,
+    letterSpacing: -0.2,
+  },
+  bentoWide: {
+    width: "100%",
+  },
   container: {
     flex: 1,
   },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-  },
-  header: {
-    marginBottom: 20,
-  },
-  headerContent: {
+  featureCard: {
     alignItems: "center",
+    borderRadius: 16,
     flexDirection: "row",
     justifyContent: "space-between",
-  },
-  greeting: {
-    fontFamily: "Montserrat-Medium",
-    fontSize: 13,
-    letterSpacing: 0.3,
-    marginBottom: 2,
-  },
-  title: {
-    fontFamily: "Montserrat-Bold",
-    fontSize: 26,
-    letterSpacing: -0.5,
-  },
-  profileButton: {
-    alignItems: "center",
-    borderRadius: 22,
-    height: 44,
-    justifyContent: "center",
-    width: 44,
+    marginBottom: 10,
+    padding: 16,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
+        shadowOpacity: 0.04,
+        shadowRadius: 8,
       },
       android: {
         elevation: 1,
       },
     }),
   },
-
-  // Featured Verse Card
+  featureCardLeft: {
+    alignItems: "center",
+    flex: 1,
+    flexDirection: "row",
+    gap: 12,
+  },
+  featureCardSubtitle: {
+    fontFamily: "Montserrat-Regular",
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  featureCardText: {
+    flex: 1,
+  },
+  featureCardTitle: {
+    fontFamily: "Montserrat-SemiBold",
+    fontSize: 15,
+    letterSpacing: -0.2,
+    marginBottom: 2,
+  },
+  featureIcon: {
+    alignItems: "center",
+    borderRadius: 14,
+    height: 48,
+    justifyContent: "center",
+    width: 48,
+  },
+  featureIconOrange: {
+    backgroundColor: "rgba(251, 146, 60, 0.1)",
+  },
+  featureIconPink: {
+    backgroundColor: "rgba(236, 72, 153, 0.1)",
+  },
+  featuredBadge: {
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    borderRadius: 12,
+    flexDirection: "row",
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  featuredBadgeText: {
+    color: "#FFFFFF",
+    fontFamily: "Montserrat-Bold",
+    fontSize: 11,
+    letterSpacing: 0.8,
+  },
   featuredCard: {
     borderRadius: 20,
     marginBottom: 24,
@@ -521,20 +623,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 12,
   },
-  featuredBadge: {
-    alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    borderRadius: 12,
-    flexDirection: "row",
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-  },
-  featuredBadgeText: {
-    color: "#FFFFFF",
-    fontFamily: "Montserrat-Bold",
-    fontSize: 11,
-    letterSpacing: 0.8,
+  featuredReference: {
+    color: "rgba(255, 255, 255, 0.85)",
+    fontFamily: "Montserrat-SemiBold",
+    fontSize: 13,
   },
   featuredVerse: {
     color: "#FFFFFF",
@@ -543,13 +635,53 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     marginBottom: 10,
   },
-  featuredReference: {
-    color: "rgba(255, 255, 255, 0.85)",
-    fontFamily: "Montserrat-SemiBold",
+  greeting: {
+    fontFamily: "Montserrat-Medium",
     fontSize: 13,
+    letterSpacing: 0.3,
+    marginBottom: 2,
   },
-
-  // Section
+  header: {
+    marginBottom: 20,
+  },
+  headerContent: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  pressedBento: {
+    opacity: 0.85,
+  },
+  pressedFeatured: {
+    opacity: 0.9,
+  },
+  pressedOpacity: {
+    opacity: 0.7,
+  },
+  profileButton: {
+    alignItems: "center",
+    borderRadius: 22,
+    height: 44,
+    justifyContent: "center",
+    width: 44,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+  },
+  scrollView: {
+    flex: 1,
+  },
   section: {
     marginBottom: 28,
   },
@@ -559,126 +691,9 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
     marginBottom: 14,
   },
-
-  // Bento Grid (2025 Design Pattern)
-  bentoGrid: {
-    gap: 12,
-  },
-  bentoRow: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  bentoWide: {
-    width: "100%",
-  },
-  bentoSmall: {
-    flex: 1,
-  },
-  bentoCard: {
-    borderRadius: 20,
-    overflow: "hidden",
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.06,
-        shadowRadius: 12,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
-  },
-  bentoCardWide: {
-    minHeight: 140,
-  },
-  bentoCardSmall: {
-    minHeight: 120,
-    padding: 16,
-  },
-  bentoCardGradient: {
-    borderRadius: 20,
-    gap: 8,
-    padding: 20,
-  },
-  bentoIcon: {
-    alignItems: "center",
-    borderRadius: 16,
-    height: 56,
-    justifyContent: "center",
-    marginBottom: 4,
-    width: 56,
-  },
-  bentoIconSmall: {
-    alignItems: "center",
-    borderRadius: 14,
-    height: 48,
-    justifyContent: "center",
-    marginBottom: 8,
-    width: 48,
-  },
-  bentoTitle: {
+  title: {
     fontFamily: "Montserrat-Bold",
-    fontSize: 18,
-    letterSpacing: -0.3,
-    marginBottom: 4,
-  },
-  bentoTitleSmall: {
-    fontFamily: "Montserrat-Bold",
-    fontSize: 14,
-    letterSpacing: -0.2,
-  },
-  bentoSubtitle: {
-    fontFamily: "Montserrat-Medium",
-    fontSize: 13,
-    opacity: 0.8,
-  },
-
-  // Feature Cards
-  featureCard: {
-    alignItems: "center",
-    borderRadius: 16,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10,
-    padding: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.04,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 1,
-      },
-    }),
-  },
-  featureCardLeft: {
-    alignItems: "center",
-    flexDirection: "row",
-    flex: 1,
-    gap: 12,
-  },
-  featureIcon: {
-    alignItems: "center",
-    borderRadius: 14,
-    height: 48,
-    justifyContent: "center",
-    width: 48,
-  },
-  featureCardText: {
-    flex: 1,
-  },
-  featureCardTitle: {
-    fontFamily: "Montserrat-SemiBold",
-    fontSize: 15,
-    letterSpacing: -0.2,
-    marginBottom: 2,
-  },
-  featureCardSubtitle: {
-    fontFamily: "Montserrat-Regular",
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 26,
+    letterSpacing: -0.5,
   },
 });

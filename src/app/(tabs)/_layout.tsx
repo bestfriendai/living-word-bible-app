@@ -6,16 +6,9 @@ import {
   VectorIcon,
 } from "expo-router/unstable-native-tabs";
 import React from "react";
-import {
-  ColorValue,
-  ImageSourcePropType,
-  Platform,
-  // eslint-disable-next-line react-native/split-platform-components
-  DynamicColorIOS,
-} from "react-native";
+import { ColorValue, ImageSourcePropType, Platform } from "react-native";
 
 import { theme } from "@/theme";
-import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { useThemeColor } from "@/components/Themed";
 
 // Todo (betomoedano): In the future we can remove this type. Learn more: https://exponent-internal.slack.com/archives/C0447EFTS74/p1758042759724779?thread_ts=1758039375.241799&cid=C0447EFTS74
@@ -80,10 +73,7 @@ export default function TabLayout() {
           Home
         </Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger
-        name="scripture"
-        role={isLiquidGlassAvailable() ? "search" : undefined}
-      >
+      <NativeTabs.Trigger name="scripture">
         {Platform.select({
           ios: <Icon sf="book" selectedColor={scriptureColor} />,
           android: (
@@ -98,9 +88,7 @@ export default function TabLayout() {
             />
           ),
         })}
-        <Label
-          selectedStyle={{ ...labelSelectedStyle, color: scriptureColor }}
-        >
+        <Label selectedStyle={{ ...labelSelectedStyle, color: scriptureColor }}>
           Scripture
         </Label>
       </NativeTabs.Trigger>

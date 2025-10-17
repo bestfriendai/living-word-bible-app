@@ -1,5 +1,5 @@
-import { Stack, useRouter } from "expo-router";
-import React, { useState } from "react";
+import { Stack } from "expo-router";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,6 @@ import {
   Modal,
   ActivityIndicator,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBibleStore } from "@/store/bibleStore";
 import { useThemeColor } from "@/components/Themed";
@@ -21,6 +20,12 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { geminiService } from "@/services/geminiService";
 import { useSpeechToText } from "@/utils/speechToText";
+
+// Color constants
+const COLOR_WHITE = "#fff";
+const COLOR_PURPLE = "#a855f7";
+const COLOR_GREEN = "#10b981";
+const COLOR_PINK = "#ec4899";
 
 export default function Journal() {
   const insets = useSafeAreaInsets();
@@ -44,22 +49,17 @@ export default function Journal() {
   const deleteJournalEntry = useBibleStore((state) => state.deleteJournalEntry);
 
   // Speech-to-text for prayer dictation
-  const {
-    isListening,
-    transcript,
-    startListening,
-    stopListening,
-    resetTranscript,
-  } = useSpeechToText({
-    onResult: (text, isFinal) => {
-      if (isFinal) {
-        setNewPrayerContent((prev) => (prev ? prev + " " + text : text));
-        stopListening();
-      }
-    },
-  });
+  const { isListening, startListening, stopListening, resetTranscript } =
+    useSpeechToText({
+      onResult: (text, isFinal) => {
+        if (isFinal) {
+          setNewPrayerContent((prev) => (prev ? prev + " " + text : text));
+          stopListening();
+        }
+      },
+    });
 
-  const handleAddPrayer = () => {
+  const handleAddPrayer = useCallback(() => {
     if (newPrayerTitle.trim() && newPrayerContent.trim()) {
       addJournalEntry({
         title: newPrayerTitle,
@@ -71,28 +71,31 @@ export default function Journal() {
     } else {
       Alert.alert("Required", "Please enter both a title and your prayer.");
     }
-  };
+  }, [newPrayerTitle, newPrayerContent, addJournalEntry]);
 
-  const handleDeletePrayer = (id: string, title: string) => {
-    if (Platform.OS === "web") {
-      if (confirm(`Delete "${title}"?`)) {
-        deleteJournalEntry(id);
+  const handleDeletePrayer = useCallback(
+    (id: string, title: string) => {
+      if (Platform.OS === "web") {
+        if (confirm(`Delete "${title}"?`)) {
+          deleteJournalEntry(id);
+        }
+      } else {
+        Alert.alert(
+          "Delete Prayer",
+          `Are you sure you want to delete "${title}"?`,
+          [
+            { text: "Cancel", style: "cancel" },
+            {
+              text: "Delete",
+              style: "destructive",
+              onPress: () => deleteJournalEntry(id),
+            },
+          ],
+        );
       }
-    } else {
-      Alert.alert(
-        "Delete Prayer",
-        `Are you sure you want to delete "${title}"?`,
-        [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Delete",
-            style: "destructive",
-            onPress: () => deleteJournalEntry(id),
-          },
-        ],
-      );
-    }
-  };
+    },
+    [deleteJournalEntry],
+  );
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -191,10 +194,14 @@ export default function Journal() {
           </View>
           <View style={styles.headerButtons}>
             <TouchableOpacity
-              style={[styles.aiButton, { backgroundColor: "#a855f7" }]}
+              style={styles.aiButton}
               onPress={() => setShowAIModal(true)}
             >
-              <MaterialCommunityIcons name="auto-fix" size={28} color="#fff" />
+              <MaterialCommunityIcons
+                name="auto-fix"
+                size={28}
+                color={COLOR_WHITE}
+              />
             </TouchableOpacity>
             <TouchableOpacity
               style={[
@@ -203,7 +210,11 @@ export default function Journal() {
               ]}
               onPress={() => setShowAddModal(true)}
             >
-              <MaterialCommunityIcons name="plus" size={32} color="#fff" />
+              <MaterialCommunityIcons
+                name="plus"
+                size={32}
+                color={COLOR_WHITE}
+              />
             </TouchableOpacity>
           </View>
         </View>
@@ -214,14 +225,12 @@ export default function Journal() {
             style={styles.insightsCard}
             onPress={handleLoadInsights}
           >
-            <View
-              style={[styles.insightsPlainCard, { backgroundColor: "#10b981" }]}
-            >
+            <View style={styles.insightsPlainCard}>
               <View style={styles.insightsContent}>
                 <MaterialCommunityIcons
                   name="chart-arc"
                   size={40}
-                  color="#fff"
+                  color={COLOR_WHITE}
                 />
                 <View style={styles.insightsTextContainer}>
                   <Text style={styles.insightsTitle}>Prayer Insights</Text>
@@ -233,7 +242,7 @@ export default function Journal() {
               <MaterialCommunityIcons
                 name="arrow-right"
                 size={28}
-                color="#fff"
+                color={COLOR_WHITE}
               />
             </View>
           </TouchableOpacity>
@@ -242,18 +251,18 @@ export default function Journal() {
         {/* Journal Entries */}
         {journalEntries.length === 0 ? (
           <View style={styles.emptyState}>
-            <View style={[styles.emptyIcon, { backgroundColor: "#a855f720" }]}>
+            <View style={styles.emptyIcon}>
               <MaterialCommunityIcons
                 name="notebook-outline"
                 size={64}
-                color="#a855f7"
+                color={COLOR_PURPLE}
               />
             </View>
             <Text style={[styles.emptyTitle, { color: textColor }]}>
               Begin Your Journal
             </Text>
             <Text style={[styles.emptySubtitle, { color: textColor + "70" }]}>
-              Document your prayers and witness God's faithfulness
+              Document your prayers and witness God&apos;s faithfulness
             </Text>
             <TouchableOpacity
               style={styles.emptyButton}
@@ -445,12 +454,12 @@ export default function Journal() {
                 onPress={handleSaveGeneratedPrayer}
                 style={styles.modalHeaderButton}
               >
-                <Text style={[styles.saveButton, { color: "#a855f7" }]}>
+                <Text style={[styles.saveButton, { color: COLOR_PURPLE }]}>
                   Save
                 </Text>
               </TouchableOpacity>
             ) : (
-              <View style={{ width: 60 }} />
+              <View style={styles.emptyHeaderSpace} />
             )}
           </View>
 
@@ -462,13 +471,11 @@ export default function Journal() {
             {!generatedPrayer ? (
               <>
                 <View style={styles.aiHeader}>
-                  <View
-                    style={[styles.aiIconPlain, { backgroundColor: "#a855f7" }]}
-                  >
+                  <View style={styles.aiIconPlain}>
                     <MaterialCommunityIcons
                       name="auto-fix"
                       size={40}
-                      color="#fff"
+                      color={COLOR_WHITE}
                     />
                   </View>
                   <Text style={[styles.aiTitle, { color: textColor }]}>
@@ -503,20 +510,22 @@ export default function Journal() {
                   style={[
                     styles.generateButton,
                     isGenerating && styles.generateButtonDisabled,
-                    { backgroundColor: isGenerating ? "#9333ea80" : "#9333ea" },
+                    isGenerating
+                      ? styles.generateButtonDisabledBg
+                      : styles.generateButtonEnabledBg,
                   ]}
                   onPress={handleGeneratePrayer}
                   disabled={isGenerating}
                 >
                   <View style={styles.generateButtonContent}>
                     {isGenerating ? (
-                      <ActivityIndicator color="#fff" size="large" />
+                      <ActivityIndicator color={COLOR_WHITE} size="large" />
                     ) : (
                       <>
                         <MaterialCommunityIcons
                           name="auto-fix"
                           size={24}
-                          color="#fff"
+                          color={COLOR_WHITE}
                         />
                         <Text style={styles.generateButtonText}>
                           Generate Prayer
@@ -557,26 +566,13 @@ export default function Journal() {
                         </Text>
                         {generatedPrayer.suggestedVerses.map(
                           (verse: string, idx: number) => (
-                            <View
-                              key={idx}
-                              style={[
-                                styles.verseTag,
-                                { backgroundColor: "#a855f720" },
-                              ]}
-                            >
+                            <View key={idx} style={styles.verseTag}>
                               <MaterialCommunityIcons
                                 name="book-open-variant"
                                 size={14}
-                                color="#a855f7"
+                                color={COLOR_PURPLE}
                               />
-                              <Text
-                                style={[
-                                  styles.verseTagText,
-                                  { color: "#a855f7" },
-                                ]}
-                              >
-                                {verse}
-                              </Text>
+                              <Text style={styles.verseTagText}>{verse}</Text>
                             </View>
                           ),
                         )}
@@ -630,7 +626,7 @@ export default function Journal() {
             <Text style={[styles.modalTitle, { color: textColor }]}>
               Prayer Insights
             </Text>
-            <View style={{ width: 60 }} />
+            <View style={styles.emptyHeaderSpace} />
           </View>
 
           <ScrollView
@@ -639,7 +635,7 @@ export default function Journal() {
           >
             {isLoadingInsights ? (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#10b981" />
+                <ActivityIndicator size="large" color={COLOR_GREEN} />
                 <Text style={[styles.loadingText, { color: textColor }]}>
                   Analyzing your prayers...
                 </Text>
@@ -647,18 +643,14 @@ export default function Journal() {
             ) : insights ? (
               <>
                 <View style={styles.insightStatsRow}>
-                  <View
-                    style={[styles.statCard, { backgroundColor: "#3b82f6" }]}
-                  >
+                  <View style={[styles.statCard, styles.statCardBlue]}>
                     <Text style={styles.statNumber}>
                       {insights.totalPrayers}
                     </Text>
                     <Text style={styles.statLabel}>Total Prayers</Text>
                   </View>
 
-                  <View
-                    style={[styles.statCard, { backgroundColor: "#10b981" }]}
-                  >
+                  <View style={[styles.statCard, styles.statCardGreen]}>
                     <Text style={styles.statNumber}>
                       {insights.answeredPrayers}
                     </Text>
@@ -679,7 +671,7 @@ export default function Journal() {
                         <MaterialCommunityIcons
                           name="tag-multiple"
                           size={28}
-                          color="#a855f7"
+                          color={COLOR_PURPLE}
                         />
                         <Text
                           style={[styles.insightTitle, { color: textColor }]}
@@ -691,18 +683,8 @@ export default function Journal() {
                         {insights.commonThemes
                           .slice(0, 3)
                           .map((theme: string, idx: number) => (
-                            <View
-                              key={idx}
-                              style={[
-                                styles.themeTag,
-                                { backgroundColor: "#a855f720" },
-                              ]}
-                            >
-                              <Text
-                                style={[styles.themeText, { color: "#a855f7" }]}
-                              >
-                                {theme}
-                              </Text>
+                            <View key={idx} style={styles.themeTag}>
+                              <Text style={styles.themeText}>{theme}</Text>
                             </View>
                           ))}
                       </View>
@@ -717,7 +699,7 @@ export default function Journal() {
                       <MaterialCommunityIcons
                         name="heart"
                         size={28}
-                        color="#ec4899"
+                        color={COLOR_PINK}
                       />
                       <Text style={[styles.insightTitle, { color: textColor }]}>
                         Encouragement
@@ -760,6 +742,7 @@ const styles = StyleSheet.create({
   },
   aiButton: {
     alignItems: "center",
+    backgroundColor: COLOR_PURPLE,
     borderRadius: 30,
     height: 60,
     justifyContent: "center",
@@ -821,9 +804,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  contentInputContainer: {
-    position: "relative",
-  },
   contentInput: {
     borderRadius: 12,
     fontSize: 18,
@@ -831,6 +811,9 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingRight: 70,
     textAlignVertical: "top",
+  },
+  contentInputContainer: {
+    position: "relative",
   },
   deleteButton: {
     padding: 12,
@@ -845,6 +828,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
+  },
+  emptyHeaderSpace: {
+    width: 60,
   },
   emptyIcon: {
     alignItems: "center",
@@ -936,23 +922,16 @@ const styles = StyleSheet.create({
   generateButtonDisabled: {
     opacity: 0.6,
   },
+  generateButtonDisabledBg: {
+    backgroundColor: "#a855f780",
+  },
+  generateButtonEnabledBg: {
+    backgroundColor: "#a855f7",
+  },
   generateButtonText: {
     color: "#fff",
     fontSize: 20,
     fontWeight: "bold",
-  },
-  growthItem: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 8,
-  },
-  growthList: {
-    gap: 12,
-  },
-  growthText: {
-    flex: 1,
-    fontSize: 16,
-    lineHeight: 22,
   },
   header: {
     alignItems: "flex-start",
@@ -1031,6 +1010,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 6,
   },
+  listeningIndicator: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 8,
+    justifyContent: "center",
+    marginTop: 16,
+    paddingVertical: 8,
+  },
+  listeningText: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
   loadingContainer: {
     alignItems: "center",
     gap: 16,
@@ -1040,6 +1031,41 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 18,
     fontWeight: "500",
+  },
+  micButton: {
+    alignItems: "center",
+    borderRadius: 28,
+    borderWidth: 2,
+    height: 56,
+    justifyContent: "center",
+    position: "absolute",
+    right: 20,
+    top: 20,
+    width: 56,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  micButtonActive: {
+    ...Platform.select({
+      ios: {
+        shadowColor: "#ef4444",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
   },
   modalContainer: {
     flex: 1,
@@ -1139,6 +1165,12 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  statCardBlue: {
+    backgroundColor: "#3b82f6",
+  },
+  statCardGreen: {
+    backgroundColor: "#10b981",
+  },
   statLabel: {
     color: "#ffffff",
     fontSize: 16,
@@ -1203,52 +1235,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 12,
-  },
-  micButton: {
-    alignItems: "center",
-    borderRadius: 28,
-    borderWidth: 2,
-    height: 56,
-    justifyContent: "center",
-    position: "absolute",
-    right: 20,
-    top: 20,
-    width: 56,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
-  },
-  micButtonActive: {
-    ...Platform.select({
-      ios: {
-        shadowColor: "#ef4444",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
-  },
-  listeningIndicator: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 8,
-    justifyContent: "center",
-    marginTop: 16,
-    paddingVertical: 8,
-  },
-  listeningText: {
-    fontSize: 14,
-    fontWeight: "600",
   },
 });

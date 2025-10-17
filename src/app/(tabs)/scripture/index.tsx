@@ -13,7 +13,6 @@ import {
   RefreshControl,
   Pressable,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBibleStore } from "@/store/bibleStore";
 import { useThemeColor } from "@/components/Themed";
@@ -32,7 +31,6 @@ export default function Scripture() {
   const backgroundColor = useThemeColor(theme.color.background);
   const textColor = useThemeColor(theme.color.text);
   const cardBg = useThemeColor(theme.color.backgroundSecondary);
-  const borderColor = useThemeColor(theme.color.border);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [showExplanation, setShowExplanation] = useState(false);
@@ -48,23 +46,17 @@ export default function Scripture() {
   const isSearching = useBibleStore((state) => state.isSearching);
   const searchVerses = useBibleStore((state) => state.searchVerses);
   const saveVerse = useBibleStore((state) => state.saveVerse);
-  const clearSearchResults = useBibleStore((state) => state.clearSearchResults);
 
   // Speech-to-text hook
-  const {
-    isListening,
-    transcript,
-    startListening,
-    stopListening,
-    resetTranscript,
-  } = useSpeechToText({
-    onResult: (text, isFinal) => {
-      if (isFinal) {
-        setSearchQuery(text);
-        stopListening();
-      }
-    },
-  });
+  const { isListening, startListening, stopListening, resetTranscript } =
+    useSpeechToText({
+      onResult: (text, isFinal) => {
+        if (isFinal) {
+          setSearchQuery(text);
+          stopListening();
+        }
+      },
+    });
 
   const handleSearch = async () => {
     if (searchQuery.trim()) {
@@ -251,7 +243,7 @@ export default function Scripture() {
               Find Scripture
             </Text>
             <Text style={[styles.emptySubtitle, { color: textColor + "70" }]}>
-              Share what's on your heart and discover relevant verses
+              Share what&apos;s on your heart and discover relevant verses
             </Text>
           </View>
         )}
@@ -288,7 +280,7 @@ export default function Scripture() {
                     </Text>
                   </View>
                   <Text style={[styles.verseText, { color: textColor }]}>
-                    "{verse.text}"
+                    &quot;{verse.text}&quot;
                   </Text>
                   {verse.context && (
                     <View
@@ -374,19 +366,19 @@ export default function Scripture() {
           >
             {selectedVerse && (
               <View style={styles.modalVerseHeader}>
-                <LinearGradient
-                  colors={["#3b82f6", "#2563eb"]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.modalVerseGradient}
+                <View
+                  style={[
+                    styles.modalVerseGradient,
+                    { backgroundColor: "#3b82f6" },
+                  ]}
                 >
                   <Text style={styles.modalVerseReference}>
                     {selectedVerse.reference}
                   </Text>
                   <Text style={styles.modalVerseText}>
-                    "{selectedVerse.text}"
+                    &quot;{selectedVerse.text}&quot;
                   </Text>
-                </LinearGradient>
+                </View>
               </View>
             )}
 
@@ -673,6 +665,18 @@ const styles = StyleSheet.create({
     gap: 12,
     justifyContent: "space-between",
   },
+  listeningIndicator: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 8,
+    justifyContent: "center",
+    marginBottom: 16,
+    paddingVertical: 8,
+  },
+  listeningText: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
   loadingContainer: {
     alignItems: "center",
     gap: 16,
@@ -682,6 +686,40 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 16,
     fontWeight: "500",
+  },
+  micButton: {
+    alignItems: "center",
+    borderRadius: 28,
+    bottom: 24,
+    height: 56,
+    justifyContent: "center",
+    position: "absolute",
+    right: 24,
+    width: 56,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  micButtonActive: {
+    ...Platform.select({
+      ios: {
+        shadowColor: "#ef4444",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
   },
   modalContainer: {
     flex: 1,
@@ -828,52 +866,6 @@ const styles = StyleSheet.create({
     minHeight: 120,
     paddingRight: 60,
     textAlignVertical: "top",
-  },
-  micButton: {
-    alignItems: "center",
-    borderRadius: 28,
-    bottom: 24,
-    height: 56,
-    justifyContent: "center",
-    position: "absolute",
-    right: 24,
-    width: 56,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
-  },
-  micButtonActive: {
-    ...Platform.select({
-      ios: {
-        shadowColor: "#ef4444",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
-  },
-  listeningIndicator: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 8,
-    justifyContent: "center",
-    marginBottom: 16,
-    paddingVertical: 8,
-  },
-  listeningText: {
-    fontSize: 14,
-    fontWeight: "600",
   },
   subtitle: {
     fontSize: 16,

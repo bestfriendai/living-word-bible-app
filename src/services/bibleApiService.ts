@@ -1,7 +1,5 @@
-import Constants from "expo-constants";
 import { bibleDatabase } from "./bibleDatabase";
-
-const BIBLE_API_KEY = Constants.expoConfig?.extra?.bibleApiKey || "";
+import { secureEnv } from "../utils/secureEnv";
 
 // API.Bible endpoints
 const API_BASE_URL = "https://api.scripture.api.bible/v1";
@@ -15,26 +13,30 @@ const TRANSLATION_IDS: Record<string, string> = {
   NKJV: "fb5c4bb8b5e0ba0c-01", // New King James Version
 };
 
-interface BibleApiVerse {
-  bookId: string;
-  chapterId: string;
-  id: string;
-  orgId: string;
-  reference: string;
-  text: string;
-  verseId: number;
-}
-
 export class BibleApiService {
-  private headers = {
-    "api-key": BIBLE_API_KEY,
-  };
+  private apiKey: string = "";
+
+  /**
+   * Initialize the service with secure API key
+   */
+  async initialize(): Promise<void> {
+    this.apiKey = await secureEnv.getApiKey("bible");
+  }
+
+  /**
+   * Get headers with API key
+   */
+  private getHeaders(): Record<string, string> {
+    return {
+      "api-key": this.apiKey,
+    };
+  }
 
   /**
    * Check if API key is configured
    */
   isConfigured(): boolean {
-    return BIBLE_API_KEY.length > 0;
+    return this.apiKey.length > 0;
   }
 
   /**
@@ -53,7 +55,7 @@ export class BibleApiService {
       const bibleId = TRANSLATION_IDS[translation] || TRANSLATION_IDS.KJV;
       const url = `${API_BASE_URL}/bibles/${bibleId}/search?query=${encodeURIComponent(reference)}&limit=1`;
 
-      const response = await fetch(url, { headers: this.headers });
+      const response = await fetch(url, { headers: this.getHeaders() });
 
       if (!response.ok) {
         throw new Error(`API request failed: ${response.status}`);
@@ -88,7 +90,7 @@ export class BibleApiService {
       const bibleId = TRANSLATION_IDS[translation] || TRANSLATION_IDS.KJV;
       const url = `${API_BASE_URL}/bibles/${bibleId}/chapters/${bookId}.${chapter}?include-verse-spans=true`;
 
-      const response = await fetch(url, { headers: this.headers });
+      const response = await fetch(url, { headers: this.getHeaders() });
 
       if (!response.ok) {
         throw new Error(`API request failed: ${response.status}`);
@@ -142,7 +144,8 @@ export class BibleApiService {
       "Psalm 23:1": "The LORD is my shepherd, I lack nothing.",
       "Romans 8:28":
         "And we know that in all things God works for the good of those who love him, who have been called according to his purpose.",
-      "John 1": "In the beginning was the Word, and the Word was with God, and the Word was God. He was with God in the beginning. Through him all things were made; without him nothing was made that has been made. In him was life, and that life was the light of all mankind. The light shines in the darkness, and the darkness has not overcome it.",
+      "John 1":
+        "In the beginning was the Word, and the Word was with God, and the Word was God. He was with God in the beginning. Through him all things were made; without him nothing was made that has been made. In him was life, and that life was the light of all mankind. The light shines in the darkness, and the darkness has not overcome it.",
     };
 
     // First try the hardcoded fallbacks
@@ -154,13 +157,16 @@ export class BibleApiService {
     try {
       const parsed = this.parseReference(reference);
       if (parsed) {
-        const verses = await bibleDatabase.getVerses(
-          parsed.book,
-          parsed.chapter,
-          "NIV"
-        );
-        if (verses && verses.length > 0) {
-          return verses.map(v => v.text).join(" ");
+        const book = await bibleDatabase.getBookByName(parsed.book);
+        if (book) {
+          const verses = await bibleDatabase.getChapter(
+            book.id,
+            parsed.chapter,
+            "NIV",
+          );
+          if (verses && verses.length > 0) {
+            return verses.map((v: { text: string }) => v.text).join(" ");
+          }
         }
       }
     } catch (error) {

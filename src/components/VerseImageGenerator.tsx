@@ -13,7 +13,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { captureRef } from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
-import * as FileSystem from "expo-file-system";
 
 interface VerseImageGeneratorProps {
   reference: string;
@@ -152,7 +151,7 @@ export function VerseImageGenerator({
                 <Text
                   style={[styles.verseText, { color: selectedTheme.textColor }]}
                 >
-                  "{text}"
+                  &quot;{text}&quot;
                 </Text>
                 <Text
                   style={[

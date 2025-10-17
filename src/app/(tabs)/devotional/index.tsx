@@ -17,6 +17,13 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { VerseImageGenerator } from "@/components/VerseImageGenerator";
 import { ttsService } from "@/utils/textToSpeech";
 
+// Color constants
+const COLOR_ORANGE = "#f97316";
+const COLOR_WHITE = "#fff";
+const COLOR_RED = "#ef4444";
+const COLOR_PURPLE = "#8b5cf6";
+const COLOR_BLUE = "#3b82f6";
+
 export default function Devotional() {
   const insets = useSafeAreaInsets();
   const backgroundColor = useThemeColor(theme.color.background);
@@ -28,16 +35,10 @@ export default function Devotional() {
 
   const verseOfTheDay = useBibleStore((state) => state.verseOfTheDay);
   const fetchVerseOfTheDay = useBibleStore((state) => state.fetchVerseOfTheDay);
-  const preferredTranslation = useBibleStore(
-    (state) => state.preferredTranslation,
-  );
-  const setPreferredTranslation = useBibleStore(
-    (state) => state.setPreferredTranslation,
-  );
 
   useEffect(() => {
     fetchVerseOfTheDay();
-  }, []);
+  }, [fetchVerseOfTheDay]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -104,7 +105,7 @@ export default function Devotional() {
             refreshing={refreshing}
             onRefresh={onRefresh}
             tintColor={textSecondary}
-            colors={["#f97316"]}
+            colors={[COLOR_ORANGE]}
           />
         }
       >
@@ -143,13 +144,13 @@ export default function Devotional() {
 
             {/* Verse Card */}
             <View style={styles.verseCard}>
-              <View
-                style={[styles.verseGradient, { backgroundColor: "#f97316" }]}
-              >
+              <View style={styles.verseGradient}>
                 <Text style={styles.verseReference}>
                   {verseOfTheDay.reference}
                 </Text>
-                <Text style={styles.verseText}>"{verseOfTheDay.text}"</Text>
+                <Text style={styles.verseText}>
+                  &quot;{verseOfTheDay.text}&quot;
+                </Text>
               </View>
             </View>
 
@@ -163,13 +164,15 @@ export default function Devotional() {
                 <View
                   style={[
                     styles.actionButtonInner,
-                    { backgroundColor: isPlaying ? "#ef4444" : "#8b5cf6" },
+                    isPlaying
+                      ? styles.audioButtonActive
+                      : styles.audioButtonInactive,
                   ]}
                 >
                   <MaterialCommunityIcons
                     name={isPlaying ? "stop" : "volume-high"}
                     size={28}
-                    color="#fff"
+                    color={COLOR_WHITE}
                   />
                   <Text style={styles.actionButtonText}>
                     {isPlaying ? "Stop" : "Listen"}
@@ -183,15 +186,12 @@ export default function Devotional() {
                 onPress={() => setShowImageGenerator(true)}
               >
                 <View
-                  style={[
-                    styles.actionButtonInner,
-                    { backgroundColor: "#3b82f6" },
-                  ]}
+                  style={[styles.actionButtonInner, styles.shareButtonInner]}
                 >
                   <MaterialCommunityIcons
                     name="share-variant"
                     size={28}
-                    color="#fff"
+                    color={COLOR_WHITE}
                   />
                   <Text style={styles.actionButtonText}>Share</Text>
                 </View>
@@ -218,7 +218,7 @@ export default function Devotional() {
               color={textColor + "30"}
             />
             <Text style={[styles.loadingText, { color: textColor + "70" }]}>
-              Loading today's devotional...
+              Loading today&apos;s devotional...
             </Text>
           </View>
         )}
@@ -238,6 +238,35 @@ export default function Devotional() {
 }
 
 const styles = StyleSheet.create({
+  actionButton: {
+    borderRadius: 12,
+    flex: 1,
+    overflow: "hidden",
+  },
+  actionButtonInner: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 10,
+    justifyContent: "center",
+    paddingVertical: 18,
+  },
+  actionButtonText: {
+    color: COLOR_WHITE,
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  actionButtons: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 24,
+  },
+  audioButton: {},
+  audioButtonActive: {
+    backgroundColor: COLOR_RED,
+  },
+  audioButtonInactive: {
+    backgroundColor: COLOR_PURPLE,
+  },
   container: {
     flex: 1,
   },
@@ -288,43 +317,9 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  actionButtons: {
-    flexDirection: "row",
-    gap: 12,
-    marginBottom: 24,
-  },
-  actionButton: {
-    borderRadius: 12,
-    flex: 1,
-    overflow: "hidden",
-  },
-  actionButtonInner: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 10,
-    justifyContent: "center",
-    paddingVertical: 18,
-  },
-  actionButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  audioButton: {},
   shareButton: {},
   shareButtonInner: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 10,
-    justifyContent: "center",
-    minHeight: 48,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-  },
-  shareButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "700",
+    backgroundColor: COLOR_BLUE,
   },
   title: {
     fontSize: 32,
@@ -356,12 +351,13 @@ const styles = StyleSheet.create({
     }),
   },
   verseGradient: {
+    backgroundColor: COLOR_ORANGE,
     justifyContent: "center",
     minHeight: 200,
     padding: 24,
   },
   verseReference: {
-    color: "#fff",
+    color: COLOR_WHITE,
     fontSize: 16,
     fontWeight: "700",
     letterSpacing: 0.8,
@@ -369,7 +365,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   verseText: {
-    color: "#fff",
+    color: COLOR_WHITE,
     fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
     fontSize: 18,
     fontStyle: "italic",
