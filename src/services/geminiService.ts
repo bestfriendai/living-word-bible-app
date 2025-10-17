@@ -216,6 +216,8 @@ Important:
 
   async getVerseOfTheDay(): Promise<VerseOfTheDay> {
     try {
+      await this.ensureInitialized();
+
       const today = new Date().toLocaleDateString();
       const prompt = `Generate a meaningful verse of the day for ${today}.
 
@@ -401,6 +403,8 @@ Return ONLY valid JSON.`;
 
   async analyzePrayerJournal(prayers: any[]): Promise<PrayerInsight> {
     try {
+      await this.ensureInitialized();
+
       const prayerSummary = prayers.slice(0, 20).map((p) => ({
         title: p.title,
         category: p.category,
@@ -447,6 +451,8 @@ Be encouraging and insightful. Return ONLY valid JSON.`;
 
   async generateGrowthReport(stats: any): Promise<SpiritualGrowthReport> {
     try {
+      await this.ensureInitialized();
+
       const prompt = `Generate a spiritual growth report based on these stats:
 Reading Streak: ${stats.readingStreak} days
 Verses Saved: ${stats.versesSaved}
@@ -524,6 +530,8 @@ Your response:`;
 
   async generateMemorizationTips(verse: string): Promise<string[]> {
     try {
+      await this.ensureInitialized();
+
       const prompt = `Provide 5 creative tips for memorizing this verse:
 "${verse}"
 
