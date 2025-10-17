@@ -128,6 +128,7 @@ const config: ExpoConfig = {
         },
       },
     ],
+    "expo-speech-recognition",
   ],
   updates: {
     url: EAS_UPDATE_URL,

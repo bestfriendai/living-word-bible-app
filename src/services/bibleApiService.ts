@@ -46,7 +46,7 @@ export class BibleApiService {
   ): Promise<string> {
     if (!this.isConfigured()) {
       console.warn("Bible API key not configured. Using fallback.");
-      return this.getFallbackVerse(reference);
+      return await this.getFallbackVerse(reference);
     }
 
     try {
@@ -68,7 +68,7 @@ export class BibleApiService {
       throw new Error("Verse not found");
     } catch (error) {
       console.error("Error fetching verse from API:", error);
-      return this.getFallbackVerse(reference);
+      return await this.getFallbackVerse(reference);
     }
   }
 
@@ -131,7 +131,7 @@ export class BibleApiService {
   /**
    * Get fallback verse when API is unavailable
    */
-  private getFallbackVerse(reference: string): string {
+  private async getFallbackVerse(reference: string): Promise<string> {
     const fallbackVerses: Record<string, string> = {
       "John 3:16":
         "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.",
@@ -142,12 +142,32 @@ export class BibleApiService {
       "Psalm 23:1": "The LORD is my shepherd, I lack nothing.",
       "Romans 8:28":
         "And we know that in all things God works for the good of those who love him, who have been called according to his purpose.",
+      "John 1": "In the beginning was the Word, and the Word was with God, and the Word was God. He was with God in the beginning. Through him all things were made; without him nothing was made that has been made. In him was life, and that life was the light of all mankind. The light shines in the darkness, and the darkness has not overcome it.",
     };
 
-    return (
-      fallbackVerses[reference] ||
-      "Verse not available offline. Please check your internet connection."
-    );
+    // First try the hardcoded fallbacks
+    if (fallbackVerses[reference]) {
+      return fallbackVerses[reference];
+    }
+
+    // Try to get from local database
+    try {
+      const parsed = this.parseReference(reference);
+      if (parsed) {
+        const verses = await bibleDatabase.getVerses(
+          parsed.book,
+          parsed.chapter,
+          "NIV"
+        );
+        if (verses && verses.length > 0) {
+          return verses.map(v => v.text).join(" ");
+        }
+      }
+    } catch (error) {
+      console.error("Error getting verse from database:", error);
+    }
+
+    return `📖 ${reference}\n\nThis passage is being loaded. Please ensure you have an internet connection or download this passage for offline reading.`;
   }
 
   /**

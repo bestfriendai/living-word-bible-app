@@ -15,6 +15,7 @@ import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { VerseImageGenerator } from "@/components/VerseImageGenerator";
+import { ttsService } from "@/utils/textToSpeech";
 
 export default function Devotional() {
   const insets = useSafeAreaInsets();
@@ -23,6 +24,7 @@ export default function Devotional() {
   const textSecondary = useThemeColor(theme.color.textSecondary);
   const [showImageGenerator, setShowImageGenerator] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const verseOfTheDay = useBibleStore((state) => state.verseOfTheDay);
   const fetchVerseOfTheDay = useBibleStore((state) => state.fetchVerseOfTheDay);
@@ -54,6 +56,34 @@ export default function Devotional() {
     month: "long",
     day: "numeric",
   });
+
+  const handlePlayPause = async () => {
+    if (!verseOfTheDay) return;
+
+    if (isPlaying) {
+      await ttsService.stop();
+      setIsPlaying(false);
+    } else {
+      setIsPlaying(true);
+      await ttsService.speakDevotional(
+        verseOfTheDay.title || "Today's Devotional",
+        verseOfTheDay.reference,
+        verseOfTheDay.text,
+        verseOfTheDay.reflection || "",
+        {
+          onDone: () => setIsPlaying(false),
+          onError: () => setIsPlaying(false),
+        },
+      );
+    }
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      ttsService.stop();
+    };
+  }, []);
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
@@ -123,25 +153,50 @@ export default function Devotional() {
               </View>
             </View>
 
-            {/* Share Button */}
-            <TouchableOpacity
-              style={styles.shareButton}
-              onPress={() => setShowImageGenerator(true)}
-            >
-              <View
-                style={[
-                  styles.shareButtonInner,
-                  { backgroundColor: "#3b82f6" },
-                ]}
+            {/* Action Buttons */}
+            <View style={styles.actionButtons}>
+              {/* Listen Button */}
+              <TouchableOpacity
+                style={[styles.actionButton, styles.audioButton]}
+                onPress={handlePlayPause}
               >
-                <MaterialCommunityIcons
-                  name="share-variant"
-                  size={28}
-                  color="#fff"
-                />
-                <Text style={styles.shareButtonText}>Share Verse</Text>
-              </View>
-            </TouchableOpacity>
+                <View
+                  style={[
+                    styles.actionButtonInner,
+                    { backgroundColor: isPlaying ? "#ef4444" : "#8b5cf6" },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name={isPlaying ? "stop" : "volume-high"}
+                    size={28}
+                    color="#fff"
+                  />
+                  <Text style={styles.actionButtonText}>
+                    {isPlaying ? "Stop" : "Listen"}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+
+              {/* Share Button */}
+              <TouchableOpacity
+                style={[styles.actionButton, styles.shareButton]}
+                onPress={() => setShowImageGenerator(true)}
+              >
+                <View
+                  style={[
+                    styles.actionButtonInner,
+                    { backgroundColor: "#3b82f6" },
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name="share-variant"
+                    size={28}
+                    color="#fff"
+                  />
+                  <Text style={styles.actionButtonText}>Share</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
 
             {/* Reflection Section */}
             <View style={styles.reflectionSection}>
@@ -233,11 +288,30 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  shareButton: {
-    borderRadius: 12,
+  actionButtons: {
+    flexDirection: "row",
+    gap: 12,
     marginBottom: 24,
+  },
+  actionButton: {
+    borderRadius: 12,
+    flex: 1,
     overflow: "hidden",
   },
+  actionButtonInner: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 10,
+    justifyContent: "center",
+    paddingVertical: 18,
+  },
+  actionButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  audioButton: {},
+  shareButton: {},
   shareButtonInner: {
     alignItems: "center",
     flexDirection: "row",
