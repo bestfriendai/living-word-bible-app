@@ -67,7 +67,13 @@ export class BibleApiService {
       const data = await response.json();
       console.log("Bible API search response:", JSON.stringify(data, null, 2));
 
-      // API.Bible search returns: { data: { verses: [...] } }
+      // API.Bible search can return either verses or passages
+      // Check for passages first (contains HTML content)
+      if (data.data?.passages && data.data.passages.length > 0) {
+        return this.cleanVerseText(data.data.passages[0].content);
+      }
+
+      // Fallback to verses format
       if (data.data?.verses && data.data.verses.length > 0) {
         return this.cleanVerseText(data.data.verses[0].text);
       }
