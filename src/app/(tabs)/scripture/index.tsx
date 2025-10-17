@@ -25,6 +25,7 @@ import { TranslationSwitcher } from "@/components/TranslationSwitcher";
 import { VerseActionsSheet } from "@/components/VerseActionsSheet";
 import { hapticPatterns } from "@/utils/haptics";
 import { VerseCardSkeleton } from "@/components/SkeletonLoader";
+import { useSpeechToText } from "@/utils/speechToText";
 
 export default function Scripture() {
   const insets = useSafeAreaInsets();
@@ -49,9 +50,36 @@ export default function Scripture() {
   const saveVerse = useBibleStore((state) => state.saveVerse);
   const clearSearchResults = useBibleStore((state) => state.clearSearchResults);
 
+  // Speech-to-text hook
+  const {
+    isListening,
+    transcript,
+    startListening,
+    stopListening,
+    resetTranscript,
+  } = useSpeechToText({
+    onResult: (text, isFinal) => {
+      if (isFinal) {
+        setSearchQuery(text);
+        stopListening();
+      }
+    },
+  });
+
   const handleSearch = async () => {
     if (searchQuery.trim()) {
       await searchVerses(searchQuery);
+    }
+  };
+
+  const handleVoiceInput = async () => {
+    if (isListening) {
+      await stopListening();
+    } else {
+      resetTranscript();
+      setSearchQuery("");
+      await startListening();
+      hapticPatterns.buttonPress();
     }
   };
 
@@ -152,7 +180,33 @@ export default function Scripture() {
             numberOfLines={4}
             textAlignVertical="top"
           />
+          <TouchableOpacity
+            style={[
+              styles.micButton,
+              isListening && styles.micButtonActive,
+              { backgroundColor: isListening ? "#ef4444" : cardBg },
+            ]}
+            onPress={handleVoiceInput}
+          >
+            <MaterialCommunityIcons
+              name={isListening ? "stop" : "microphone"}
+              size={24}
+              color={isListening ? "#fff" : textColor}
+            />
+          </TouchableOpacity>
         </View>
+        {isListening && (
+          <View style={styles.listeningIndicator}>
+            <MaterialCommunityIcons
+              name="microphone"
+              size={16}
+              color="#ef4444"
+            />
+            <Text style={[styles.listeningText, { color: textColor }]}>
+              Listening... speak now
+            </Text>
+          </View>
+        )}
 
         {/* Search Button */}
         <TouchableOpacity
@@ -766,12 +820,60 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginBottom: 24,
     padding: 24,
+    position: "relative",
   },
   searchInput: {
     fontSize: 18,
     lineHeight: 26,
     minHeight: 120,
+    paddingRight: 60,
     textAlignVertical: "top",
+  },
+  micButton: {
+    alignItems: "center",
+    borderRadius: 28,
+    bottom: 24,
+    height: 56,
+    justifyContent: "center",
+    position: "absolute",
+    right: 24,
+    width: 56,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  micButtonActive: {
+    ...Platform.select({
+      ios: {
+        shadowColor: "#ef4444",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+  listeningIndicator: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 8,
+    justifyContent: "center",
+    marginBottom: 16,
+    paddingVertical: 8,
+  },
+  listeningText: {
+    fontSize: 14,
+    fontWeight: "600",
   },
   subtitle: {
     fontSize: 16,

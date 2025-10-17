@@ -20,6 +20,7 @@ import { theme } from "@/theme";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { geminiService } from "@/services/geminiService";
+import { useSpeechToText } from "@/utils/speechToText";
 
 export default function Journal() {
   const insets = useSafeAreaInsets();
@@ -41,6 +42,22 @@ export default function Journal() {
   const journalEntries = useBibleStore((state) => state.journalEntries);
   const addJournalEntry = useBibleStore((state) => state.addJournalEntry);
   const deleteJournalEntry = useBibleStore((state) => state.deleteJournalEntry);
+
+  // Speech-to-text for prayer dictation
+  const {
+    isListening,
+    transcript,
+    startListening,
+    stopListening,
+    resetTranscript,
+  } = useSpeechToText({
+    onResult: (text, isFinal) => {
+      if (isFinal) {
+        setNewPrayerContent((prev) => (prev ? prev + " " + text : text));
+        stopListening();
+      }
+    },
+  });
 
   const handleAddPrayer = () => {
     if (newPrayerTitle.trim() && newPrayerContent.trim()) {
@@ -137,6 +154,15 @@ export default function Journal() {
       console.error("Error loading insights:", error);
     } finally {
       setIsLoadingInsights(false);
+    }
+  };
+
+  const handleVoiceInput = async () => {
+    if (isListening) {
+      await stopListening();
+    } else {
+      resetTranscript();
+      await startListening();
     }
   };
 
@@ -336,23 +362,55 @@ export default function Journal() {
               onChangeText={setNewPrayerTitle}
             />
 
-            <TextInput
-              style={[
-                styles.contentInput,
-                {
-                  color: textColor,
-                  borderColor: cardBg,
-                  backgroundColor: cardBg,
-                },
-              ]}
-              placeholder="Write your prayer here..."
-              placeholderTextColor={textColor + "50"}
-              value={newPrayerContent}
-              onChangeText={setNewPrayerContent}
-              multiline
-              numberOfLines={10}
-              textAlignVertical="top"
-            />
+            <View style={styles.contentInputContainer}>
+              <TextInput
+                style={[
+                  styles.contentInput,
+                  {
+                    color: textColor,
+                    borderColor: cardBg,
+                    backgroundColor: cardBg,
+                  },
+                ]}
+                placeholder="Write your prayer here..."
+                placeholderTextColor={textColor + "50"}
+                value={newPrayerContent}
+                onChangeText={setNewPrayerContent}
+                multiline
+                numberOfLines={10}
+                textAlignVertical="top"
+              />
+              <TouchableOpacity
+                style={[
+                  styles.micButton,
+                  isListening && styles.micButtonActive,
+                  {
+                    backgroundColor: isListening ? "#ef4444" : cardBg,
+                    borderColor: isListening ? "#ef4444" : textColor + "30",
+                  },
+                ]}
+                onPress={handleVoiceInput}
+              >
+                <MaterialCommunityIcons
+                  name={isListening ? "stop" : "microphone"}
+                  size={24}
+                  color={isListening ? "#fff" : textColor}
+                />
+              </TouchableOpacity>
+            </View>
+
+            {isListening && (
+              <View style={styles.listeningIndicator}>
+                <MaterialCommunityIcons
+                  name="microphone"
+                  size={16}
+                  color="#ef4444"
+                />
+                <Text style={[styles.listeningText, { color: textColor }]}>
+                  Listening... speak your prayer
+                </Text>
+              </View>
+            )}
           </ScrollView>
         </View>
       </Modal>
@@ -763,11 +821,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  contentInputContainer: {
+    position: "relative",
+  },
   contentInput: {
     borderRadius: 12,
     fontSize: 18,
     minHeight: 250,
     padding: 20,
+    paddingRight: 70,
     textAlignVertical: "top",
   },
   deleteButton: {
@@ -1141,5 +1203,52 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 12,
+  },
+  micButton: {
+    alignItems: "center",
+    borderRadius: 28,
+    borderWidth: 2,
+    height: 56,
+    justifyContent: "center",
+    position: "absolute",
+    right: 20,
+    top: 20,
+    width: 56,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  micButtonActive: {
+    ...Platform.select({
+      ios: {
+        shadowColor: "#ef4444",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+  listeningIndicator: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 8,
+    justifyContent: "center",
+    marginTop: 16,
+    paddingVertical: 8,
+  },
+  listeningText: {
+    fontSize: 14,
+    fontWeight: "600",
   },
 });
