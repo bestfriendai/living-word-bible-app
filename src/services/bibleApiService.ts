@@ -21,6 +21,7 @@ export class BibleApiService {
    */
   async initialize(): Promise<void> {
     this.apiKey = await secureEnv.getApiKey("bible");
+    console.log(`📖 Bible API Key loaded: ${this.apiKey ? `${this.apiKey.substring(0, 8)}...` : "NOT FOUND"}`);
   }
 
   /**

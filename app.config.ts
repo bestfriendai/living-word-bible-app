@@ -75,10 +75,10 @@ const config: ExpoConfig = {
     eas: {
       projectId: EAS_PROJECT_ID,
     },
-    // Security: API keys are handled securely at runtime
-    // and not exposed in the client bundle
-    geminiApiKey: process.env.NODE_ENV === 'development' ? process.env.GEMINI_API_KEY : "",
-    bibleApiKey: process.env.NODE_ENV === 'development' ? process.env.BIBLE_API_KEY : "",
+    // Security: API keys are loaded from .env for development builds
+    // For production, use SecureStore to store keys at runtime
+    geminiApiKey: process.env.GEMINI_API_KEY || "",
+    bibleApiKey: process.env.BIBLE_API_KEY || "",
   },
   owner: EAS_APP_OWNER,
   plugins: [
