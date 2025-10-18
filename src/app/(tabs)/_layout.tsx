@@ -33,7 +33,6 @@ export default function TabLayout() {
   const devotionalColor = "#fb923c";
   const prayerColor = "#ec4899";
   const prayerBuddyColor = "#a855f7";
-  const memorizationColor = "#8b5cf6";
 
   const labelSelectedStyle =
     Platform.OS === "ios"
@@ -151,25 +150,6 @@ export default function TabLayout() {
         })}
         <Label selectedStyle={{ ...labelSelectedStyle, color: prayerBuddyColor }}>
           AI Buddy
-        </Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="memorization">
-        {Platform.select({
-          ios: <Icon sf="brain.head.profile" selectedColor={memorizationColor} />,
-          android: (
-            <Icon
-              src={
-                <VectorIcon
-                  family={MaterialCommunityIcons as VectorIconFamily}
-                  name="brain"
-                />
-              }
-              selectedColor={memorizationColor}
-            />
-          ),
-        })}
-        <Label selectedStyle={{ ...labelSelectedStyle, color: memorizationColor }}>
-          Memory
         </Label>
       </NativeTabs.Trigger>
     </NativeTabs>
