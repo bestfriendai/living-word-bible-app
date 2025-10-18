@@ -8,14 +8,17 @@ import {
   TouchableOpacity,
   Switch,
   Platform,
+  Dimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
+import { spacing, borderRadius, fontSize, fontWeight } from "@/theme/spacing";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { ThemeMode } from "@/contexts/ThemeContext";
 import { hapticPatterns } from "@/utils/haptics";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Settings() {
   const insets = useSafeAreaInsets();
@@ -258,38 +261,45 @@ export default function Settings() {
   );
 }
 
+const { width } = Dimensions.get("window");
+
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 16,
-    marginBottom: 16,
-    padding: 20,
+    borderRadius: borderRadius.xl,
+    elevation: 2,
+    marginBottom: spacing.md,
+    padding: spacing.lg,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: "700",
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.bold,
   },
   container: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
   },
   scrollView: {
     flex: 1,
   },
   section: {
-    marginBottom: 32,
+    marginBottom: spacing.xxl,
   },
   sectionTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    marginBottom: 16,
+    fontSize: fontSize.xxl,
+    fontWeight: fontWeight.bold,
+    marginBottom: spacing.md,
   },
   settingLeft: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 16,
+    gap: spacing.md,
   },
   settingRow: {
     alignItems: "center",
@@ -297,37 +307,38 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   settingSubtitle: {
-    fontSize: 14,
-    marginTop: 2,
+    fontSize: fontSize.sm,
+    marginTop: spacing.xs,
   },
   settingText: {
     flex: 1,
   },
   settingTitle: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
   },
   themeOption: {
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: borderRadius.xl,
     borderWidth: 2,
     flexDirection: "row",
-    gap: 16,
-    marginBottom: 12,
-    padding: 16,
+    gap: spacing.md,
+    marginBottom: spacing.md,
+    padding: spacing.md,
   },
   themeOptionSelected: {
+    backgroundColor: "rgba(16, 185, 129, 0.05)",
     borderColor: "#10b981",
   },
   themeOptionSubtitle: {
-    fontSize: 14,
-    marginTop: 2,
+    fontSize: fontSize.sm,
+    marginTop: spacing.xs,
   },
   themeOptionText: {
     flex: 1,
   },
   themeOptionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
   },
 });

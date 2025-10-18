@@ -12,17 +12,20 @@ import {
   KeyboardAvoidingView,
   Modal,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
 import { appleDesign } from "@/theme/appleDesign";
+import { spacing, borderRadius, fontSize, fontWeight } from "@/theme/spacing";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import {
   memorizationService,
   MemorizedVerse,
 } from "@/services/memorizationService";
 import { bibleApiService } from "@/services/bibleApiService";
+import { LinearGradient } from "expo-linear-gradient";
 
 type ExerciseType =
   | "fill-blank"
@@ -368,13 +371,18 @@ export default function Memorization() {
 
           {/* Streak Display */}
           {streak.currentStreak > 0 && (
-            <View style={[styles.streakCard, { backgroundColor: "#ff6b6b" }]}>
+            <LinearGradient
+              colors={["#ff6b6b", "#ff5252"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.streakCard}
+            >
               <MaterialCommunityIcons name="fire" size={32} color="#fff" />
               <View style={styles.streakInfo}>
                 <Text style={styles.streakNumber}>{streak.currentStreak}</Text>
                 <Text style={styles.streakLabel}>Day Streak!</Text>
               </View>
-            </View>
+            </LinearGradient>
           )}
 
           {/* Stats Cards */}
@@ -1060,75 +1068,82 @@ export default function Memorization() {
   );
 }
 
+const { width } = Dimensions.get("window");
+
 const styles = StyleSheet.create({
   accuracyText: {
-    fontSize: 14,
+    fontSize: fontSize.sm,
   },
   achievementCard: {
     alignItems: "center",
-    borderRadius: 16,
+    borderRadius: borderRadius.xl,
     flexDirection: "row",
-    marginBottom: 16,
-    padding: 20,
+    marginBottom: spacing.md,
+    padding: spacing.lg,
   },
   achievementDescription: {
-    fontSize: 14,
+    fontSize: fontSize.sm,
     lineHeight: 20,
   },
   achievementIcon: {
-    fontSize: 48,
-    marginRight: 16,
+    fontSize: fontSize.xxxl + 16,
+    marginRight: spacing.md,
   },
   achievementInfo: {
     flex: 1,
   },
   achievementTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 4,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
+    marginBottom: spacing.xs,
   },
   addButton: {
     alignItems: "center",
     backgroundColor: "#667eea",
     borderRadius: 28,
+    elevation: 4,
     height: 56,
     justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
     width: 56,
   },
   answerCard: {
-    borderRadius: 12,
-    marginBottom: 24,
-    padding: 20,
+    borderRadius: borderRadius.xl,
+    marginBottom: spacing.xl,
+    padding: spacing.lg,
   },
   answerInput: {
-    borderRadius: 12,
+    borderRadius: borderRadius.xl,
     borderWidth: 2,
-    fontSize: 16,
+    fontSize: fontSize.md,
     lineHeight: 24,
-    marginBottom: 20,
+    marginBottom: spacing.xl,
     minHeight: 120,
-    padding: 16,
+    padding: spacing.md,
   },
   answerLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    marginBottom: 8,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semibold,
+    marginBottom: spacing.sm,
   },
   answerText: {
     fontFamily: Platform.select({ ios: "Georgia", default: "serif" }),
-    fontSize: 16,
+    fontSize: fontSize.md,
     lineHeight: 24,
   },
   categoryBadge: {
     backgroundColor: "#667eea",
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    borderRadius: borderRadius.xl,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
   },
   categoryText: {
     color: "#fff",
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.semibold,
   },
   container: {
     flex: 1,
@@ -1137,67 +1152,67 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
     justifyContent: "center",
-    paddingVertical: 60,
+    paddingVertical: spacing.xxl,
   },
   emptyText: {
-    fontSize: 16,
-    marginTop: 20,
+    fontSize: fontSize.md,
+    marginTop: spacing.lg,
     textAlign: "center",
   },
   exercisePrompt: {
     fontFamily: Platform.select({ ios: "Georgia", default: "serif" }),
-    fontSize: 18,
+    fontSize: fontSize.lg,
     lineHeight: 28,
-    marginBottom: 24,
+    marginBottom: spacing.xl,
     textAlign: "center",
   },
   exerciseTypeButton: {
     alignItems: "center",
-    borderRadius: 12,
-    marginRight: 12,
+    borderRadius: borderRadius.xl,
+    marginRight: spacing.md,
     minWidth: 100,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
   },
   exerciseTypeContainer: {
-    paddingVertical: 8,
+    paddingVertical: spacing.sm,
   },
   exerciseTypeLabel: {
-    fontSize: 13,
-    fontWeight: "600",
-    marginTop: 6,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semibold,
+    marginTop: spacing.xs,
   },
   header: {
     alignItems: "flex-start",
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 24,
+    marginBottom: spacing.xl,
   },
   hintsText: {
-    fontSize: 12,
-    marginTop: 2,
+    fontSize: fontSize.xs,
+    marginTop: spacing.xs,
   },
   inputLabel: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 8,
-    marginTop: 16,
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
+    marginBottom: spacing.sm,
+    marginTop: spacing.md,
   },
   lookupButton: {
     alignItems: "center",
     backgroundColor: "#667eea",
-    borderRadius: 12,
+    borderRadius: borderRadius.xl,
     height: 50,
     justifyContent: "center",
-    marginLeft: 8,
+    marginLeft: spacing.sm,
     width: 50,
   },
   masteryLabel: {
-    fontSize: 15,
-    fontWeight: "700",
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.bold,
   },
   modalCancel: {
-    fontSize: 17,
+    fontSize: fontSize.lg,
   },
   modalContainer: {
     flex: 1,
@@ -1207,8 +1222,8 @@ const styles = StyleSheet.create({
   },
   modalDone: {
     color: "#667eea",
-    fontSize: 17,
-    fontWeight: "600",
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.semibold,
   },
   modalHeader: {
     alignItems: "center",
@@ -1216,22 +1231,22 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
   modalScrollContent: {
-    paddingBottom: 32,
-    paddingHorizontal: 20,
+    paddingBottom: spacing.xxl,
+    paddingHorizontal: spacing.lg,
   },
   modalTitle: {
-    fontSize: 18,
-    fontWeight: "700",
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
   },
   progressBar: {
     backgroundColor: "#00000020",
-    borderRadius: 4,
+    borderRadius: borderRadius.sm,
     height: 8,
-    marginTop: 8,
+    marginTop: spacing.sm,
     overflow: "hidden",
   },
   progressFill: {
@@ -1239,34 +1254,34 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   progressSection: {
-    borderRadius: 16,
-    marginTop: 24,
-    padding: 20,
+    borderRadius: borderRadius.xl,
+    marginTop: spacing.xl,
+    padding: spacing.lg,
   },
   progressStat: {
-    fontSize: 16,
+    fontSize: fontSize.md,
     lineHeight: 24,
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   progressTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    marginBottom: 16,
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.bold,
+    marginBottom: spacing.md,
   },
   ratingButton: {
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: borderRadius.xl,
     justifyContent: "center",
     minHeight: 64,
-    paddingVertical: 12,
+    paddingVertical: spacing.md,
   },
   ratingButtonText: {
     color: "#fff",
-    fontSize: 17,
-    fontWeight: "700",
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
   },
   ratingButtons: {
-    gap: 12,
+    gap: spacing.md,
   },
   ratingFailed: {
     backgroundColor: "#ef4444",
@@ -1281,26 +1296,26 @@ const styles = StyleSheet.create({
     backgroundColor: "#8b5cf6",
   },
   ratingSection: {
-    marginTop: 24,
+    marginTop: spacing.xl,
   },
   ratingSubtext: {
     color: "#fff",
-    fontSize: 13,
-    marginTop: 4,
+    fontSize: fontSize.sm,
+    marginTop: spacing.xs,
     opacity: 0.9,
   },
   ratingTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 20,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
+    marginBottom: spacing.xl,
     textAlign: "center",
   },
   referenceInput: {
-    borderRadius: 12,
+    borderRadius: borderRadius.xl,
     flex: 1,
-    fontSize: 17,
+    fontSize: fontSize.lg,
     height: 50,
-    paddingHorizontal: 16,
+    paddingHorizontal: spacing.md,
   },
   referenceInputContainer: {
     flexDirection: "row",
@@ -1308,228 +1323,228 @@ const styles = StyleSheet.create({
   resetButton: {
     alignItems: "center",
     backgroundColor: "#ef4444",
-    borderRadius: 12,
-    marginTop: 16,
-    paddingVertical: 12,
+    borderRadius: borderRadius.xl,
+    marginTop: spacing.md,
+    paddingVertical: spacing.md,
   },
   resetButtonText: {
     color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
   },
   revealButton: {
     alignItems: "center",
     backgroundColor: "#667eea",
-    borderRadius: 12,
-    marginTop: 20,
-    paddingVertical: 16,
+    borderRadius: borderRadius.xl,
+    marginTop: spacing.lg,
+    paddingVertical: spacing.md,
   },
   revealButtonText: {
     color: "#fff",
-    fontSize: 16,
-    fontWeight: "700",
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.bold,
   },
   reviewButton: {
-    borderRadius: 12,
+    borderRadius: borderRadius.xl,
     overflow: "hidden",
   },
   reviewButtonInner: {
     alignItems: "center",
     justifyContent: "center",
     minHeight: 48,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
   reviewButtonText: {
     color: "#fff",
-    fontSize: 16,
-    fontWeight: "700",
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.bold,
   },
   reviewContainer: {
     flex: 1,
   },
   reviewContent: {
-    paddingBottom: 32,
-    paddingHorizontal: 20,
+    paddingBottom: spacing.xxl,
+    paddingHorizontal: spacing.lg,
   },
   reviewHeader: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
   reviewHeaderCenter: {
     alignItems: "center",
     flex: 1,
   },
   reviewReference: {
-    fontSize: 24,
-    fontWeight: "700",
-    marginBottom: 24,
+    fontSize: fontSize.xxl,
+    fontWeight: fontWeight.bold,
+    marginBottom: spacing.xl,
     textAlign: "center",
   },
   reviewScrollView: {
     flex: 1,
   },
   reviewTitle: {
-    fontSize: 18,
-    fontWeight: "700",
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
   },
   scramblePrompt: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 16,
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
+    marginBottom: spacing.md,
     textAlign: "center",
   },
   scrambleWord: {
-    borderRadius: 8,
-    marginBottom: 8,
-    marginRight: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.sm,
+    marginRight: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
   },
   scrambleWordText: {
     color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
   },
   scrambleWordsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: 12,
+    marginTop: spacing.md,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing.lg,
   },
   scrollView: {
     flex: 1,
   },
   section: {
-    marginBottom: 32,
+    marginBottom: spacing.xxl,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    marginBottom: 16,
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.bold,
+    marginBottom: spacing.md,
   },
   statBox: {
     alignItems: "center",
-    borderRadius: 16,
+    borderRadius: borderRadius.xl,
     flex: 1,
-    marginBottom: 16,
-    paddingVertical: 20,
+    marginBottom: spacing.md,
+    paddingVertical: spacing.lg,
   },
   statBoxLabel: {
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semibold,
   },
   statBoxNumber: {
-    fontSize: 36,
-    fontWeight: "700",
-    marginBottom: 4,
+    fontSize: fontSize.xxxl + 4,
+    fontWeight: fontWeight.bold,
+    marginBottom: spacing.xs,
   },
   statCard: {
     alignItems: "center",
-    borderRadius: 16,
+    borderRadius: borderRadius.xl,
     flex: 1,
     justifyContent: "center",
     minHeight: 100,
-    padding: 16,
+    padding: spacing.md,
   },
   statLabel: {
     color: "#fff",
-    fontSize: 14,
-    fontWeight: "700",
-    marginTop: 4,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semibold,
+    marginTop: spacing.xs,
   },
   statNumber: {
     color: "#fff",
-    fontSize: 32,
-    fontWeight: "700",
-    marginBottom: 4,
+    fontSize: fontSize.xxxl,
+    fontWeight: fontWeight.bold,
+    marginBottom: spacing.xs,
   },
   statsContainer: {
     flexDirection: "row",
-    gap: 12,
-    marginBottom: 24,
+    gap: spacing.md,
+    marginBottom: spacing.xl,
   },
   statsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 12,
+    gap: spacing.md,
   },
   streakCard: {
     alignItems: "center",
-    borderRadius: 16,
+    borderRadius: borderRadius.xl,
     flexDirection: "row",
-    marginBottom: 24,
-    padding: 20,
+    marginBottom: spacing.xl,
+    padding: spacing.lg,
   },
   streakInfo: {
-    marginLeft: 16,
+    marginLeft: spacing.md,
   },
   streakLabel: {
     color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
   },
   streakNumber: {
     color: "#fff",
-    fontSize: 36,
-    fontWeight: "700",
+    fontSize: fontSize.xxxl,
+    fontWeight: fontWeight.bold,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: fontSize.md,
   },
   textInput: {
-    borderRadius: 12,
-    fontSize: 17,
+    borderRadius: borderRadius.xl,
+    fontSize: fontSize.lg,
     minHeight: 150,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
     textAlignVertical: "top",
   },
   title: {
-    fontSize: 28,
-    fontWeight: "700",
-    marginBottom: 4,
+    fontSize: fontSize.xxxl,
+    fontWeight: fontWeight.bold,
+    marginBottom: spacing.xs,
   },
   userAnswerBox: {
-    borderRadius: 12,
-    marginBottom: 16,
+    borderRadius: borderRadius.xl,
+    marginBottom: spacing.md,
     minHeight: 60,
-    padding: 16,
+    padding: spacing.md,
   },
   userAnswerText: {
-    fontSize: 16,
+    fontSize: fontSize.md,
     lineHeight: 24,
   },
   verseCard: {
-    borderRadius: 16,
-    marginBottom: 16,
-    padding: 20,
+    borderRadius: borderRadius.xl,
+    marginBottom: spacing.md,
+    padding: spacing.lg,
   },
   verseFooter: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 12,
-    marginBottom: 16,
+    gap: spacing.md,
+    marginBottom: spacing.md,
   },
   verseHeader: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 12,
-    marginBottom: 16,
+    gap: spacing.md,
+    marginBottom: spacing.md,
   },
   verseReference: {
-    fontSize: 18,
-    fontWeight: "700",
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
   },
   verseText: {
     fontFamily: Platform.select({ ios: "Georgia", default: "serif" }),
-    fontSize: 16,
+    fontSize: fontSize.md,
     lineHeight: 24,
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
 });

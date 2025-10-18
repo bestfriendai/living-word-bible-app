@@ -7,6 +7,8 @@ import {
   ScrollView,
   TouchableOpacity,
   Platform,
+  Dimensions,
+  Animated,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,6 +16,7 @@ import { useBibleStore } from "@/store/bibleStore";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
 import { appleDesign } from "@/theme/appleDesign";
+import { spacing, borderRadius, fontSize, fontWeight } from "@/theme/spacing";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { readingPlansData } from "@/data/readingPlans";
 import * as Progress from "react-native-progress";
@@ -270,76 +273,77 @@ export default function ReadingPlans() {
         {/* Plans List */}
         <View style={styles.plansList}>
           {filteredPlans.map((plan, index) => (
-              <View key={plan.id} style={[styles.planCard, { backgroundColor: cardBg }]}>
-                <View style={styles.planHeader}>
-                  <View style={styles.planMeta}>
+            <View
+              key={plan.id}
+              style={[styles.planCard, { backgroundColor: cardBg }]}
+            >
+              <View style={styles.planHeader}>
+                <View style={styles.planMeta}>
+                  <View
+                    style={[
+                      styles.difficultyBadge,
+                      {
+                        backgroundColor:
+                          getDifficultyColor(plan.difficulty) + "15",
+                      },
+                    ]}
+                  >
                     <View
                       style={[
-                        styles.difficultyBadge,
+                        styles.difficultyDot,
                         {
-                          backgroundColor:
-                            getDifficultyColor(plan.difficulty) + "15",
+                          backgroundColor: getDifficultyColor(plan.difficulty),
                         },
                       ]}
+                    />
+                    <Text
+                      style={[
+                        styles.difficultyText,
+                        { color: getDifficultyColor(plan.difficulty) },
+                      ]}
                     >
-                      <View
-                        style={[
-                          styles.difficultyDot,
-                          {
-                            backgroundColor: getDifficultyColor(
-                              plan.difficulty,
-                            ),
-                          },
-                        ]}
-                      />
-                      <Text
-                        style={[
-                          styles.difficultyText,
-                          { color: getDifficultyColor(plan.difficulty) },
-                        ]}
-                      >
-                        {plan.difficulty}
-                      </Text>
-                    </View>
-                    <View style={styles.durationBadge}>
-                      <MaterialCommunityIcons
-                        name="calendar-outline"
-                        size={14}
-                        color={textTertiary}
-                      />
-                      <Text
-                        style={[styles.durationText, { color: textSecondary }]}
-                      >
-                        {plan.duration} days
-                      </Text>
-                    </View>
+                      {plan.difficulty}
+                    </Text>
+                  </View>
+                  <View style={styles.durationBadge}>
+                    <MaterialCommunityIcons
+                      name="calendar-outline"
+                      size={14}
+                      color={textTertiary}
+                    />
+                    <Text
+                      style={[styles.durationText, { color: textSecondary }]}
+                    >
+                      {plan.duration} days
+                    </Text>
                   </View>
                 </View>
-
-                <Text style={[styles.planName, { color: textColor }]}>
-                  {plan.name}
-                </Text>
-
-                <Text
-                  style={[styles.planDescription, { color: textSecondary }]}
-                  numberOfLines={2}
-                >
-                  {plan.description}
-                </Text>
-
-                <TouchableOpacity
-                  style={styles.startButton}
-                  onPress={() => handleStartPlan(plan.id)}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.startButtonText}>Start Plan</Text>
-                  <MaterialCommunityIcons
-                    name="arrow-right"
-                    size={18}
-                    color="#667eea"
-                  />
-                </TouchableOpacity>
               </View>
+
+              <Text style={[styles.planName, { color: textColor }]}>
+                {plan.name}
+              </Text>
+
+              <Text
+                style={[styles.planDescription, { color: textSecondary }]}
+                numberOfLines={2}
+              >
+                {plan.description}
+              </Text>
+
+              <TouchableOpacity
+                style={styles.startButton}
+                onPress={() => handleStartPlan(plan.id)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.startButtonText}>Start Plan</Text>
+                <MaterialCommunityIcons
+                  name="arrow-right"
+                  size={18}
+                  color="#667eea"
+                />
+              </TouchableOpacity>
+            </View>
           ))}
         </View>
       </ScrollView>
@@ -347,25 +351,28 @@ export default function ReadingPlans() {
   );
 }
 
+const { width } = Dimensions.get("window");
+
 const styles = StyleSheet.create({
   // Active Plan Card
   activeBadge: {
     alignItems: "center",
     backgroundColor: "rgba(255, 255, 255, 0.2)",
-    borderRadius: 12,
+    borderRadius: borderRadius.lg,
     flexDirection: "row",
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
   },
   activeBadgeText: {
     color: "#FFFFFF",
-    fontSize: 11,
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.bold,
     letterSpacing: 0.8,
   },
   activeCard: {
     borderRadius: 20,
-    marginBottom: 24,
+    marginBottom: spacing.lg,
     overflow: "hidden",
     ...Platform.select({
       ios: {
@@ -380,60 +387,63 @@ const styles = StyleSheet.create({
     }),
   },
   activeGradient: {
-    padding: 20,
+    padding: spacing.lg,
   },
   activeHeader: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   activePlanName: {
     color: "#FFFFFF",
-    fontSize: 18,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.semibold,
     letterSpacing: -0.3,
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   activeProgress: {
-    gap: 8,
+    gap: spacing.sm,
   },
   activeProgressText: {
     color: "rgba(255,255,255,0.9)",
-    fontSize: 13,
+    fontSize: fontSize.sm,
   },
   container: {
     flex: 1,
   },
   difficultyBadge: {
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: borderRadius.lg,
     flexDirection: "row",
-    gap: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
   },
   difficultyDot: {
-    borderRadius: 3,
+    borderRadius: borderRadius.sm,
     height: 6,
     width: 6,
   },
   difficultyText: {
-    fontSize: 12,
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.medium,
   },
   durationBadge: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 4,
+    gap: spacing.xs,
   },
   durationText: {
-    fontSize: 12,
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.medium,
   },
 
   // Filter Section
   filterChip: {
     borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
@@ -447,19 +457,20 @@ const styles = StyleSheet.create({
     }),
   },
   filterScroll: {
-    gap: 8,
+    gap: spacing.sm,
   },
   filterSection: {
-    marginBottom: 20,
+    marginBottom: spacing.lg,
   },
   filterText: {
-    fontSize: 13,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.medium,
   },
 
   // Plans List
   planCard: {
-    borderRadius: 16,
-    padding: 18,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
@@ -473,28 +484,29 @@ const styles = StyleSheet.create({
     }),
   },
   planDescription: {
-    fontSize: 14,
+    fontSize: fontSize.sm,
     lineHeight: 20,
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   planHeader: {
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   planMeta: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 8,
+    gap: spacing.sm,
   },
   planName: {
-    fontSize: 17,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.semibold,
     letterSpacing: -0.3,
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   plansList: {
-    gap: 14,
+    gap: spacing.md,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing.lg,
   },
   scrollView: {
     flex: 1,
@@ -502,23 +514,24 @@ const styles = StyleSheet.create({
   startButton: {
     alignItems: "center",
     borderColor: "#667eea",
-    borderRadius: 12,
+    borderRadius: borderRadius.lg,
     borderWidth: 1.5,
     flexDirection: "row",
-    gap: 6,
+    gap: spacing.sm,
     justifyContent: "center",
-    paddingVertical: 12,
+    paddingVertical: spacing.md,
   },
   startButtonText: {
     color: "#667eea",
-    fontSize: 14,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semibold,
   },
 
   // Stats Section
   statsCard: {
-    borderRadius: 16,
-    marginBottom: 20,
-    padding: 18,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.lg,
+    padding: spacing.lg,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
@@ -535,10 +548,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   statsTitle: {
-    fontSize: 16,
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
     letterSpacing: -0.2,
   },
   statsGrid: {
@@ -551,18 +565,20 @@ const styles = StyleSheet.create({
   },
   statIcon: {
     alignItems: "center",
-    borderRadius: 12,
-    height: 40,
+    borderRadius: borderRadius.lg,
+    height: 48,
     justifyContent: "center",
-    marginBottom: 8,
-    width: 40,
+    marginBottom: spacing.sm,
+    width: 48,
   },
   statValue: {
-    fontSize: 20,
-    marginBottom: 2,
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.bold,
+    marginBottom: spacing.xs,
   },
   statLabel: {
-    fontSize: 11,
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.medium,
     textAlign: "center",
   },
 });

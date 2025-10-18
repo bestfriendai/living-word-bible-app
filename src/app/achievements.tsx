@@ -5,16 +5,20 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  Dimensions,
+  Animated,
 } from "react-native";
 import { useBibleStore } from "@/store/bibleStore";
 import { ThemedCard } from "@/components/ThemedCard";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { achievementsData } from "@/data/achievements";
 import { socialSharingService } from "@/services/socialSharingService";
+import { LinearGradient } from "expo-linear-gradient";
 
 import type { Achievement } from "@/data/achievements";
 import { colors } from "@/theme/colors";
 import { appleDesign } from "@/theme/appleDesign";
+import { spacing, borderRadius, fontSize, fontWeight } from "@/theme/spacing";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 export default function AchievementsScreen() {
@@ -45,47 +49,52 @@ export default function AchievementsScreen() {
     }
   };
 
+  const { width } = Dimensions.get("window");
+
   const styles = StyleSheet.create({
     achievementCard: {
-      marginBottom: 12,
-      marginHorizontal: 20,
-      padding: 16,
+      borderColor: isDark ? colors.dark.border : colors.border.default,
+      borderRadius: borderRadius.xl,
+      borderWidth: 1,
+      marginBottom: spacing.md,
+      marginHorizontal: spacing.lg,
+      padding: spacing.lg,
     },
     achievementDescription: {
       color: isDark ? colors.dark.textSecondary : colors.text.secondary,
-      fontSize: 14,
+      fontSize: fontSize.sm,
       lineHeight: 20,
-      marginBottom: 12,
+      marginBottom: spacing.md,
     },
     achievementHeader: {
       alignItems: "center",
       flexDirection: "row",
-      marginBottom: 8,
+      marginBottom: spacing.sm,
     },
     achievementIcon: {
-      fontSize: 24,
-      marginRight: 12,
+      fontSize: fontSize.xl,
+      marginRight: spacing.md,
     },
     achievementPoints: {
       color: colors.primary,
-      fontSize: 14,
-      fontWeight: "bold",
+      fontSize: fontSize.sm,
+      fontWeight: fontWeight.bold,
     },
     achievementTitle: {
       color: isDark ? colors.dark.text : colors.text.primary,
       flex: 1,
-      fontSize: 16,
-      fontWeight: "bold",
+      fontSize: fontSize.md,
+      fontWeight: fontWeight.bold,
     },
     categorySection: {
-      marginBottom: 24,
+      marginBottom: spacing.xl,
     },
     categoryTitle: {
       color: isDark ? colors.dark.text : colors.text.primary,
-      fontSize: 20,
-      fontWeight: "bold",
-      marginBottom: 12,
-      paddingHorizontal: 20,
+      fontSize: fontSize.xl,
+      fontWeight: fontWeight.bold,
+      marginBottom: spacing.md,
+      paddingHorizontal: spacing.lg,
     },
     container: {
       backgroundColor: isDark
@@ -95,83 +104,93 @@ export default function AchievementsScreen() {
     },
     header: {
       alignItems: "center",
-      padding: 20,
+      padding: spacing.lg,
+      paddingTop: spacing.xl,
     },
     lockedText: {
       color: isDark ? colors.dark.textSecondary : colors.text.secondary,
-      fontSize: 12,
-      marginTop: 8,
+      fontSize: fontSize.xs,
+      marginTop: spacing.sm,
     },
     pointsContainer: {
       alignItems: "center",
-      backgroundColor: colors.primary,
-      borderRadius: 20,
+      borderRadius: borderRadius.xl,
       flexDirection: "row",
       justifyContent: "space-between",
-      marginBottom: 20,
-      paddingHorizontal: 20,
-      paddingVertical: 10,
+      marginBottom: spacing.lg,
+      marginHorizontal: spacing.lg,
+      overflow: "hidden",
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
     },
     pointsText: {
       color: "white",
-      fontSize: 18,
-      fontWeight: "bold",
+      fontSize: fontSize.lg,
+      fontWeight: fontWeight.bold,
     },
     progressBar: {
       backgroundColor: isDark ? colors.dark.border : colors.border.default,
-      borderRadius: 4,
+      borderRadius: borderRadius.sm,
       height: 8,
+      marginTop: spacing.sm,
       overflow: "hidden",
     },
     progressFill: {
       backgroundColor: colors.primary,
-      borderRadius: 4,
+      borderRadius: borderRadius.sm,
       height: "100%",
     },
     shareButton: {
-      padding: 8,
+      padding: spacing.sm,
     },
     statCard: {
       alignItems: "center",
       backgroundColor: isDark ? colors.dark.card : colors.background.card,
-      borderRadius: 12,
+      borderRadius: borderRadius.xl,
+      elevation: 2,
       flex: 1,
-      marginHorizontal: 8,
-      padding: 16,
+      marginHorizontal: spacing.sm,
+      padding: spacing.lg,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.05,
+      shadowRadius: 8,
     },
     statLabel: {
       color: isDark ? colors.dark.textSecondary : colors.text.secondary,
-      fontSize: 12,
+      fontSize: fontSize.xs,
+      fontWeight: fontWeight.medium,
       textAlign: "center",
     },
     statNumber: {
       color: colors.primary,
-      fontSize: 24,
-      fontWeight: "bold",
-      marginBottom: 4,
+      fontSize: fontSize.xxxl,
+      fontWeight: fontWeight.bold,
+      marginBottom: spacing.xs,
     },
     statsContainer: {
       flexDirection: "row",
-      justifyContent: "space-around",
-      marginBottom: 20,
-      paddingHorizontal: 20,
+      justifyContent: "space-between",
+      marginBottom: spacing.lg,
+      paddingHorizontal: spacing.lg,
     },
     subtitle: {
       color: isDark ? colors.dark.textSecondary : colors.text.secondary,
-      fontSize: 16,
-      marginBottom: 16,
+      fontSize: fontSize.md,
+      marginBottom: spacing.md,
+      textAlign: "center",
     },
     title: {
       color: isDark ? colors.dark.text : colors.text.primary,
-      fontSize: 28,
-      fontWeight: "bold",
-      marginBottom: 8,
+      fontSize: fontSize.xxxl + 4,
+      fontWeight: fontWeight.bold,
+      marginBottom: spacing.sm,
     },
     unlockedText: {
       color: colors.success,
-      fontSize: 12,
+      fontSize: fontSize.xs,
       fontStyle: "italic",
-      marginTop: 8,
+      marginTop: spacing.sm,
     },
   });
 
@@ -200,27 +219,49 @@ export default function AchievementsScreen() {
     const unlockedDate = getUnlockedDate(achievement.id);
 
     return (
-      <ThemedCard key={achievement.id} style={styles.achievementCard}>
+      <ThemedCard
+        key={achievement.id}
+        style={styles.achievementCard}
+        elevated={unlocked}
+      >
         <View style={styles.achievementHeader}>
-          <Text style={styles.achievementIcon}>{achievement.icon}</Text>
-          <Text style={styles.achievementTitle}>{achievement.name}</Text>
-          <Text style={styles.achievementPoints}>+{achievement.points}</Text>
-          {unlocked && (
-            <TouchableOpacity
-              onPress={() => handleShareAchievement(achievement)}
-              style={styles.shareButton}
+          <View
+            style={{
+              opacity: unlocked ? 1 : 0.5,
+            }}
+          >
+            <Text style={styles.achievementIcon}>{achievement.icon}</Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text
+              style={[
+                styles.achievementTitle,
+                unlocked && { color: colors.success },
+              ]}
             >
-              <MaterialCommunityIcons
-                name="share-variant"
-                size={20}
-                color={colors.primary}
-              />
-            </TouchableOpacity>
-          )}
+              {achievement.name}
+            </Text>
+            <Text style={styles.achievementDescription}>
+              {achievement.description}
+            </Text>
+          </View>
+          <View style={{ alignItems: "flex-end" }}>
+            <Text style={styles.achievementPoints}>+{achievement.points}</Text>
+            {unlocked && (
+              <TouchableOpacity
+                onPress={() => handleShareAchievement(achievement)}
+                style={styles.shareButton}
+              >
+                <MaterialCommunityIcons
+                  name="share-variant"
+                  size={20}
+                  color={colors.primary}
+                />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-        <Text style={styles.achievementDescription}>
-          {achievement.description}
-        </Text>
+
         {!unlocked && (
           <View style={styles.progressBar}>
             <View
@@ -228,15 +269,32 @@ export default function AchievementsScreen() {
             />
           </View>
         )}
-        {unlocked ? (
-          <Text style={styles.unlockedText}>
-            Unlocked {new Date(unlockedDate!).toLocaleDateString()}
-          </Text>
-        ) : (
-          <Text style={styles.lockedText}>
-            {Math.round(progress * 100)}% Complete
-          </Text>
-        )}
+
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          {unlocked ? (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <MaterialCommunityIcons
+                name="check-circle"
+                size={16}
+                color={colors.success}
+                style={{ marginRight: spacing.xs }}
+              />
+              <Text style={styles.unlockedText}>
+                Unlocked {new Date(unlockedDate!).toLocaleDateString()}
+              </Text>
+            </View>
+          ) : (
+            <Text style={styles.lockedText}>
+              {Math.round(progress * 100)}% Complete
+            </Text>
+          )}
+        </View>
       </ThemedCard>
     );
   };
@@ -253,8 +311,20 @@ export default function AchievementsScreen() {
         <Text style={styles.subtitle}>
           Track your spiritual journey and milestones
         </Text>
-        <View style={styles.pointsContainer}>
-          <Text style={styles.pointsText}>{totalPoints} Total Points</Text>
+        <LinearGradient
+          colors={["#667eea", "#764ba2"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.pointsContainer}
+        >
+          <View>
+            <Text style={styles.pointsText}>{totalPoints}</Text>
+            <Text
+              style={{ color: "rgba(255,255,255,0.8)", fontSize: fontSize.sm }}
+            >
+              Total Points
+            </Text>
+          </View>
           <TouchableOpacity
             onPress={handleShareProgress}
             style={styles.shareButton}
@@ -265,19 +335,37 @@ export default function AchievementsScreen() {
               color="white"
             />
           </TouchableOpacity>
-        </View>
+        </LinearGradient>
       </View>
 
       <View style={styles.statsContainer}>
         <View style={styles.statCard}>
+          <MaterialCommunityIcons
+            name="trophy"
+            size={24}
+            color={colors.success}
+            style={{ marginBottom: spacing.xs }}
+          />
           <Text style={styles.statNumber}>{unlockedCount}</Text>
           <Text style={styles.statLabel}>Unlocked</Text>
         </View>
         <View style={styles.statCard}>
+          <MaterialCommunityIcons
+            name="progress-check"
+            size={24}
+            color={colors.primary}
+            style={{ marginBottom: spacing.xs }}
+          />
           <Text style={styles.statNumber}>{completionRate}%</Text>
           <Text style={styles.statLabel}>Complete</Text>
         </View>
         <View style={styles.statCard}>
+          <MaterialCommunityIcons
+            name="target"
+            size={24}
+            color={colors.warning}
+            style={{ marginBottom: spacing.xs }}
+          />
           <Text style={styles.statNumber}>{totalCount - unlockedCount}</Text>
           <Text style={styles.statLabel}>Remaining</Text>
         </View>

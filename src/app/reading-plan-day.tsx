@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Platform,
+  Dimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -15,6 +16,7 @@ import { useBibleStore } from "@/store/bibleStore";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
 import { appleDesign } from "@/theme/appleDesign";
+import { spacing, borderRadius, fontSize, fontWeight } from "@/theme/spacing";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { bibleApiService } from "@/services/bibleApiService";
 import * as Progress from "react-native-progress";
@@ -132,9 +134,7 @@ export default function ReadingPlanDay() {
 
       {/* Celebration Overlay */}
       {showCelebration && (
-        <View
-          style={styles.celebrationOverlay}
-        >
+        <View style={styles.celebrationOverlay}>
           <LinearGradient
             colors={["rgba(16, 185, 129, 0.95)", "rgba(5, 150, 105, 0.95)"]}
             style={styles.celebrationContent}
@@ -159,8 +159,7 @@ export default function ReadingPlanDay() {
         showsVerticalScrollIndicator={false}
       >
         {/* Progress Header */}
-        <View style={styles.progressSection}
-        >
+        <View style={styles.progressSection}>
           <View style={styles.progressInfo}>
             <Text style={[styles.planName, { color: textColor }]}>
               {readingPlan.name}
@@ -204,8 +203,7 @@ export default function ReadingPlanDay() {
         />
 
         {/* Reading Title */}
-        <View style={styles.titleSection}
-        >
+        <View style={styles.titleSection}>
           <Text style={[styles.readingTitle, { color: textColor }]}>
             {currentReading.title || currentReading.reference}
           </Text>
@@ -220,8 +218,7 @@ export default function ReadingPlanDay() {
         </View>
 
         {/* Verse Content */}
-        <View style={[styles.contentCard, { backgroundColor: cardBg }]}
-        >
+        <View style={[styles.contentCard, { backgroundColor: cardBg }]}>
           {loading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="small" color="#667eea" />
@@ -299,8 +296,7 @@ export default function ReadingPlanDay() {
         </View>
 
         {/* Progress Overview */}
-        <View style={[styles.progressOverview, { backgroundColor: cardBg }]}
-        >
+        <View style={[styles.progressOverview, { backgroundColor: cardBg }]}>
           <Text style={[styles.progressTitle, { color: textColor }]}>
             Reading Progress
           </Text>
@@ -347,7 +343,8 @@ export default function ReadingPlanDay() {
       </ScrollView>
 
       {/* Bottom Action Bar */}
-      <View style={[
+      <View
+        style={[
           styles.bottomBar,
           {
             backgroundColor: cardBg,
@@ -413,15 +410,17 @@ export default function ReadingPlanDay() {
   );
 }
 
+const { width } = Dimensions.get("window");
+
 const styles = StyleSheet.create({
   actionButton: {
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: borderRadius.xl,
     flex: 1,
     flexDirection: "row",
-    gap: 6,
+    gap: spacing.sm,
     justifyContent: "center",
-    paddingVertical: 12,
+    paddingVertical: spacing.md,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
@@ -435,19 +434,20 @@ const styles = StyleSheet.create({
     }),
   },
   actionButtonText: {
-    fontSize: 13,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.medium,
   },
   actionsGrid: {
     flexDirection: "row",
-    gap: 10,
-    marginBottom: 16,
+    gap: spacing.sm,
+    marginBottom: spacing.md,
   },
   bottomBar: {
     borderTopColor: "rgba(0,0,0,0.05)",
     borderTopWidth: 1,
     bottom: 0,
     left: 0,
-    padding: 16,
+    padding: spacing.md,
     position: "absolute",
     right: 0,
     ...Platform.select({
@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
   celebrationContent: {
     alignItems: "center",
     borderRadius: 100,
-    gap: 12,
+    gap: spacing.md,
     height: 200,
     justifyContent: "center",
     width: 200,
@@ -482,16 +482,17 @@ const styles = StyleSheet.create({
   },
   celebrationSubtext: {
     color: "rgba(255,255,255,0.9)",
-    fontSize: 14,
+    fontSize: fontSize.md,
   },
   celebrationText: {
     color: "#FFFFFF",
-    fontSize: 20,
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.bold,
   },
   centerContent: {
     alignItems: "center",
     flex: 1,
-    gap: 12,
+    gap: spacing.md,
     justifyContent: "center",
   },
   completeButton: {
@@ -501,19 +502,20 @@ const styles = StyleSheet.create({
   completeButtonGradient: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 8,
+    gap: spacing.sm,
     justifyContent: "center",
-    paddingVertical: 16,
+    paddingVertical: spacing.md,
   },
   completeButtonText: {
     color: "#FFFFFF",
-    fontSize: 15,
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
   },
   completedBadge: {
     alignItems: "center",
     flex: 1,
     flexDirection: "row",
-    gap: 8,
+    gap: spacing.sm,
   },
   completedContainer: {
     alignItems: "center",
@@ -522,16 +524,17 @@ const styles = StyleSheet.create({
   },
   completedText: {
     color: "#10b981",
-    fontSize: 15,
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
   },
   container: {
     flex: 1,
   },
   contentCard: {
-    borderRadius: 16,
-    marginBottom: 16,
+    borderRadius: borderRadius.xl,
+    marginBottom: spacing.md,
     minHeight: 300,
-    padding: 20,
+    padding: spacing.lg,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
@@ -547,10 +550,10 @@ const styles = StyleSheet.create({
   dayInfo: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 8,
+    gap: spacing.sm,
   },
   dayText: {
-    fontSize: 13,
+    fontSize: fontSize.sm,
   },
   dot: {
     backgroundColor: "#9ca3af",
@@ -559,55 +562,57 @@ const styles = StyleSheet.create({
     width: 3,
   },
   errorText: {
-    fontSize: 14,
+    fontSize: fontSize.sm,
   },
   loadingContainer: {
     alignItems: "center",
     flex: 1,
-    gap: 12,
+    gap: spacing.md,
     justifyContent: "center",
-    padding: 40,
+    padding: spacing.xl,
   },
   loadingText: {
-    fontSize: 13,
+    fontSize: fontSize.sm,
   },
   nextDayButton: {
-    borderRadius: 12,
+    borderRadius: borderRadius.xl,
     overflow: "hidden",
   },
   nextDayGradient: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 6,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
   nextDayText: {
     color: "#FFFFFF",
-    fontSize: 14,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semibold,
   },
   planName: {
-    fontSize: 15,
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.medium,
     letterSpacing: -0.2,
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   progressBar: {
-    marginBottom: 24,
+    marginBottom: spacing.xl,
   },
   progressDivider: {
     backgroundColor: "#e5e7eb",
     height: "70%",
-    marginHorizontal: 16,
+    marginHorizontal: spacing.md,
     width: 1,
   },
   progressInfo: {
     flex: 1,
-    marginRight: 16,
+    marginRight: spacing.md,
   },
   progressOverview: {
-    borderRadius: 16,
-    marginBottom: 16,
-    padding: 18,
+    borderRadius: borderRadius.xl,
+    marginBottom: spacing.md,
+    padding: spacing.lg,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
@@ -624,19 +629,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   progressStat: {
     alignItems: "center",
     flex: 1,
   },
   progressStatLabel: {
-    fontSize: 12,
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.medium,
     textAlign: "center",
   },
   progressStatValue: {
-    fontSize: 18,
-    marginBottom: 4,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.semibold,
+    marginBottom: spacing.xs,
   },
   progressStats: {
     alignItems: "center",
@@ -644,40 +651,43 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   progressTitle: {
-    fontSize: 16,
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
     letterSpacing: -0.2,
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   readingTitle: {
-    fontSize: 22,
+    fontSize: fontSize.xxl,
+    fontWeight: fontWeight.bold,
     letterSpacing: -0.5,
     lineHeight: 30,
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   referenceChip: {
     alignItems: "center",
     alignSelf: "flex-start",
     borderRadius: 16,
     flexDirection: "row",
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
   referenceText: {
     color: "#667eea",
-    fontSize: 13,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.medium,
   },
   scrollContent: {
-    padding: 20,
+    padding: spacing.lg,
   },
   scrollView: {
     flex: 1,
   },
   titleSection: {
-    marginBottom: 20,
+    marginBottom: spacing.lg,
   },
   verseContent: {
-    fontSize: 16,
+    fontSize: fontSize.md,
     letterSpacing: 0.2,
     lineHeight: 26,
   },

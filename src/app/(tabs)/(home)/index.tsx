@@ -93,12 +93,15 @@ export default function Home() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerContent}>
-            <View>
+            <View style={styles.headerTextSection}>
               <Text style={[styles.greeting, { color: textTertiary }]}>
                 Good {timeOfDay}
               </Text>
               <Text style={[styles.title, { color: textColor }]}>
                 Living Word
+              </Text>
+              <Text style={[styles.subtitle, { color: textSecondary }]}>
+                Your daily spiritual companion
               </Text>
             </View>
             <View style={styles.headerButtons}>
@@ -145,51 +148,72 @@ export default function Home() {
           <FeaturedVerseSkeleton />
         ) : verseOfTheDay ? (
           <Pressable
-              onPress={() => {
-                hapticPatterns.buttonPress();
-                router.push("/devotional");
-              }}
-              style={({ pressed }) => [
-                styles.featuredCard,
-                pressed && styles.pressedFeatured,
-              ]}
+            onPress={() => {
+              hapticPatterns.buttonPress();
+              router.push("/devotional");
+            }}
+            style={({ pressed }) => [
+              styles.featuredCard,
+              pressed && styles.pressedFeatured,
+            ]}
+          >
+            <LinearGradient
+              colors={[colors.primary, colors.purple]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.featuredGradient}
             >
-              <LinearGradient
-                colors={[colors.primary, colors.purple]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.featuredGradient}
-              >
-                <View style={styles.featuredHeader}>
-                  <View style={styles.featuredBadge}>
-                    <MaterialCommunityIcons
-                      name="star-four-points"
-                      size={12}
-                      color={colors.text.inverse}
-                    />
-                    <Text style={styles.featuredBadgeText}>TODAY</Text>
-                  </View>
+              <View style={styles.featuredHeader}>
+                <View style={styles.featuredBadge}>
+                  <MaterialCommunityIcons
+                    name="star-four-points"
+                    size={12}
+                    color={colors.text.inverse}
+                  />
+                  <Text style={styles.featuredBadgeText}>VERSE OF THE DAY</Text>
+                </View>
+                <View style={styles.featuredActions}>
+                  <MaterialCommunityIcons
+                    name="bookmark-outline"
+                    size={20}
+                    color={colors.text.inverseLight}
+                    style={styles.featuredActionIcon}
+                  />
+                  <MaterialCommunityIcons
+                    name="share-variant"
+                    size={20}
+                    color={colors.text.inverseLight}
+                    style={styles.featuredActionIcon}
+                  />
                   <MaterialCommunityIcons
                     name="chevron-right"
                     size={20}
                     color={colors.text.inverseLight}
                   />
                 </View>
+              </View>
+              <View style={styles.featuredContent}>
                 <Text style={styles.featuredVerse} numberOfLines={3}>
                   {verseOfTheDay.text}
                 </Text>
                 <Text style={styles.featuredReference}>
                   {verseOfTheDay.reference}
                 </Text>
-              </LinearGradient>
-            </Pressable>
+              </View>
+            </LinearGradient>
+          </Pressable>
         ) : null}
 
-        {/* Quick Access - Bento Grid */}
+        {/* Quick Access - Enhanced Bento Grid */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: textColor }]}>
-            Quick Access
-          </Text>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: textColor }]}>
+              Quick Access
+            </Text>
+            <Text style={[styles.sectionSubtitle, { color: textSecondary }]}>
+              Jump to your favorite features
+            </Text>
+          </View>
 
           <View style={styles.bentoGrid}>
             {/* Scripture - Wide Card (2x1) */}
@@ -212,26 +236,33 @@ export default function Home() {
                   end={{ x: 1, y: 1 }}
                   style={styles.bentoCardGradient}
                 >
-                  <View style={[styles.bentoIcon, styles.bentoIconBlue]}>
-                    <MaterialCommunityIcons
-                      name="book-search"
-                      size={28}
-                      color={colors.primary}
-                    />
+                  <View style={styles.bentoCardHeader}>
+                    <View style={[styles.bentoIcon, styles.bentoIconBlue]}>
+                      <MaterialCommunityIcons
+                        name="book-search"
+                        size={28}
+                        color={colors.primary}
+                      />
+                    </View>
+                    <View style={styles.bentoCardBadge}>
+                      <Text style={styles.bentoCardBadgeText}>Popular</Text>
+                    </View>
                   </View>
-                  <Text style={[styles.bentoTitle, { color: textColor }]}>
-                    Scripture Search
-                  </Text>
-                  <Text
-                    style={[styles.bentoSubtitle, { color: textSecondary }]}
-                  >
-                    Find verses for any situation
-                  </Text>
+                  <View style={styles.bentoCardContent}>
+                    <Text style={[styles.bentoTitle, { color: textColor }]}>
+                      Scripture Search
+                    </Text>
+                    <Text
+                      style={[styles.bentoSubtitle, { color: textSecondary }]}
+                    >
+                      Find verses for any situation
+                    </Text>
+                  </View>
                 </LinearGradient>
               </Pressable>
             </View>
 
-            {/* Row 2 - Three small cards */}
+            {/* Row 2 - Three enhanced small cards */}
             <View style={styles.bentoRow}>
               {/* Reading Plans */}
               <View style={styles.bentoSmall}>
@@ -247,16 +278,30 @@ export default function Home() {
                     pressed && styles.pressedBento,
                   ]}
                 >
-                  <View style={[styles.bentoIconSmall, styles.bentoIconGreen]}>
-                    <MaterialCommunityIcons
-                      name="calendar-check"
-                      size={24}
-                      color={colors.success}
-                    />
+                  <View style={styles.bentoSmallContent}>
+                    <View
+                      style={[styles.bentoIconSmall, styles.bentoIconGreen]}
+                    >
+                      <MaterialCommunityIcons
+                        name="calendar-check"
+                        size={24}
+                        color={colors.success}
+                      />
+                    </View>
+                    <Text
+                      style={[styles.bentoTitleSmall, { color: textColor }]}
+                    >
+                      Plans
+                    </Text>
+                    <Text
+                      style={[
+                        styles.bentoSmallSubtitle,
+                        { color: textSecondary },
+                      ]}
+                    >
+                      Daily
+                    </Text>
                   </View>
-                  <Text style={[styles.bentoTitleSmall, { color: textColor }]}>
-                    Plans
-                  </Text>
                 </Pressable>
               </View>
 
@@ -274,18 +319,30 @@ export default function Home() {
                     pressed && styles.pressedBento,
                   ]}
                 >
-                  <View
-                    style={[styles.bentoIconSmall, styles.bentoIconPurpleAlt]}
-                  >
-                    <MaterialCommunityIcons
-                      name="hand-heart"
-                      size={24}
-                      color={colors.secondary}
-                    />
+                  <View style={styles.bentoSmallContent}>
+                    <View
+                      style={[styles.bentoIconSmall, styles.bentoIconPurpleAlt]}
+                    >
+                      <MaterialCommunityIcons
+                        name="hand-heart"
+                        size={24}
+                        color={colors.secondary}
+                      />
+                    </View>
+                    <Text
+                      style={[styles.bentoTitleSmall, { color: textColor }]}
+                    >
+                      Prayer
+                    </Text>
+                    <Text
+                      style={[
+                        styles.bentoSmallSubtitle,
+                        { color: textSecondary },
+                      ]}
+                    >
+                      Journal
+                    </Text>
                   </View>
-                  <Text style={[styles.bentoTitleSmall, { color: textColor }]}>
-                    Prayer
-                  </Text>
                 </Pressable>
               </View>
 
@@ -303,29 +360,49 @@ export default function Home() {
                     pressed && styles.pressedBento,
                   ]}
                 >
-                  <View style={[styles.bentoIconSmall, styles.bentoIconViolet]}>
-                    <MaterialCommunityIcons
-                      name="brain"
-                      size={24}
-                      color={colors.secondary}
-                    />
+                  <View style={styles.bentoSmallContent}>
+                    <View
+                      style={[styles.bentoIconSmall, styles.bentoIconViolet]}
+                    >
+                      <MaterialCommunityIcons
+                        name="brain"
+                        size={24}
+                        color={colors.secondary}
+                      />
+                    </View>
+                    <Text
+                      style={[styles.bentoTitleSmall, { color: textColor }]}
+                    >
+                      Memory
+                    </Text>
+                    <Text
+                      style={[
+                        styles.bentoSmallSubtitle,
+                        { color: textSecondary },
+                      ]}
+                    >
+                      Verses
+                    </Text>
                   </View>
-                  <Text style={[styles.bentoTitleSmall, { color: textColor }]}>
-                    Memory
-                  </Text>
                 </Pressable>
               </View>
             </View>
           </View>
         </View>
 
-        {/* Featured Tools */}
+        {/* Featured Tools - Enhanced */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: textColor }]}>
-            AI Tools
-          </Text>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: textColor }]}>
+              AI-Powered Tools
+            </Text>
+            <Text style={[styles.sectionSubtitle, { color: textSecondary }]}>
+              Enhanced spiritual guidance
+            </Text>
+          </View>
 
-          <TouchableOpacity
+          <View style={styles.featureCardsContainer}>
+            <TouchableOpacity
               activeOpacity={0.7}
               style={[styles.featureCard, { backgroundColor: cardBg }]}
               onPress={() => router.push("/prayer-buddy")}
@@ -350,16 +427,26 @@ export default function Home() {
                   >
                     AI-powered spiritual guidance
                   </Text>
+                  <View style={styles.featureCardTags}>
+                    <View style={styles.featureCardTag}>
+                      <Text style={styles.featureCardTagText}>AI</Text>
+                    </View>
+                    <View style={styles.featureCardTag}>
+                      <Text style={styles.featureCardTagText}>Chat</Text>
+                    </View>
+                  </View>
                 </View>
               </View>
-              <MaterialCommunityIcons
-                name="chevron-right"
-                size={20}
-                color={textTertiary}
-              />
+              <View style={styles.featureCardRight}>
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={20}
+                  color={textTertiary}
+                />
+              </View>
             </TouchableOpacity>
 
-          <TouchableOpacity
+            <TouchableOpacity
               activeOpacity={0.7}
               style={[styles.featureCard, { backgroundColor: cardBg }]}
               onPress={() => router.push("/devotional")}
@@ -384,14 +471,25 @@ export default function Home() {
                   >
                     Verse of the day with insights
                   </Text>
+                  <View style={styles.featureCardTags}>
+                    <View style={styles.featureCardTag}>
+                      <Text style={styles.featureCardTagText}>Daily</Text>
+                    </View>
+                    <View style={styles.featureCardTag}>
+                      <Text style={styles.featureCardTagText}>Audio</Text>
+                    </View>
+                  </View>
                 </View>
               </View>
-              <MaterialCommunityIcons
-                name="chevron-right"
-                size={20}
-                color={textTertiary}
-              />
+              <View style={styles.featureCardRight}>
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={20}
+                  color={textTertiary}
+                />
+              </View>
             </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -400,69 +498,100 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   bentoCard: {
-    borderRadius: appleDesign.borderRadius.lg,
+    borderRadius: appleDesign.borderRadius.xl,
     overflow: "hidden",
     ...Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.04,
-        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
       },
       android: {
-        elevation: 1,
+        elevation: 3,
       },
     }),
+  },
+  bentoCardBadge: {
+    backgroundColor: colors.primaryGlow,
+    borderRadius: appleDesign.borderRadius.sm,
+    paddingHorizontal: appleDesign.spacing.sm,
+    paddingVertical: appleDesign.spacing.xs,
+  },
+  bentoCardBadgeText: {
+    color: colors.primary,
+    fontSize: appleDesign.typography.fontSize.caption1,
+    fontWeight: appleDesign.typography.fontWeight.bold,
+    lineHeight: appleDesign.typography.lineHeight.caption1,
+  },
+  bentoCardContent: {
+    flex: 1,
   },
   bentoCardGradient: {
     borderRadius: appleDesign.borderRadius.xl,
     gap: appleDesign.spacing.sm,
     padding: appleDesign.spacing.xl,
   },
+  bentoCardHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: appleDesign.spacing.md,
+  },
   bentoCardSmall: {
-    minHeight: 110,
+    minHeight: 120,
     padding: appleDesign.spacing.lg,
   },
   bentoCardWide: {
-    minHeight: 140,
+    minHeight: 160,
   },
   bentoGrid: {
-    gap: appleDesign.spacing.md,
+    gap: appleDesign.spacing.lg,
   },
   bentoIcon: {
     alignItems: "center",
-    borderRadius: appleDesign.borderRadius.md,
-    height: 52,
+    borderRadius: appleDesign.borderRadius.lg,
+    height: 56,
     justifyContent: "center",
     marginBottom: appleDesign.spacing.sm,
-    width: 52,
+    width: 56,
   },
   bentoIconBlue: {
-    backgroundColor: colors.primaryLight,
+    backgroundColor: colors.primaryLight + "20",
   },
   bentoIconGreen: {
-    backgroundColor: colors.successLight,
+    backgroundColor: colors.successLight + "20",
   },
   bentoIconPurpleAlt: {
-    backgroundColor: colors.secondaryLight,
+    backgroundColor: colors.secondaryLight + "20",
   },
   bentoIconSmall: {
     alignItems: "center",
-    borderRadius: appleDesign.borderRadius.sm,
-    height: 44,
+    borderRadius: appleDesign.borderRadius.md,
+    height: 48,
     justifyContent: "center",
     marginBottom: appleDesign.spacing.sm,
-    width: 44,
+    width: 48,
   },
   bentoIconViolet: {
-    backgroundColor: colors.secondaryLight,
+    backgroundColor: colors.secondaryLight + "20",
   },
   bentoRow: {
     flexDirection: "row",
-    gap: appleDesign.spacing.md,
+    gap: appleDesign.spacing.lg,
   },
   bentoSmall: {
     flex: 1,
+  },
+  bentoSmallContent: {
+    alignItems: "center",
+    flex: 1,
+  },
+  bentoSmallSubtitle: {
+    fontSize: appleDesign.typography.fontSize.caption1,
+    fontWeight: appleDesign.typography.fontWeight.medium,
+    lineHeight: appleDesign.typography.lineHeight.caption1,
+    marginTop: appleDesign.spacing.xs,
   },
   bentoSubtitle: {
     fontSize: appleDesign.typography.fontSize.subheadline,
@@ -490,21 +619,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   featureCard: {
-    alignItems: "center",
-    borderRadius: appleDesign.borderRadius.md,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: appleDesign.spacing.md,
-    padding: appleDesign.spacing.lg,
+    borderRadius: appleDesign.borderRadius.lg,
+    marginBottom: appleDesign.spacing.lg,
+    padding: appleDesign.spacing.xl,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.03,
-        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
       },
       android: {
-        elevation: 1,
+        elevation: 2,
       },
     }),
   },
@@ -512,12 +638,33 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
     flexDirection: "row",
-    gap: appleDesign.spacing.md,
+    gap: appleDesign.spacing.lg,
+  },
+  featureCardRight: {
+    alignItems: "center",
   },
   featureCardSubtitle: {
     fontSize: appleDesign.typography.fontSize.subheadline,
     fontWeight: appleDesign.typography.fontWeight.regular,
     lineHeight: appleDesign.typography.lineHeight.subheadline,
+    marginTop: appleDesign.spacing.xs,
+  },
+  featureCardTag: {
+    backgroundColor: colors.background.tertiary,
+    borderRadius: appleDesign.borderRadius.sm,
+    marginRight: appleDesign.spacing.xs,
+    paddingHorizontal: appleDesign.spacing.sm,
+    paddingVertical: appleDesign.spacing.xs,
+  },
+  featureCardTagText: {
+    color: colors.text.secondary,
+    fontSize: appleDesign.typography.fontSize.caption2,
+    fontWeight: appleDesign.typography.fontWeight.semibold,
+    lineHeight: appleDesign.typography.lineHeight.caption2,
+  },
+  featureCardTags: {
+    flexDirection: "row",
+    marginTop: appleDesign.spacing.sm,
   },
   featureCardText: {
     flex: 1,
@@ -527,14 +674,16 @@ const styles = StyleSheet.create({
     fontWeight: appleDesign.typography.fontWeight.semibold,
     letterSpacing: appleDesign.typography.letterSpacing.tight,
     lineHeight: appleDesign.typography.lineHeight.headline,
-    marginBottom: appleDesign.spacing.xxs,
+  },
+  featureCardsContainer: {
+    gap: appleDesign.spacing.lg,
   },
   featureIcon: {
     alignItems: "center",
-    borderRadius: appleDesign.borderRadius.md,
-    height: 48,
+    borderRadius: appleDesign.borderRadius.lg,
+    height: 52,
     justifyContent: "center",
-    width: 48,
+    width: 52,
   },
   featureIconOrange: {
     backgroundColor: colors.warningLightBg,
@@ -542,14 +691,22 @@ const styles = StyleSheet.create({
   featureIconPink: {
     backgroundColor: colors.accentPinkBg,
   },
+  featuredActionIcon: {
+    opacity: 0.8,
+  },
+  featuredActions: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: appleDesign.spacing.md,
+  },
   featuredBadge: {
     alignItems: "center",
     backgroundColor: colors.background.overlay,
-    borderRadius: appleDesign.borderRadius.md,
+    borderRadius: appleDesign.borderRadius.lg,
     flexDirection: "row",
     gap: appleDesign.spacing.xs,
     paddingHorizontal: appleDesign.spacing.md,
-    paddingVertical: appleDesign.spacing.xs,
+    paddingVertical: appleDesign.spacing.sm,
   },
   featuredBadgeText: {
     color: colors.text.inverse,
@@ -560,41 +717,45 @@ const styles = StyleSheet.create({
   },
   featuredCard: {
     borderRadius: appleDesign.borderRadius.xxl,
-    marginBottom: appleDesign.spacing.xxl,
+    marginBottom: appleDesign.spacing.xxxl,
     overflow: "hidden",
     ...Platform.select({
       ios: {
         shadowColor: "#667eea",
-        shadowOffset: { width: 0, height: 12 },
-        shadowOpacity: 0.12,
-        shadowRadius: 24,
+        shadowOffset: { width: 0, height: 16 },
+        shadowOpacity: 0.15,
+        shadowRadius: 32,
       },
       android: {
-        elevation: 4,
+        elevation: 6,
       },
     }),
   },
+  featuredContent: {
+    flex: 1,
+  },
   featuredGradient: {
-    minHeight: 140,
-    padding: appleDesign.spacing.xl,
+    minHeight: 180,
+    padding: appleDesign.spacing.xxl,
   },
   featuredHeader: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: appleDesign.spacing.md,
+    marginBottom: appleDesign.spacing.lg,
   },
   featuredReference: {
     color: colors.text.inverseLight,
     fontSize: appleDesign.typography.fontSize.subheadline,
     fontWeight: appleDesign.typography.fontWeight.semibold,
     lineHeight: appleDesign.typography.lineHeight.subheadline,
+    marginTop: appleDesign.spacing.sm,
   },
   featuredVerse: {
     color: colors.text.inverse,
-    fontSize: appleDesign.typography.fontSize.headline,
+    fontSize: appleDesign.typography.fontSize.title2,
     fontWeight: appleDesign.typography.fontWeight.medium,
-    lineHeight: appleDesign.typography.lineHeight.headline,
+    lineHeight: appleDesign.typography.lineHeight.title2,
     marginBottom: appleDesign.spacing.md,
   },
   greeting: {
@@ -602,19 +763,22 @@ const styles = StyleSheet.create({
     fontWeight: appleDesign.typography.fontWeight.medium,
     letterSpacing: appleDesign.typography.letterSpacing.normal,
     lineHeight: appleDesign.typography.lineHeight.subheadline,
-    marginBottom: appleDesign.spacing.xxs,
+    marginBottom: appleDesign.spacing.xs,
   },
   header: {
-    marginBottom: appleDesign.spacing.xl,
+    marginBottom: appleDesign.spacing.xxxl,
   },
   headerButtons: {
     flexDirection: "row" as const,
     gap: appleDesign.spacing.md,
   },
   headerContent: {
-    alignItems: "center",
+    alignItems: "flex-start",
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  headerTextSection: {
+    flex: 1,
   },
   iconButton: {
     alignItems: "center" as const,
@@ -625,12 +789,12 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.03,
-        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 6,
       },
       android: {
-        elevation: 1,
+        elevation: 2,
       },
     }),
   },
@@ -652,17 +816,31 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: appleDesign.spacing.xxxl,
   },
+  sectionHeader: {
+    marginBottom: appleDesign.spacing.lg,
+  },
+  sectionSubtitle: {
+    fontSize: appleDesign.typography.fontSize.subheadline,
+    fontWeight: appleDesign.typography.fontWeight.regular,
+    lineHeight: appleDesign.typography.lineHeight.subheadline,
+    marginTop: appleDesign.spacing.xs,
+  },
   sectionTitle: {
     fontSize: appleDesign.typography.fontSize.title2,
     fontWeight: appleDesign.typography.fontWeight.bold,
     letterSpacing: appleDesign.typography.letterSpacing.tight,
     lineHeight: appleDesign.typography.lineHeight.title2,
-    marginBottom: appleDesign.spacing.md,
+  },
+  subtitle: {
+    fontSize: appleDesign.typography.fontSize.callout,
+    fontWeight: appleDesign.typography.fontWeight.regular,
+    lineHeight: appleDesign.typography.lineHeight.callout,
+    marginTop: appleDesign.spacing.xs,
   },
   title: {
-    fontSize: appleDesign.typography.fontSize.title1,
+    fontSize: appleDesign.typography.fontSize.largeTitle,
     fontWeight: appleDesign.typography.fontWeight.heavy,
     letterSpacing: appleDesign.typography.letterSpacing.tight,
-    lineHeight: appleDesign.typography.lineHeight.title1,
+    lineHeight: appleDesign.typography.lineHeight.largeTitle,
   },
 });

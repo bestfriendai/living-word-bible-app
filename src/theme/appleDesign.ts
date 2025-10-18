@@ -17,16 +17,16 @@ export const appleDesign = {
     },
     fontSize: {
       largeTitle: 24, // Main page titles
-      title1: 20,     // Section headers
-      title2: 18,     // Card titles
-      title3: 16,     // Smaller headers
-      headline: 15,   // Important body text
-      body: 15,       // Regular body text
-      callout: 14,    // Secondary text
+      title1: 20, // Section headers
+      title2: 18, // Card titles
+      title3: 16, // Smaller headers
+      headline: 15, // Important body text
+      body: 15, // Regular body text
+      callout: 14, // Secondary text
       subheadline: 13, // Tertiary text
-      footnote: 12,   // Small text
-      caption1: 11,   // Very small text
-      caption2: 10,   // Tiny text
+      footnote: 12, // Small text
+      caption1: 11, // Very small text
+      caption2: 10, // Tiny text
     },
     fontWeight: {
       regular: "400" as const,
@@ -36,17 +36,17 @@ export const appleDesign = {
       heavy: "800" as const,
     },
     lineHeight: {
-      largeTitle: 30,  // 1.25x fontSize
-      title1: 26,      // 1.3x fontSize
-      title2: 24,      // 1.33x fontSize
-      title3: 22,      // 1.375x fontSize
-      headline: 20,    // 1.33x fontSize
-      body: 20,        // 1.33x fontSize
-      callout: 19,     // 1.35x fontSize
+      largeTitle: 30, // 1.25x fontSize
+      title1: 26, // 1.3x fontSize
+      title2: 24, // 1.33x fontSize
+      title3: 22, // 1.375x fontSize
+      headline: 20, // 1.33x fontSize
+      body: 20, // 1.33x fontSize
+      callout: 19, // 1.35x fontSize
       subheadline: 18, // 1.38x fontSize
-      footnote: 16,    // 1.33x fontSize
-      caption1: 14,    // 1.27x fontSize
-      caption2: 13,    // 1.3x fontSize
+      footnote: 16, // 1.33x fontSize
+      caption1: 14, // 1.27x fontSize
+      caption2: 13, // 1.3x fontSize
     },
     letterSpacing: {
       tight: -0.4,
@@ -265,6 +265,8 @@ export const getShadow = (level: keyof typeof appleDesign.shadows) => {
 };
 
 // Helper function to create card style
-export const getCardStyle = (variant: keyof typeof appleDesign.card = "default") => {
+export const getCardStyle = (
+  variant: keyof typeof appleDesign.card = "default",
+) => {
   return appleDesign.card[variant];
 };

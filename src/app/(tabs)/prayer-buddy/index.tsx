@@ -242,6 +242,7 @@ export default function PrayerBuddy() {
   const colorScheme = useColorScheme() as "light" | "dark" | null;
   const backgroundColor = useThemeColor(theme.color.background);
   const textColor = useThemeColor(theme.color.text);
+  const textSecondary = useThemeColor(theme.color.textSecondary);
   const cardBg = useThemeColor(theme.color.backgroundSecondary);
   const scrollViewRef = useRef<ScrollView>(null);
   const inputRef = useRef<TextInput>(null);
@@ -252,7 +253,7 @@ export default function PrayerBuddy() {
       id: Date.now().toString(),
       role: "assistant",
       content:
-        'Hello! 🙏 I\'m your **Prayer Buddy**, powered by AI to support your spiritual journey.\n\n**I can help you with:**\n\n• **Prayer** - Create personalized prayers for any situation\n• **Bible Study** - Explain verses and provide context\n• **Encouragement** - Offer hope and Biblical wisdom\n• **Questions** - Answer faith and spiritual questions\n• **Guidance** - Provide practical next steps\n\n> *"For where two or three gather in my name, there am I with them."* - Matthew 18:20\n\n**How can I support you today?**',
+        'Hello! 🙏 I\'m your **Prayer Buddy**, powered by AI to support your spiritual journey.\n\n**I can help you with:**\n\n• **Personalized Prayer** - Create prayers for any situation\n• **Bible Study** - Explain verses and provide context\n• **Spiritual Guidance** - Offer Biblical wisdom and encouragement\n• **Faith Questions** - Answer spiritual inquiries\n• **Prayer Strategies** - Provide practical next steps\n\n> *"For where two or three gather in my name, there am I with them."* - Matthew 18:20\n\n**How can I support your spiritual walk today?**',
       timestamp: new Date().toISOString(),
     },
   ]);
@@ -806,9 +807,7 @@ export default function PrayerBuddy() {
 
       {/* Search Bar */}
       {showSearch && (
-        <View
-          style={[styles.searchBar, { backgroundColor: cardBg }]}
-        >
+        <View style={[styles.searchBar, { backgroundColor: cardBg }]}>
           <MaterialCommunityIcons
             name="magnify"
             size={20}
@@ -993,14 +992,19 @@ export default function PrayerBuddy() {
             </View>
           )}
 
-          {/* Prayer Templates */}
+          {/* Enhanced Prayer Templates */}
           {!isTyping && messages.length <= 2 && (
-            <View
-              style={styles.templatesContainer}
-            >
-              <Text style={[styles.templatesTitle, { color: textColor }]}>
-                Quick Prayer Templates
-              </Text>
+            <View style={styles.templatesContainer}>
+              <View style={styles.templatesHeader}>
+                <Text style={[styles.templatesTitle, { color: textColor }]}>
+                  Quick Prayer Templates
+                </Text>
+                <Text
+                  style={[styles.templatesSubtitle, { color: textSecondary }]}
+                >
+                  Get started with guided prayers
+                </Text>
+              </View>
               <View style={styles.templateGrid}>
                 {PRAYER_TEMPLATES.map((template, index) => (
                   <TouchableOpacity
@@ -1010,30 +1014,34 @@ export default function PrayerBuddy() {
                     accessibilityLabel={`${template.text} prayer template`}
                     accessibilityRole="button"
                   >
-                    <MaterialCommunityIcons
-                      name={template.icon as any}
-                      size={24}
-                      color={colors.secondary}
-                    />
+                    <View style={styles.templateIcon}>
+                      <MaterialCommunityIcons
+                        name={template.icon as any}
+                        size={24}
+                        color={colors.secondary}
+                      />
+                    </View>
                     <Text style={[styles.templateText, { color: textColor }]}>
                       {template.text}
                     </Text>
+                    <MaterialCommunityIcons
+                      name="chevron-right"
+                      size={16}
+                      color={textSecondary}
+                    />
                   </TouchableOpacity>
                 ))}
               </View>
             </View>
           )}
 
-          {/* Quick Replies */}
+          {/* Enhanced Quick Replies */}
           {showQuickReplies && !isTyping && (
-            <View
-              
-              style={styles.quickRepliesContainer}
-            >
+            <View style={styles.quickRepliesContainer}>
               <Text
-                style={[styles.quickRepliesTitle, { color: textColor + "80" }]}
+                style={[styles.quickRepliesTitle, { color: textSecondary }]}
               >
-                Suggested:
+                💬 Suggested responses
               </Text>
               <View style={styles.quickRepliesGrid}>
                 {currentSuggestions.map((reply, index) => (
@@ -1047,6 +1055,11 @@ export default function PrayerBuddy() {
                     <Text style={[styles.quickReplyText, { color: textColor }]}>
                       {reply}
                     </Text>
+                    <MaterialCommunityIcons
+                      name="send"
+                      size={14}
+                      color={colors.secondary}
+                    />
                   </TouchableOpacity>
                 ))}
               </View>
@@ -1580,12 +1593,19 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   quickReplyChip: {
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    alignItems: "center",
+    borderRadius: appleDesign.borderRadius.xl,
+    flexDirection: "row",
+    gap: appleDesign.spacing.sm,
+    justifyContent: "space-between",
+    paddingHorizontal: appleDesign.spacing.lg,
+    paddingVertical: appleDesign.spacing.md,
   },
   quickReplyText: {
-    fontSize: 16,
+    flex: 1,
+    fontSize: appleDesign.typography.fontSize.callout,
+    fontWeight: appleDesign.typography.fontWeight.medium,
+    lineHeight: appleDesign.typography.lineHeight.callout,
   },
   reactionBubble: {
     borderRadius: 12,
@@ -1695,28 +1715,50 @@ const styles = StyleSheet.create({
   },
   templateCard: {
     alignItems: "center",
-    borderRadius: 12,
-    gap: 8,
-    padding: 16,
+    borderRadius: appleDesign.borderRadius.lg,
+    flexDirection: "row",
+    gap: appleDesign.spacing.md,
+    justifyContent: "space-between",
+    padding: appleDesign.spacing.lg,
     width: "48%",
+    ...appleDesign.shadows.sm,
   },
   templateGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 12,
+    gap: appleDesign.spacing.md,
+  },
+  templateIcon: {
+    alignItems: "center",
+    backgroundColor: colors.secondaryLight + "20",
+    borderRadius: appleDesign.borderRadius.md,
+    height: 40,
+    justifyContent: "center",
+    width: 40,
   },
   templateText: {
-    fontSize: 15,
-    fontWeight: "600",
+    flex: 1,
+    fontSize: appleDesign.typography.fontSize.callout,
+    fontWeight: appleDesign.typography.fontWeight.semibold,
+    lineHeight: appleDesign.typography.lineHeight.callout,
   },
   templatesContainer: {
-    marginBottom: 8,
-    marginTop: 16,
+    marginBottom: appleDesign.spacing.lg,
+    marginTop: appleDesign.spacing.xl,
+  },
+  templatesHeader: {
+    marginBottom: appleDesign.spacing.lg,
+  },
+  templatesSubtitle: {
+    fontSize: appleDesign.typography.fontSize.subheadline,
+    fontWeight: appleDesign.typography.fontWeight.regular,
+    lineHeight: appleDesign.typography.lineHeight.subheadline,
+    marginTop: appleDesign.spacing.xs,
   },
   templatesTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    marginBottom: 12,
+    fontSize: appleDesign.typography.fontSize.title3,
+    fontWeight: appleDesign.typography.fontWeight.bold,
+    lineHeight: appleDesign.typography.lineHeight.title3,
   },
   timeText: {
     fontSize: 14,

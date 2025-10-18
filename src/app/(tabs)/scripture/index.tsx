@@ -13,10 +13,12 @@ import {
   RefreshControl,
   Pressable,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBibleStore } from "@/store/bibleStore";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
+import { colors } from "@/theme/colors";
 import { appleDesign } from "@/theme/appleDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 // Removed excessive animations for 2025 modern design
@@ -32,6 +34,7 @@ export default function Scripture() {
   const insets = useSafeAreaInsets();
   const backgroundColor = useThemeColor(theme.color.background);
   const textColor = useThemeColor(theme.color.text);
+  const textSecondary = useThemeColor(theme.color.textSecondary);
   const cardBg = useThemeColor(theme.color.backgroundSecondary);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -150,15 +153,20 @@ export default function Scripture() {
           />
         }
       >
-        {/* Header */}
+        {/* Enhanced Header */}
         <View style={styles.header}>
           <View style={styles.headerTop}>
             <View style={styles.headerTextContainer}>
-              <Text style={[styles.subtitle, { color: textColor + "90" }]}>
+              <Text style={[styles.subtitle, { color: textSecondary }]}>
                 Find guidance
               </Text>
               <Text style={[styles.title, { color: textColor }]}>
-                Scripture
+                Scripture Search
+              </Text>
+              <Text
+                style={[styles.headerDescription, { color: textSecondary }]}
+              >
+                Discover relevant verses for your journey
               </Text>
             </View>
             <TranslationSwitcher
@@ -169,11 +177,21 @@ export default function Scripture() {
           </View>
         </View>
 
-        {/* Search Input */}
+        {/* Enhanced Search Input */}
         <View style={[styles.searchContainer, { backgroundColor: cardBg }]}>
+          <View style={styles.searchHeader}>
+            <MaterialCommunityIcons
+              name="magnify"
+              size={20}
+              color={textSecondary}
+            />
+            <Text style={[styles.searchLabel, { color: textSecondary }]}>
+              What's on your heart?
+            </Text>
+          </View>
           <TextInput
             style={[styles.searchInput, { color: textColor }]}
-            placeholder="Share what you're going through..."
+            placeholder="              Share what're going through or looking for..."
             placeholderTextColor={textColor + "50"}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -181,44 +199,60 @@ export default function Scripture() {
             numberOfLines={4}
             textAlignVertical="top"
           />
-          <TouchableOpacity
-            style={[
-              styles.micButton,
-              isListening && styles.micButtonActive,
-              { backgroundColor: isListening ? "#ef4444" : cardBg },
-            ]}
-            onPress={handleVoiceInput}
-          >
-            <MaterialCommunityIcons
-              name={isListening ? "microphone" : "microphone-outline"}
-              size={20}
-              color={isListening ? "#fff" : textColor}
-            />
-          </TouchableOpacity>
+          <View style={styles.searchActions}>
+            <TouchableOpacity
+              style={[
+                styles.micButton,
+                isListening && styles.micButtonActive,
+                isListening && { backgroundColor: "#ef4444" },
+                !isListening && { backgroundColor: colors.background.tertiary },
+              ]}
+              onPress={handleVoiceInput}
+            >
+              <MaterialCommunityIcons
+                name={isListening ? "microphone" : "microphone-outline"}
+                size={20}
+                color={isListening ? "#fff" : textColor}
+              />
+            </TouchableOpacity>
+            {searchQuery.trim() && (
+              <TouchableOpacity
+                style={[
+                  styles.clearButton,
+                  { backgroundColor: colors.background.tertiary },
+                ]}
+                onPress={() => setSearchQuery("")}
+              >
+                <MaterialCommunityIcons
+                  name="close-circle"
+                  size={20}
+                  color={textSecondary}
+                />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
         {isListening && (
           <View style={styles.listeningIndicator}>
-            <MaterialCommunityIcons
-              name="microphone"
-              size={16}
-              color="#ef4444"
-            />
-            <Text style={[styles.listeningText, { color: textColor }]}>
-              Listening... speak now
+            <View style={styles.listeningDot} />
+            <Text style={[styles.listeningText, { color: colors.error }]}>
+              Listening... speak from your heart
             </Text>
           </View>
         )}
 
-        {/* Search Button */}
+        {/* Enhanced Search Button */}
         <TouchableOpacity
           style={styles.searchButton}
           onPress={handleSearch}
           disabled={isSearching || !searchQuery.trim()}
         >
-          <View
+          <LinearGradient
+            colors={["#3b82f6", "#2563eb"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
             style={[
               styles.searchButtonGradient,
-              { backgroundColor: "#3b82f6" },
               (!searchQuery.trim() || isSearching) &&
                 styles.searchButtonDisabled,
             ]}
@@ -233,27 +267,53 @@ export default function Scripture() {
                   color="#fff"
                 />
                 <Text style={styles.searchButtonText}>Find Scripture</Text>
+                <Text style={styles.searchButtonSubtext}>
+                  Search {searchQuery.trim().split(" ").length} words
+                </Text>
               </>
             )}
-          </View>
+          </LinearGradient>
         </TouchableOpacity>
 
-        {/* Empty State */}
+        {/* Enhanced Empty State */}
         {!isSearching && searchResults.length === 0 && (
           <View style={styles.emptyState}>
-            <View style={[styles.emptyIcon, { backgroundColor: "#3b82f620" }]}>
+            <View
+              style={[
+                styles.emptyIcon,
+                { backgroundColor: colors.primaryGlow },
+              ]}
+            >
               <MaterialCommunityIcons
                 name="book-open-variant"
                 size={48}
-                color="#3b82f6"
+                color={colors.primary}
               />
             </View>
             <Text style={[styles.emptyTitle, { color: textColor }]}>
-              Find Scripture
+              Discover Scripture
             </Text>
-            <Text style={[styles.emptySubtitle, { color: textColor + "70" }]}>
-              Share what&apos;s on your heart and discover relevant verses
+            <Text style={[styles.emptySubtitle, { color: textSecondary }]}>
+              Share what&apos;s on your heart and find relevant verses
             </Text>
+            <View style={styles.suggestionsList}>
+              <Text style={[styles.suggestionsTitle, { color: textSecondary }]}>
+                Try searching for:
+              </Text>
+              <View style={styles.suggestionChips}>
+                {["peace", "strength", "guidance", "hope"].map((suggestion) => (
+                  <TouchableOpacity
+                    key={suggestion}
+                    style={[styles.suggestionChip, { backgroundColor: cardBg }]}
+                    onPress={() => setSearchQuery(suggestion)}
+                  >
+                    <Text style={[styles.suggestionText, { color: textColor }]}>
+                      {suggestion}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
           </View>
         )}
 
@@ -286,114 +346,107 @@ export default function Scripture() {
               };
 
               return (
-                  <View
-                    key={`${verse.reference}-${index}`}
-                    style={[
-                      styles.verseCard,
-                      {
-                        backgroundColor: cardBg,
-                        borderLeftWidth: existingHighlight ? 4 : 0,
-                        borderLeftColor: existingHighlight
-                          ? highlightColors[existingHighlight.color]
-                          : "transparent",
-                      },
-                    ]}
-                  >
-                    <View style={styles.verseHeader}>
-                      <Text
-                        style={[
-                          styles.verseReference,
-                          { color: theme.color.reactBlue.dark },
-                        ]}
-                      >
-                        {verse.reference}
+                <View
+                  key={`${verse.reference}-${index}`}
+                  style={[
+                    styles.verseCard,
+                    { backgroundColor: cardBg },
+                    existingHighlight && {
+                      borderLeftWidth: 4,
+                      borderLeftColor: highlightColors[existingHighlight.color],
+                    },
+                  ]}
+                >
+                  <View style={styles.verseHeader}>
+                    <Text
+                      style={[
+                        styles.verseReference,
+                        { color: theme.color.reactBlue.dark },
+                      ]}
+                    >
+                      {verse.reference}
+                    </Text>
+                  </View>
+                  <Text style={[styles.verseText, { color: textColor }]}>
+                    &quot;{verse.text}&quot;
+                  </Text>
+                  {verse.context && (
+                    <View
+                      style={[
+                        styles.contextBox,
+                        { backgroundColor: backgroundColor },
+                      ]}
+                    >
+                      <Text style={[styles.contextLabel, { color: textColor }]}>
+                        Context:
+                      </Text>
+                      <Text style={[styles.contextText, { color: textColor }]}>
+                        {verse.context}
                       </Text>
                     </View>
-                    <Text style={[styles.verseText, { color: textColor }]}>
-                      &quot;{verse.text}&quot;
-                    </Text>
-                    {verse.context && (
-                      <View
-                        style={[
-                          styles.contextBox,
-                          { backgroundColor: backgroundColor },
-                        ]}
+                  )}
+                  {verse.relevance && (
+                    <View style={styles.relevanceBox}>
+                      <Text
+                        style={[styles.relevanceText, { color: textColor }]}
                       >
-                        <Text
-                          style={[styles.contextLabel, { color: textColor }]}
-                        >
-                          Context:
-                        </Text>
-                        <Text
-                          style={[styles.contextText, { color: textColor }]}
-                        >
-                          {verse.context}
-                        </Text>
-                      </View>
-                    )}
-                    {verse.relevance && (
-                      <View style={styles.relevanceBox}>
-                        <Text
-                          style={[styles.relevanceText, { color: textColor }]}
-                        >
-                          {verse.relevance}
-                        </Text>
-                      </View>
-                    )}
-                    <View style={styles.verseActions}>
-                      <Pressable
-                        onPress={() => {
-                          hapticPatterns.buttonPress();
-                          const [book, chapterVerse] =
-                            verse.reference.split(" ");
-                          const [chapter, verseNum] = chapterVerse.split(":");
-                          setHighlighterVerse({
-                            id: verse.id || verse.reference,
-                            book,
-                            chapter: parseInt(chapter),
-                            verse: parseInt(verseNum),
-                            reference: verse.reference,
-                          });
-                          setShowHighlighter(true);
-                        }}
-                        style={({ pressed }) => [
-                          styles.actionButton,
-                          pressed && { opacity: 0.85 },
-                          existingHighlight && {
-                            backgroundColor:
-                              highlightColors[existingHighlight.color],
-                          },
-                        ]}
-                      >
-                        <MaterialCommunityIcons
-                          name={
-                            existingHighlight ? "bookmark" : "bookmark-outline"
-                          }
-                          size={20}
-                          color={existingHighlight ? "#000" : "#fff"}
-                        />
-                      </Pressable>
-
-                      <Pressable
-                        onPress={() => {
-                          hapticPatterns.buttonPress();
-                          setActionSheetVerse(verse);
-                          setShowActionsSheet(true);
-                        }}
-                        style={({ pressed }) => [
-                          styles.actionButton,
-                          styles.moreButton,
-                          pressed && { opacity: 0.85 },
-                        ]}
-                      >
-                        <MaterialCommunityIcons
-                          name="dots-horizontal"
-                          size={20}
-                          color="#fff"
-                        />
-                      </Pressable>
+                        {verse.relevance}
+                      </Text>
                     </View>
+                  )}
+                  <View style={styles.verseActions}>
+                    <Pressable
+                      onPress={() => {
+                        hapticPatterns.buttonPress();
+                        const [book, chapterVerse] = verse.reference.split(" ");
+                        const [chapter, verseNum] = chapterVerse.split(":");
+                        setHighlighterVerse({
+                          id: verse.id || verse.reference,
+                          book,
+                          chapter: parseInt(chapter),
+                          verse: parseInt(verseNum),
+                          reference: verse.reference,
+                        });
+                        setShowHighlighter(true);
+                      }}
+                      style={({ pressed }) => [
+                        styles.actionButton,
+                        pressed && { opacity: 0.85 },
+                        existingHighlight && {
+                          backgroundColor:
+                            highlightColors[existingHighlight.color],
+                        },
+                      ]}
+                    >
+                      <MaterialCommunityIcons
+                        name={
+                          existingHighlight ? "bookmark" : "bookmark-outline"
+                        }
+                        size={20}
+                        color={existingHighlight ? "#000" : "#fff"}
+                      />
+                    </Pressable>
+
+                    <Pressable
+                      onPress={() => {
+                        hapticPatterns.buttonPress();
+                        setActionSheetVerse(verse);
+                        setShowActionsSheet(true);
+                      }}
+                      style={({ pressed }) => [
+                        styles.actionButton,
+                        styles.moreButton,
+                        pressed && { opacity: 0.85 },
+                      ]}
+                    >
+                      <MaterialCommunityIcons
+                        name="dots-horizontal"
+                        size={20}
+                        color="#fff"
+                      />
+                    </Pressable>
                   </View>
+                </View>
               );
             })}
           </View>
@@ -419,7 +472,7 @@ export default function Scripture() {
             <Text style={[styles.modalTitle, { color: textColor }]}>
               Deep Dive
             </Text>
-            <View style={{ width: 50 }} />
+            <View style={styles.spacerWidth} />
           </View>
 
           <ScrollView
@@ -428,12 +481,7 @@ export default function Scripture() {
           >
             {selectedVerse && (
               <View style={styles.modalVerseHeader}>
-                <View
-                  style={[
-                    styles.modalVerseGradient,
-                    { backgroundColor: "#3b82f6" },
-                  ]}
-                >
+                <View style={styles.modalVerseGradient}>
                   <Text style={styles.modalVerseReference}>
                     {selectedVerse.reference}
                   </Text>
@@ -560,13 +608,10 @@ export default function Scripture() {
                       {explanation.keyThemes.map((theme, idx) => (
                         <View
                           key={idx}
-                          style={[
-                            styles.themeTag,
-                            { backgroundColor: "#a855f720" },
-                          ]}
+                          style={[styles.themeTag, styles.themeTagBackground]}
                         >
                           <Text
-                            style={[styles.themeText, { color: "#a855f7" }]}
+                            style={[styles.themeText, styles.themeTextColor]}
                           >
                             {theme}
                           </Text>
@@ -605,7 +650,7 @@ export default function Scripture() {
                             key={idx}
                             style={[
                               styles.relatedVerseTag,
-                              { backgroundColor: "#3b82f620" },
+                              styles.relatedVerseTagBackground,
                             ]}
                           >
                             <MaterialCommunityIcons
@@ -616,7 +661,7 @@ export default function Scripture() {
                             <Text
                               style={[
                                 styles.relatedVerseText,
-                                { color: "#3b82f6" },
+                                styles.relatedVerseTextColor,
                               ]}
                             >
                               {verse}
@@ -683,6 +728,11 @@ const styles = StyleSheet.create({
     borderRadius: appleDesign.borderRadius.xl,
     justifyContent: "center",
     padding: appleDesign.spacing.sm,
+  },
+  clearButton: {
+    alignItems: "center",
+    flexDirection: "row",
+    paddingVertical: appleDesign.spacing.sm,
   },
   container: {
     flex: 1,
@@ -755,6 +805,12 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: appleDesign.spacing.xxl,
   },
+  headerDescription: {
+    fontSize: appleDesign.typography.fontSize.callout,
+    fontWeight: appleDesign.typography.fontWeight.regular,
+    lineHeight: appleDesign.typography.lineHeight.callout,
+    marginTop: appleDesign.spacing.xs,
+  },
   headerTextContainer: {
     flex: 1,
   },
@@ -763,6 +819,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: appleDesign.spacing.md,
     justifyContent: "space-between",
+  },
+  listeningDot: {
+    backgroundColor: colors.error,
+    borderRadius: 4,
+    height: 8,
+    marginLeft: appleDesign.spacing.sm,
+    width: 8,
   },
   listeningIndicator: {
     alignItems: "center",
@@ -825,6 +888,7 @@ const styles = StyleSheet.create({
     lineHeight: appleDesign.typography.lineHeight.title3,
   },
   modalVerseGradient: {
+    backgroundColor: "#3b82f6",
     padding: appleDesign.spacing.xxl,
   },
   modalVerseHeader: {
@@ -868,10 +932,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: appleDesign.spacing.md,
     paddingVertical: appleDesign.spacing.md,
   },
+  relatedVerseTagBackground: {
+    backgroundColor: "#3b82f620",
+  },
   relatedVerseText: {
     fontSize: appleDesign.typography.fontSize.subheadline,
     fontWeight: appleDesign.typography.fontWeight.semibold,
     lineHeight: appleDesign.typography.lineHeight.subheadline,
+  },
+  relatedVerseTextColor: {
+    color: "#3b82f6",
   },
   relatedVersesList: {
     gap: appleDesign.spacing.sm,
@@ -899,9 +969,14 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: appleDesign.spacing.xl,
   },
-
   scrollView: {
     flex: 1,
+  },
+  searchActions: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: appleDesign.spacing.md,
   },
   searchButton: {
     borderRadius: appleDesign.borderRadius.lg,
@@ -920,6 +995,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: appleDesign.spacing.xxl,
     paddingVertical: appleDesign.spacing.lg,
   },
+  searchButtonSubtext: {
+    fontSize: appleDesign.typography.fontSize.caption1,
+    fontWeight: appleDesign.typography.fontWeight.regular,
+    marginTop: appleDesign.spacing.xs,
+  },
   searchButtonText: {
     color: "#fff",
     fontSize: appleDesign.typography.fontSize.title2,
@@ -927,10 +1007,16 @@ const styles = StyleSheet.create({
     lineHeight: appleDesign.typography.lineHeight.title2,
   },
   searchContainer: {
-    borderRadius: appleDesign.borderRadius.lg,
-    marginBottom: appleDesign.spacing.xxl,
-    padding: appleDesign.spacing.xxl,
+    borderRadius: appleDesign.borderRadius.xl,
+    marginBottom: appleDesign.spacing.xl,
+    padding: appleDesign.spacing.xl,
     position: "relative",
+    ...appleDesign.shadows.sm,
+  },
+  searchHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    marginBottom: appleDesign.spacing.md,
   },
   searchInput: {
     fontSize: appleDesign.typography.fontSize.title3,
@@ -940,21 +1026,58 @@ const styles = StyleSheet.create({
     paddingRight: 60,
     textAlignVertical: "top",
   },
+  searchLabel: {
+    fontSize: appleDesign.typography.fontSize.callout,
+    fontWeight: appleDesign.typography.fontWeight.semibold,
+    marginLeft: appleDesign.spacing.sm,
+  },
+  spacerWidth: {
+    width: 50,
+  },
   subtitle: {
     fontSize: appleDesign.typography.fontSize.callout,
     fontWeight: appleDesign.typography.fontWeight.medium,
     lineHeight: appleDesign.typography.lineHeight.callout,
     marginBottom: appleDesign.spacing.xs,
   },
+  suggestionChip: {
+    backgroundColor: colors.backgroundSecondary,
+    borderRadius: appleDesign.borderRadius.xl,
+    paddingHorizontal: appleDesign.spacing.md,
+    paddingVertical: appleDesign.spacing.sm,
+  },
+  suggestionChips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: appleDesign.spacing.sm,
+  },
+  suggestionText: {
+    fontSize: appleDesign.typography.fontSize.caption1,
+    fontWeight: appleDesign.typography.fontWeight.medium,
+  },
+  suggestionsList: {
+    marginTop: appleDesign.spacing.xl,
+  },
+  suggestionsTitle: {
+    fontSize: appleDesign.typography.fontSize.callout,
+    fontWeight: appleDesign.typography.fontWeight.semibold,
+    marginBottom: appleDesign.spacing.md,
+  },
   themeTag: {
     borderRadius: appleDesign.borderRadius.sm,
     paddingHorizontal: appleDesign.spacing.md,
     paddingVertical: appleDesign.spacing.sm,
   },
+  themeTagBackground: {
+    backgroundColor: "#a855f720",
+  },
   themeText: {
     fontSize: appleDesign.typography.fontSize.subheadline,
     fontWeight: appleDesign.typography.fontWeight.semibold,
     lineHeight: appleDesign.typography.lineHeight.subheadline,
+  },
+  themeTextColor: {
+    color: "#a855f7",
   },
   themesList: {
     flexDirection: "row",

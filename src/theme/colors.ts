@@ -61,6 +61,9 @@ export const colors = {
     purple: "#8b5cf6",
   },
 
+  // Convenience access to background colors
+  backgroundSecondary: "#F5F5F5",
+
   // Dark mode colors - Comprehensive palette
   dark: {
     // Backgrounds

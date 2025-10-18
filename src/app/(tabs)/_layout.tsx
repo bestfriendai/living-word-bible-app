@@ -95,7 +95,9 @@ export default function TabLayout() {
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="devotional">
         {Platform.select({
-          ios: <Icon sf="heart.text.square.fill" selectedColor={devotionalColor} />,
+          ios: (
+            <Icon sf="heart.text.square.fill" selectedColor={devotionalColor} />
+          ),
           android: (
             <Icon
               src={

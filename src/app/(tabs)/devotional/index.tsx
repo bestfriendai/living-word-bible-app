@@ -9,10 +9,12 @@ import {
   Platform,
   RefreshControl,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBibleStore } from "@/store/bibleStore";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
+import { colors } from "@/theme/colors";
 import { appleDesign } from "@/theme/appleDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { VerseImageGenerator } from "@/components/VerseImageGenerator";
@@ -30,6 +32,7 @@ export default function Devotional() {
   const backgroundColor = useThemeColor(theme.color.background);
   const textColor = useThemeColor(theme.color.text);
   const textSecondary = useThemeColor(theme.color.textSecondary);
+  const cardBg = useThemeColor(theme.color.backgroundSecondary);
   const [showImageGenerator, setShowImageGenerator] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -113,49 +116,103 @@ export default function Devotional() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.titleRow}>
-            <View>
-              <Text style={[styles.date, { color: textColor }]}>
+            <View style={styles.headerTextSection}>
+              <Text style={[styles.date, { color: textSecondary }]}>
                 {dateString}
               </Text>
               <Text style={[styles.title, { color: textColor }]}>
-                Devotional
+                Daily Devotional
+              </Text>
+              <Text style={[styles.subtitle, { color: textSecondary }]}>
+                Spiritual nourishment for your day
               </Text>
             </View>
-            <TouchableOpacity
-              style={styles.refreshButton}
-              onPress={() => fetchVerseOfTheDay()}
-            >
-              <MaterialCommunityIcons
-                name="refresh"
-                size={32}
-                color={textColor}
-              />
-            </TouchableOpacity>
+            <View style={styles.headerActions}>
+              <TouchableOpacity
+                style={styles.headerButton}
+                onPress={() => fetchVerseOfTheDay()}
+              >
+                <MaterialCommunityIcons
+                  name="refresh"
+                  size={24}
+                  color={textColor}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.headerButton}
+                onPress={() => setShowImageGenerator(true)}
+              >
+                <MaterialCommunityIcons
+                  name="share-variant"
+                  size={24}
+                  color={textColor}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
         {verseOfTheDay ? (
           <>
             {/* Title Card */}
-            <View style={styles.titleCard}>
+            <View style={[styles.titleCard, { backgroundColor: cardBg }]}>
+              <View style={styles.titleCardHeader}>
+                <View style={styles.titleCardIcon}>
+                  <MaterialCommunityIcons
+                    name="meditation"
+                    size={24}
+                    color={COLOR_ORANGE}
+                  />
+                </View>
+                <Text style={[styles.titleCardLabel, { color: textSecondary }]}>
+                  Today&apos;s Focus
+                </Text>
+              </View>
               <Text style={[styles.devotionalTitle, { color: textColor }]}>
                 {verseOfTheDay.title}
               </Text>
             </View>
 
-            {/* Verse Card */}
+            {/* Enhanced Verse Card */}
             <View style={styles.verseCard}>
-              <View style={styles.verseGradient}>
+              <LinearGradient
+                colors={[COLOR_ORANGE, "#ea580c"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.verseGradient}
+              >
+                <View style={styles.verseHeader}>
+                  <View style={styles.verseBadge}>
+                    <MaterialCommunityIcons
+                      name="book-open-variant"
+                      size={16}
+                      color={COLOR_WHITE}
+                    />
+                    <Text style={styles.verseBadgeText}>SCRIPTURE</Text>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.verseBookmark}
+                    onPress={() => {
+                      // Add bookmark functionality
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name="bookmark-outline"
+                      size={20}
+                      color={COLOR_WHITE}
+                    />
+                  </TouchableOpacity>
+                </View>
                 <Text style={styles.verseReference}>
                   {verseOfTheDay.reference}
                 </Text>
                 <Text style={styles.verseText}>
                   &quot;{verseOfTheDay.text}&quot;
                 </Text>
-              </View>
+              </LinearGradient>
             </View>
 
-            {/* Action Buttons */}
+            {/* Enhanced Action Buttons */}
             <View style={styles.actionButtons}>
               {/* Listen Button */}
               <TouchableOpacity
@@ -197,29 +254,73 @@ export default function Devotional() {
                   <Text style={styles.actionButtonText}>Share</Text>
                 </View>
               </TouchableOpacity>
+
+              {/* Notes Button */}
+              <TouchableOpacity
+                style={[styles.actionButton, styles.notesButton]}
+                onPress={() => {
+                  // Add notes functionality
+                }}
+              >
+                <View
+                  style={[styles.actionButtonInner, styles.notesButtonInner]}
+                >
+                  <MaterialCommunityIcons
+                    name="pencil-outline"
+                    size={28}
+                    color={COLOR_WHITE}
+                  />
+                  <Text style={styles.actionButtonText}>Notes</Text>
+                </View>
+              </TouchableOpacity>
             </View>
 
-            {/* Reflection Section */}
-            <View style={styles.reflectionSection}>
-              <Text style={[styles.reflectionTitle, { color: textColor }]}>
-                Reflection
-              </Text>
+            {/* Enhanced Reflection Section */}
+            <View
+              style={[styles.reflectionSection, { backgroundColor: cardBg }]}
+            >
+              <View style={styles.reflectionHeader}>
+                <View style={styles.reflectionIcon}>
+                  <MaterialCommunityIcons
+                    name="lightbulb-on"
+                    size={24}
+                    color={COLOR_PURPLE}
+                  />
+                </View>
+                <Text style={[styles.reflectionTitle, { color: textColor }]}>
+                  Daily Reflection
+                </Text>
+              </View>
               <Text
-                style={[styles.reflectionText, { color: textColor + "E0" }]}
+                style={[styles.reflectionText, { color: textColor + "D0" }]}
               >
                 {verseOfTheDay.reflection}
               </Text>
+
+              {/* Prayer Prompt */}
+              <View style={styles.prayerPrompt}>
+                <Text
+                  style={[styles.prayerPromptText, { color: textSecondary }]}
+                >
+                  🙏 Take a moment to pray about today&apos;s message...
+                </Text>
+              </View>
             </View>
           </>
         ) : (
           <View style={styles.loadingState}>
-            <MaterialCommunityIcons
-              name="book-open-page-variant"
-              size={64}
-              color={textColor + "30"}
-            />
+            <View style={styles.loadingIcon}>
+              <MaterialCommunityIcons
+                name="book-open-page-variant"
+                size={48}
+                color={COLOR_ORANGE}
+              />
+            </View>
             <Text style={[styles.loadingText, { color: textColor + "70" }]}>
               Loading today&apos;s devotional...
+            </Text>
+            <Text style={[styles.loadingSubtext, { color: textColor + "50" }]}>
+              Preparing your spiritual nourishment
             </Text>
           </View>
         )}
@@ -243,6 +344,7 @@ const styles = StyleSheet.create({
     borderRadius: appleDesign.borderRadius.lg,
     flex: 1,
     overflow: "hidden",
+    ...appleDesign.shadows.sm,
   },
   actionButtonInner: {
     alignItems: "center",
@@ -282,14 +384,48 @@ const styles = StyleSheet.create({
     fontSize: appleDesign.typography.fontSize.title1,
     fontWeight: appleDesign.typography.fontWeight.bold,
     lineHeight: appleDesign.typography.lineHeight.title1,
+    marginTop: appleDesign.spacing.sm,
   },
   header: {
     marginBottom: appleDesign.spacing.xxl,
   },
+  headerActions: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: appleDesign.spacing.sm,
+  },
+  headerButton: {
+    alignItems: "center",
+    backgroundColor: colors.backgroundSecondary,
+    borderRadius: appleDesign.borderRadius.lg,
+    height: 44,
+    justifyContent: "center",
+    width: 44,
+    ...appleDesign.shadows.sm,
+  },
+  headerTextSection: {
+    flex: 1,
+  },
+  loadingIcon: {
+    alignItems: "center",
+    backgroundColor: COLOR_ORANGE + "20",
+    borderRadius: appleDesign.borderRadius.round,
+    height: 96,
+    justifyContent: "center",
+    marginBottom: appleDesign.spacing.xl,
+    width: 96,
+  },
   loadingState: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 60,
+    paddingVertical: 80,
+  },
+  loadingSubtext: {
+    fontSize: appleDesign.typography.fontSize.subheadline,
+    fontWeight: appleDesign.typography.fontWeight.regular,
+    lineHeight: appleDesign.typography.lineHeight.subheadline,
+    marginTop: appleDesign.spacing.sm,
+    textAlign: "center",
   },
   loadingText: {
     fontSize: appleDesign.typography.fontSize.callout,
@@ -297,8 +433,40 @@ const styles = StyleSheet.create({
     lineHeight: appleDesign.typography.lineHeight.callout,
     marginTop: appleDesign.spacing.md,
   },
+  notesButton: {},
+  notesButtonInner: {
+    backgroundColor: COLOR_BLUE,
+  },
+  prayerPrompt: {
+    backgroundColor: colors.background.tertiary,
+    borderRadius: appleDesign.borderRadius.lg,
+    marginTop: appleDesign.spacing.xl,
+    padding: appleDesign.spacing.lg,
+  },
+  prayerPromptText: {
+    fontSize: appleDesign.typography.fontSize.subheadline,
+    fontStyle: "italic",
+    lineHeight: appleDesign.typography.lineHeight.subheadline,
+  },
+  reflectionHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: appleDesign.spacing.md,
+    marginBottom: appleDesign.spacing.lg,
+  },
+  reflectionIcon: {
+    alignItems: "center",
+    backgroundColor: COLOR_PURPLE + "20",
+    borderRadius: appleDesign.borderRadius.md,
+    height: 40,
+    justifyContent: "center",
+    width: 40,
+  },
   reflectionSection: {
+    borderRadius: appleDesign.borderRadius.lg,
     marginBottom: appleDesign.spacing.xxl,
+    padding: appleDesign.spacing.xl,
+    ...appleDesign.shadows.sm,
   },
   reflectionText: {
     fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
@@ -310,13 +478,6 @@ const styles = StyleSheet.create({
     fontSize: appleDesign.typography.fontSize.title2,
     fontWeight: appleDesign.typography.fontWeight.bold,
     lineHeight: appleDesign.typography.lineHeight.title2,
-    marginBottom: appleDesign.spacing.lg,
-  },
-  refreshButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: appleDesign.button.height.medium,
-    minWidth: appleDesign.button.height.medium,
   },
   scrollContent: {
     paddingHorizontal: appleDesign.spacing.xl,
@@ -328,6 +489,12 @@ const styles = StyleSheet.create({
   shareButtonInner: {
     backgroundColor: COLOR_BLUE,
   },
+  subtitle: {
+    fontSize: appleDesign.typography.fontSize.subheadline,
+    fontWeight: appleDesign.typography.fontWeight.regular,
+    lineHeight: appleDesign.typography.lineHeight.subheadline,
+    marginTop: appleDesign.spacing.xs,
+  },
   title: {
     fontSize: appleDesign.typography.fontSize.largeTitle,
     fontWeight: appleDesign.typography.fontWeight.heavy,
@@ -335,24 +502,77 @@ const styles = StyleSheet.create({
     lineHeight: appleDesign.typography.lineHeight.largeTitle,
   },
   titleCard: {
+    borderRadius: appleDesign.borderRadius.lg,
     marginBottom: appleDesign.spacing.xl,
+    padding: appleDesign.spacing.xl,
+    ...appleDesign.shadows.sm,
+  },
+  titleCardHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: appleDesign.spacing.md,
+    marginBottom: appleDesign.spacing.sm,
+  },
+  titleCardIcon: {
+    alignItems: "center",
+    backgroundColor: COLOR_ORANGE + "20",
+    borderRadius: appleDesign.borderRadius.sm,
+    height: 32,
+    justifyContent: "center",
+    width: 32,
+  },
+  titleCardLabel: {
+    fontSize: appleDesign.typography.fontSize.caption1,
+    fontWeight: appleDesign.typography.fontWeight.semibold,
+    letterSpacing: appleDesign.typography.letterSpacing.wide,
+    lineHeight: appleDesign.typography.lineHeight.caption1,
+    textTransform: "uppercase",
   },
   titleRow: {
-    alignItems: "center",
+    alignItems: "flex-start",
     flexDirection: "row",
     justifyContent: "space-between",
   },
+  verseBadge: {
+    alignItems: "center",
+    backgroundColor: colors.background.overlay,
+    borderRadius: appleDesign.borderRadius.md,
+    flexDirection: "row",
+    gap: appleDesign.spacing.xs,
+    paddingHorizontal: appleDesign.spacing.md,
+    paddingVertical: appleDesign.spacing.xs,
+  },
+  verseBadgeText: {
+    color: COLOR_WHITE,
+    fontSize: appleDesign.typography.fontSize.caption1,
+    fontWeight: appleDesign.typography.fontWeight.bold,
+    letterSpacing: appleDesign.typography.letterSpacing.wide,
+    lineHeight: appleDesign.typography.lineHeight.caption1,
+  },
+  verseBookmark: {
+    alignItems: "center",
+    backgroundColor: colors.background.overlay,
+    borderRadius: appleDesign.borderRadius.md,
+    height: 36,
+    justifyContent: "center",
+    width: 36,
+  },
   verseCard: {
-    borderRadius: appleDesign.borderRadius.lg,
+    borderRadius: appleDesign.borderRadius.xl,
     marginBottom: appleDesign.spacing.xl,
     overflow: "hidden",
-    ...appleDesign.shadows.md,
+    ...appleDesign.shadows.lg,
   },
   verseGradient: {
-    backgroundColor: COLOR_ORANGE,
     justifyContent: "center",
-    minHeight: 200,
-    padding: appleDesign.spacing.xxl,
+    minHeight: 220,
+    padding: appleDesign.spacing.xl,
+  },
+  verseHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: appleDesign.spacing.lg,
   },
   verseReference: {
     color: COLOR_WHITE,
@@ -366,9 +586,9 @@ const styles = StyleSheet.create({
   verseText: {
     color: COLOR_WHITE,
     fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
-    fontSize: appleDesign.typography.fontSize.title3,
+    fontSize: appleDesign.typography.fontSize.title2,
     fontStyle: "italic",
     fontWeight: appleDesign.typography.fontWeight.semibold,
-    lineHeight: 30,
+    lineHeight: 32,
   },
 });

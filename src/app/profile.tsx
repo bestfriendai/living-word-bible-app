@@ -9,15 +9,18 @@ import {
   Alert,
   Image,
   TextInput,
+  Dimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
 import { appleDesign } from "@/theme/appleDesign";
+import { spacing, borderRadius, fontSize, fontWeight } from "@/theme/spacing";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface UserProfile {
   fullName: string;
@@ -204,14 +207,14 @@ export default function ProfileScreen() {
             {profile.avatar ? (
               <Image source={{ uri: profile.avatar }} style={styles.avatar} />
             ) : (
-              <View
-                style={[
-                  styles.avatarPlaceholder,
-                  { backgroundColor: primaryColor },
-                ]}
+              <LinearGradient
+                colors={[primaryColor, secondaryColor]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.avatarPlaceholder}
               >
-                <MaterialCommunityIcons name="account" size={40} color="#fff" />
-              </View>
+                <MaterialCommunityIcons name="account" size={48} color="#fff" />
+              </LinearGradient>
             )}
             <View style={styles.editAvatarIcon}>
               <MaterialCommunityIcons name="camera" size={16} color="#fff" />
@@ -232,7 +235,7 @@ export default function ProfileScreen() {
                 <TouchableOpacity onPress={handleNameEdit}>
                   <MaterialCommunityIcons
                     name="check"
-                    size={20}
+                    size={24}
                     color={theme.color.success.light}
                   />
                 </TouchableOpacity>
@@ -247,17 +250,31 @@ export default function ProfileScreen() {
                 </Text>
                 <MaterialCommunityIcons
                   name="pencil"
-                  size={16}
-                  color={textColor}
+                  size={18}
+                  color={textColor + "80"}
                 />
               </TouchableOpacity>
             )}
             <Text style={[styles.profileEmail, { color: textColor + "80" }]}>
               {profile.email}
             </Text>
-            <Text style={[styles.memberSince, { color: textColor + "60" }]}>
-              Member since {formatDate(profile.joinedAt)}
-            </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: spacing.xs,
+              }}
+            >
+              <MaterialCommunityIcons
+                name="calendar"
+                size={14}
+                color={textColor + "60"}
+                style={{ marginRight: spacing.xs }}
+              />
+              <Text style={[styles.memberSince, { color: textColor + "60" }]}>
+                Member since {formatDate(profile.joinedAt)}
+              </Text>
+            </View>
           </View>
         </View>
 
@@ -561,182 +578,200 @@ export default function ProfileScreen() {
   );
 }
 
+const { width } = Dimensions.get("window");
+
 const styles = StyleSheet.create({
   actionItem: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 12,
+    gap: spacing.md,
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
   },
   actionText: {
     flex: 1,
-    fontSize: 16,
+    fontSize: fontSize.md,
   },
   avatar: {
-    borderRadius: 40,
-    height: 80,
-    width: 80,
+    borderRadius: 50,
+    height: 100,
+    width: 100,
   },
   avatarContainer: {
-    marginRight: 16,
+    marginRight: spacing.lg,
     position: "relative",
   },
   avatarPlaceholder: {
     alignItems: "center",
-    borderRadius: 40,
-    height: 80,
+    borderRadius: 50,
+    height: 100,
     justifyContent: "center",
-    width: 80,
+    width: 100,
   },
   container: {
     flex: 1,
   },
   content: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing.lg,
   },
   editAvatarIcon: {
     alignItems: "center",
-    backgroundColor: "#000",
-    borderRadius: 12,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    borderRadius: borderRadius.full,
     bottom: 0,
-    height: 24,
+    height: 28,
     justifyContent: "center",
     position: "absolute",
     right: 0,
-    width: 24,
+    width: 28,
   },
   header: {
     alignItems: "center",
     borderBottomWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.semibold,
   },
   memberSince: {
-    fontSize: 12,
-    marginTop: 2,
+    fontSize: fontSize.xs,
+    marginTop: spacing.xs,
   },
   nameContainer: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 8,
+    gap: spacing.sm,
   },
   nameEditContainer: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 8,
+    gap: spacing.sm,
   },
   nameInput: {
     borderBottomWidth: 1,
     flex: 1,
-    fontSize: 20,
-    fontWeight: "600",
-    paddingVertical: 4,
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.semibold,
+    paddingVertical: spacing.xs,
   },
   profileEmail: {
-    fontSize: 14,
-    marginTop: 4,
+    fontSize: fontSize.sm,
+    marginTop: spacing.xs,
   },
   profileInfo: {
     flex: 1,
   },
   profileName: {
-    fontSize: 20,
-    fontWeight: "600",
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.semibold,
   },
   profileSection: {
     alignItems: "center",
-    borderRadius: 16,
+    borderRadius: borderRadius.xl,
+    elevation: 4,
     flexDirection: "row",
-    marginBottom: 24,
-    marginTop: 20,
-    padding: 20,
+    marginBottom: spacing.xl,
+    marginTop: spacing.lg,
+    padding: spacing.lg,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
   },
   section: {
-    borderRadius: 12,
-    marginBottom: 20,
-    padding: 4,
+    borderRadius: borderRadius.xl,
+    elevation: 2,
+    marginBottom: spacing.lg,
+    padding: spacing.xs,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
   },
   settingItem: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
   },
   settingLeft: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 12,
+    gap: spacing.md,
   },
   settingRight: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 8,
+    gap: spacing.sm,
   },
   settingText: {
-    fontSize: 16,
+    fontSize: fontSize.md,
   },
   settingValue: {
-    fontSize: 14,
+    fontSize: fontSize.sm,
   },
   signOutButton: {
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: borderRadius.xl,
     borderWidth: 1,
     flexDirection: "row",
-    gap: 8,
+    gap: spacing.sm,
     justifyContent: "center",
-    marginBottom: 40,
-    padding: 16,
+    marginBottom: spacing.xl,
+    padding: spacing.md,
   },
   signOutText: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
   },
   statCard: {
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: borderRadius.xl,
+    elevation: 3,
     flex: 1,
-    padding: 16,
+    padding: spacing.lg,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
   },
   statEmoji: {
-    fontSize: 24,
+    fontSize: fontSize.xl,
   },
   statIcon: {
     alignItems: "center",
-    borderRadius: 24,
-    height: 48,
+    borderRadius: borderRadius.full,
+    height: 56,
     justifyContent: "center",
-    marginBottom: 8,
-    width: 48,
+    marginBottom: spacing.sm,
+    width: 56,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.medium,
     textAlign: "center",
   },
   statNumber: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 4,
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.semibold,
+    marginBottom: spacing.xs,
   },
   statsContainer: {
     flexDirection: "row",
-    gap: 12,
-    marginBottom: 24,
+    gap: spacing.md,
+    marginBottom: spacing.xl,
   },
 });

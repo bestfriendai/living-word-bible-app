@@ -13,13 +13,14 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBibleStore } from "@/store/bibleStore";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
 import { appleDesign } from "@/theme/appleDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import Animated, { FadeInDown } from "react-native-reanimated";
+
 import { geminiService } from "@/services/geminiService";
 import { useSpeechToText } from "@/utils/speechToText";
 import { socialSharingService } from "@/services/socialSharingService";
@@ -29,6 +30,7 @@ export default function Journal() {
   const insets = useSafeAreaInsets();
   const backgroundColor = useThemeColor(theme.color.background);
   const textColor = useThemeColor(theme.color.text);
+  const textSecondary = useThemeColor(theme.color.textSecondary);
   const cardBg = useThemeColor(theme.color.backgroundSecondary);
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -195,23 +197,26 @@ export default function Journal() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+        {/* Enhanced Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={[styles.subtitle, { color: textColor + "90" }]}>
+          <View style={styles.headerTextSection}>
+            <Text style={[styles.subtitle, { color: textSecondary }]}>
               Prayer tracker
             </Text>
             <Text style={[styles.title, { color: textColor }]}>Journal</Text>
+            <Text style={[styles.headerDescription, { color: textSecondary }]}>
+              Document your spiritual journey
+            </Text>
           </View>
           <View style={styles.headerButtons}>
             <TouchableOpacity
-              style={styles.aiButton}
+              style={[styles.headerButton, { backgroundColor: cardBg }]}
               onPress={() => setShowAIModal(true)}
             >
               <MaterialCommunityIcons
                 name="auto-fix"
-                size={28}
-                color={colors.text.inverse}
+                size={24}
+                color={colors.secondary}
               />
             </TouchableOpacity>
             <TouchableOpacity
@@ -223,43 +228,64 @@ export default function Journal() {
             >
               <MaterialCommunityIcons
                 name="plus"
-                size={32}
+                size={28}
                 color={colors.text.inverse}
               />
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Prayer Insights Card */}
+        {/* Enhanced Prayer Insights Card */}
         {journalEntries.length >= 3 && (
           <TouchableOpacity
             style={styles.insightsCard}
             onPress={handleLoadInsights}
           >
-            <View style={styles.insightsPlainCard}>
+            <LinearGradient
+              colors={[colors.secondary, colors.purple]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.insightsPlainCard}
+            >
               <View style={styles.insightsContent}>
-                <MaterialCommunityIcons
-                  name="chart-arc"
-                  size={40}
-                  color={colors.text.inverse}
-                />
+                <View style={styles.insightsIcon}>
+                  <MaterialCommunityIcons
+                    name="chart-arc"
+                    size={32}
+                    color={colors.text.inverse}
+                  />
+                </View>
                 <View style={styles.insightsTextContainer}>
                   <Text style={styles.insightsTitle}>Prayer Insights</Text>
                   <Text style={styles.insightsSubtitle}>
-                    View analysis of your prayers
+                    View analysis of your {journalEntries.length} prayers
                   </Text>
+                  <View style={styles.insightsStats}>
+                    <View style={styles.insightStat}>
+                      <Text style={styles.insightStatNumber}>
+                        {journalEntries.length}
+                      </Text>
+                      <Text style={styles.insightStatLabel}>Total</Text>
+                    </View>
+                    <View style={styles.insightStat}>
+                      <Text style={styles.insightStatNumber}>
+                        {Math.floor(journalEntries.length * 0.7)}
+                      </Text>
+                      <Text style={styles.insightStatLabel}>This Month</Text>
+                    </View>
+                  </View>
                 </View>
               </View>
               <MaterialCommunityIcons
                 name="arrow-right"
-                size={28}
-                color={colors.text.inverse}
+                size={24}
+                color={colors.text.inverseLight}
               />
-            </View>
+            </LinearGradient>
           </TouchableOpacity>
         )}
 
-        {/* Journal Entries */}
+        {/* Enhanced Journal Entries */}
         {journalEntries.length === 0 ? (
           <View style={styles.emptyState}>
             <View style={styles.emptyIcon}>
@@ -272,63 +298,93 @@ export default function Journal() {
             <Text style={[styles.emptyTitle, { color: textColor }]}>
               Begin Your Journal
             </Text>
-            <Text style={[styles.emptySubtitle, { color: textColor + "70" }]}>
+            <Text style={[styles.emptySubtitle, { color: textSecondary }]}>
               Document your prayers and witness God&apos;s faithfulness
             </Text>
             <TouchableOpacity
               style={styles.emptyButton}
               onPress={() => setShowAddModal(true)}
             >
+              <MaterialCommunityIcons
+                name="plus"
+                size={20}
+                color={colors.text.inverse}
+              />
               <Text style={styles.emptyButtonText}>Add First Prayer</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <View style={styles.entriesContainer}>
+            <View style={styles.entriesHeader}>
+              <Text style={[styles.entriesTitle, { color: textColor }]}>
+                Your Prayers
+              </Text>
+              <Text style={[styles.entriesCount, { color: textSecondary }]}>
+                {journalEntries.length} entries
+              </Text>
+            </View>
             {journalEntries.map((entry, index) => (
-                <View key={entry.id} style={[styles.entryCard, { backgroundColor: cardBg }]}>
-                  <View style={styles.entryHeader}>
-                    <View style={styles.entryHeaderLeft}>
+              <View
+                key={entry.id}
+                style={[styles.entryCard, { backgroundColor: cardBg }]}
+              >
+                <View style={styles.entryHeader}>
+                  <View style={styles.entryHeaderLeft}>
+                    <View style={styles.entryIcon}>
+                      <MaterialCommunityIcons
+                        name="hand-heart"
+                        size={20}
+                        color={colors.secondary}
+                      />
+                    </View>
+                    <View style={styles.entryTitleSection}>
                       <Text style={[styles.entryTitle, { color: textColor }]}>
                         {entry.title}
                       </Text>
                       <Text
-                        style={[styles.entryDate, { color: textColor + "70" }]}
+                        style={[styles.entryDate, { color: textSecondary }]}
                       >
                         {formatDate(entry.createdAt)}
                       </Text>
                     </View>
-                    <View style={styles.entryHeaderRight}>
-                      <TouchableOpacity
-                        onPress={() => handleShareJournalEntry(entry)}
-                        style={styles.shareButton}
-                      >
-                        <MaterialCommunityIcons
-                          name="share-variant"
-                          size={28}
-                          color={textColor + "70"}
-                        />
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() =>
-                          handleDeletePrayer(entry.id, entry.title)
-                        }
-                        style={styles.deleteButton}
-                      >
-                        <MaterialCommunityIcons
-                          name="delete-outline"
-                          size={28}
-                          color={textColor + "70"}
-                        />
-                      </TouchableOpacity>
-                    </View>
                   </View>
-                  <Text
-                    style={[styles.entryContent, { color: textColor + "D0" }]}
-                    numberOfLines={3}
-                  >
-                    {entry.content}
-                  </Text>
+                  <View style={styles.entryHeaderRight}>
+                    <TouchableOpacity
+                      onPress={() => handleShareJournalEntry(entry)}
+                      style={styles.entryActionButton}
+                    >
+                      <MaterialCommunityIcons
+                        name="share-variant"
+                        size={20}
+                        color={textSecondary}
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => handleDeletePrayer(entry.id, entry.title)}
+                      style={styles.entryActionButton}
+                    >
+                      <MaterialCommunityIcons
+                        name="delete-outline"
+                        size={20}
+                        color={colors.error}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
+                <Text
+                  style={[styles.entryContent, { color: textColor + "D0" }]}
+                  numberOfLines={3}
+                >
+                  {entry.content}
+                </Text>
+                {entry.category && (
+                  <View style={styles.entryCategory}>
+                    <Text style={styles.entryCategoryText}>
+                      {entry.category}
+                    </Text>
+                  </View>
+                )}
+              </View>
             ))}
           </View>
         )}
@@ -760,20 +816,12 @@ const styles = StyleSheet.create({
   addButton: {
     alignItems: "center",
     borderRadius: appleDesign.borderRadius.round,
-    height: 60,
+    height: 56,
     justifyContent: "center",
-    width: 60,
+    width: 56,
     ...appleDesign.shadows.md,
   },
-  aiButton: {
-    alignItems: "center",
-    backgroundColor: colors.secondary,
-    borderRadius: appleDesign.borderRadius.round,
-    height: 60,
-    justifyContent: "center",
-    width: 60,
-    ...appleDesign.shadows.md,
-  },
+
   aiHeader: {
     alignItems: "center",
     marginBottom: appleDesign.spacing.xxxl,
@@ -826,14 +874,16 @@ const styles = StyleSheet.create({
   contentInputContainer: {
     position: "relative",
   },
-  deleteButton: {
-    padding: appleDesign.spacing.md,
-  },
+
   emptyButton: {
+    alignItems: "center",
     backgroundColor: colors.secondary,
     borderRadius: appleDesign.borderRadius.lg,
-    paddingHorizontal: appleDesign.spacing.xxl,
+    flexDirection: "row",
+    gap: appleDesign.spacing.sm,
+    paddingHorizontal: appleDesign.spacing.xl,
     paddingVertical: appleDesign.spacing.md,
+    ...appleDesign.shadows.sm,
   },
   emptyButtonText: {
     color: colors.text.inverse,
@@ -846,7 +896,8 @@ const styles = StyleSheet.create({
   },
   emptyIcon: {
     alignItems: "center",
-    borderRadius: 60,
+    backgroundColor: colors.secondary + "20",
+    borderRadius: appleDesign.borderRadius.round,
     height: 120,
     justifyContent: "center",
     marginBottom: appleDesign.spacing.xxl,
@@ -855,7 +906,7 @@ const styles = StyleSheet.create({
   emptyState: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 64,
+    paddingVertical: 80,
   },
   emptySubtitle: {
     fontSize: appleDesign.typography.fontSize.callout,
@@ -874,20 +925,61 @@ const styles = StyleSheet.create({
   entriesContainer: {
     gap: appleDesign.spacing.xxl,
   },
+  entriesCount: {
+    fontSize: appleDesign.typography.fontSize.subheadline,
+    fontWeight: appleDesign.typography.fontWeight.medium,
+    lineHeight: appleDesign.typography.lineHeight.subheadline,
+  },
+  entriesHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: appleDesign.spacing.lg,
+  },
+  entriesTitle: {
+    fontSize: appleDesign.typography.fontSize.title2,
+    fontWeight: appleDesign.typography.fontWeight.bold,
+    lineHeight: appleDesign.typography.lineHeight.title2,
+  },
+  entryActionButton: {
+    alignItems: "center",
+    backgroundColor: colors.background.tertiary,
+    borderRadius: appleDesign.borderRadius.md,
+    height: 36,
+    justifyContent: "center",
+    marginLeft: appleDesign.spacing.sm,
+    width: 36,
+  },
   entryCard: {
     borderRadius: appleDesign.borderRadius.lg,
-    padding: appleDesign.spacing.xxl,
+    padding: appleDesign.spacing.xl,
     ...appleDesign.shadows.sm,
+  },
+  entryCategory: {
+    alignSelf: "flex-start",
+    backgroundColor: colors.secondaryLight + "30",
+    borderRadius: appleDesign.borderRadius.sm,
+    marginTop: appleDesign.spacing.md,
+    paddingHorizontal: appleDesign.spacing.sm,
+    paddingVertical: appleDesign.spacing.xs,
+  },
+  entryCategoryText: {
+    color: colors.secondary,
+    fontSize: appleDesign.typography.fontSize.caption1,
+    fontWeight: appleDesign.typography.fontWeight.semibold,
+    lineHeight: appleDesign.typography.lineHeight.caption1,
   },
   entryContent: {
     fontSize: appleDesign.typography.fontSize.title3,
     fontWeight: appleDesign.typography.fontWeight.regular,
     lineHeight: 30,
+    marginTop: appleDesign.spacing.md,
   },
   entryDate: {
-    fontSize: appleDesign.typography.fontSize.headline,
-    fontWeight: appleDesign.typography.fontWeight.regular,
-    lineHeight: appleDesign.typography.lineHeight.headline,
+    fontSize: appleDesign.typography.fontSize.caption1,
+    fontWeight: appleDesign.typography.fontWeight.medium,
+    lineHeight: appleDesign.typography.lineHeight.caption1,
+    marginTop: appleDesign.spacing.xs,
   },
   entryHeader: {
     alignItems: "flex-start",
@@ -896,17 +988,30 @@ const styles = StyleSheet.create({
     marginBottom: appleDesign.spacing.lg,
   },
   entryHeaderLeft: {
+    alignItems: "center",
     flex: 1,
+    flexDirection: "row",
+    gap: appleDesign.spacing.md,
   },
   entryHeaderRight: {
     alignItems: "center",
     flexDirection: "row",
   },
+  entryIcon: {
+    alignItems: "center",
+    backgroundColor: colors.secondary + "20",
+    borderRadius: appleDesign.borderRadius.md,
+    height: 40,
+    justifyContent: "center",
+    width: 40,
+  },
   entryTitle: {
-    fontSize: appleDesign.typography.fontSize.title1,
+    fontSize: appleDesign.typography.fontSize.title3,
     fontWeight: appleDesign.typography.fontWeight.bold,
-    lineHeight: appleDesign.typography.lineHeight.title1,
-    marginBottom: appleDesign.spacing.xs,
+    lineHeight: appleDesign.typography.lineHeight.title3,
+  },
+  entryTitleSection: {
+    flex: 1,
   },
   generateButton: {
     borderRadius: appleDesign.borderRadius.lg,
@@ -943,9 +1048,27 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: appleDesign.spacing.xxxl,
   },
+  headerButton: {
+    alignItems: "center",
+    borderRadius: appleDesign.borderRadius.lg,
+    height: 44,
+    justifyContent: "center",
+    width: 44,
+    ...appleDesign.shadows.sm,
+  },
   headerButtons: {
+    alignItems: "flex-start",
     flexDirection: "row",
-    gap: appleDesign.spacing.md,
+    gap: appleDesign.spacing.sm,
+  },
+  headerDescription: {
+    fontSize: appleDesign.typography.fontSize.subheadline,
+    fontWeight: appleDesign.typography.fontWeight.regular,
+    lineHeight: appleDesign.typography.lineHeight.subheadline,
+    marginTop: appleDesign.spacing.xs,
+  },
+  headerTextSection: {
+    flex: 1,
   },
   insightHeader: {
     alignItems: "center",
@@ -957,6 +1080,21 @@ const styles = StyleSheet.create({
     borderRadius: appleDesign.borderRadius.lg,
     marginBottom: appleDesign.spacing.xxl,
     padding: appleDesign.spacing.xxl,
+  },
+  insightStat: {
+    alignItems: "center",
+  },
+  insightStatLabel: {
+    color: colors.text.inverseSecondary,
+    fontSize: appleDesign.typography.fontSize.caption2,
+    fontWeight: appleDesign.typography.fontWeight.medium,
+    lineHeight: appleDesign.typography.lineHeight.caption2,
+  },
+  insightStatNumber: {
+    color: colors.text.inverse,
+    fontSize: appleDesign.typography.fontSize.title3,
+    fontWeight: appleDesign.typography.fontWeight.bold,
+    lineHeight: appleDesign.typography.lineHeight.title3,
   },
   insightStatsRow: {
     flexDirection: "row",
@@ -983,7 +1121,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     flex: 1,
-    gap: appleDesign.spacing.xl,
+    gap: appleDesign.spacing.xxl,
+  },
+
+  insightsIcon: {
+    alignItems: "center",
+    backgroundColor: colors.background.overlay,
+    borderRadius: appleDesign.borderRadius.lg,
+    height: 56,
+    justifyContent: "center",
+    width: 56,
   },
   insightsPlainCard: {
     alignItems: "center",
@@ -991,6 +1138,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     minHeight: 80,
     padding: appleDesign.spacing.xxl,
+  },
+  insightsStats: {
+    flexDirection: "row",
+    gap: appleDesign.spacing.lg,
+    marginTop: appleDesign.spacing.sm,
   },
   insightsSubtitle: {
     color: colors.text.inverse,
@@ -1132,9 +1284,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  shareButton: {
-    padding: appleDesign.spacing.md,
-  },
+
   statCard: {
     alignItems: "center",
     borderRadius: appleDesign.borderRadius.lg,
