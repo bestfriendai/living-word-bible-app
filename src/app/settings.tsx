@@ -29,12 +29,12 @@ export default function Settings() {
   const { themeMode, isDark, setThemeMode, toggleTheme } = useAppTheme();
 
   const handleThemeModeChange = async (mode: ThemeMode) => {
-    await hapticPatterns.selection();
+    await hapticPatterns.buttonPress();
     setThemeMode(mode);
   };
 
   const handleToggleTheme = async () => {
-    await hapticPatterns.selection();
+    await hapticPatterns.buttonPress();
     toggleTheme();
   };
 

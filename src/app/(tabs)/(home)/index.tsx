@@ -129,20 +129,39 @@ export default function Home() {
                 Living Word
               </Text>
             </View>
-            <Pressable
-              onPress={() => hapticPatterns.buttonPress()}
-              style={({ pressed }) => [
-                styles.profileButton,
-                { backgroundColor: cardBg },
-                pressed && styles.pressedOpacity,
-              ]}
-            >
-              <MaterialCommunityIcons
-                name="account-circle-outline"
-                size={28}
-                color={textColor}
-              />
-            </Pressable>
+            <View style={styles.headerButtons}>
+              <Pressable
+                onPress={async () => {
+                  await hapticPatterns.buttonPress();
+                  router.push("/settings");
+                }}
+                style={({ pressed }) => [
+                  styles.iconButton,
+                  { backgroundColor: cardBg },
+                  pressed && styles.pressedOpacity,
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name="cog-outline"
+                  size={24}
+                  color={textColor}
+                />
+              </Pressable>
+              <Pressable
+                onPress={() => hapticPatterns.buttonPress()}
+                style={({ pressed }) => [
+                  styles.iconButton,
+                  { backgroundColor: cardBg },
+                  pressed && styles.pressedOpacity,
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name="account-circle-outline"
+                  size={24}
+                  color={textColor}
+                />
+              </Pressable>
+            </View>
           </View>
         </MotiView>
 
@@ -657,6 +676,28 @@ const styles = StyleSheet.create({
   },
   pressedOpacity: {
     opacity: 0.7,
+  },
+  headerButtons: {
+    flexDirection: "row" as const,
+    gap: 12,
+  },
+  iconButton: {
+    alignItems: "center" as const,
+    borderRadius: 22,
+    height: 44,
+    justifyContent: "center" as const,
+    width: 44,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
   },
   profileButton: {
     alignItems: "center",
