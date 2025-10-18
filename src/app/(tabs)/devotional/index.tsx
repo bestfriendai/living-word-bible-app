@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBibleStore } from "@/store/bibleStore";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
+import { appleDesign } from "@/theme/appleDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { VerseImageGenerator } from "@/components/VerseImageGenerator";
 import { ttsService } from "@/utils/textToSpeech";
@@ -239,26 +240,27 @@ export default function Devotional() {
 
 const styles = StyleSheet.create({
   actionButton: {
-    borderRadius: 12,
+    borderRadius: appleDesign.borderRadius.lg,
     flex: 1,
     overflow: "hidden",
   },
   actionButtonInner: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 10,
+    gap: appleDesign.spacing.md,
     justifyContent: "center",
-    paddingVertical: 18,
+    paddingVertical: appleDesign.spacing.lg,
   },
   actionButtonText: {
     color: COLOR_WHITE,
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: appleDesign.typography.fontSize.callout,
+    fontWeight: appleDesign.typography.fontWeight.semibold,
+    lineHeight: appleDesign.typography.lineHeight.callout,
   },
   actionButtons: {
     flexDirection: "row",
-    gap: 12,
-    marginBottom: 24,
+    gap: appleDesign.spacing.md,
+    marginBottom: appleDesign.spacing.xxl,
   },
   audioButton: {},
   audioButtonActive: {
@@ -271,16 +273,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   date: {
-    fontSize: 18,
-    marginBottom: 6,
+    fontSize: appleDesign.typography.fontSize.callout,
+    fontWeight: appleDesign.typography.fontWeight.medium,
+    lineHeight: appleDesign.typography.lineHeight.callout,
+    marginBottom: appleDesign.spacing.xs,
   },
   devotionalTitle: {
-    fontSize: 26,
-    fontWeight: "bold",
-    lineHeight: 34,
+    fontSize: appleDesign.typography.fontSize.title1,
+    fontWeight: appleDesign.typography.fontWeight.bold,
+    lineHeight: appleDesign.typography.lineHeight.title1,
   },
   header: {
-    marginBottom: 24,
+    marginBottom: appleDesign.spacing.xxl,
   },
   loadingState: {
     alignItems: "center",
@@ -288,31 +292,34 @@ const styles = StyleSheet.create({
     paddingVertical: 60,
   },
   loadingText: {
-    fontSize: 18,
-    marginTop: 12,
+    fontSize: appleDesign.typography.fontSize.callout,
+    fontWeight: appleDesign.typography.fontWeight.medium,
+    lineHeight: appleDesign.typography.lineHeight.callout,
+    marginTop: appleDesign.spacing.md,
   },
   reflectionSection: {
-    marginBottom: 24,
+    marginBottom: appleDesign.spacing.xxl,
   },
   reflectionText: {
     fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
-    fontSize: 18,
-    letterSpacing: 0.2,
-    lineHeight: 28,
+    fontSize: appleDesign.typography.fontSize.callout,
+    letterSpacing: appleDesign.typography.letterSpacing.normal,
+    lineHeight: appleDesign.typography.lineHeight.title2,
   },
   reflectionTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 16,
+    fontSize: appleDesign.typography.fontSize.title2,
+    fontWeight: appleDesign.typography.fontWeight.bold,
+    lineHeight: appleDesign.typography.lineHeight.title2,
+    marginBottom: appleDesign.spacing.lg,
   },
   refreshButton: {
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 48,
-    minWidth: 48,
+    minHeight: appleDesign.button.height.medium,
+    minWidth: appleDesign.button.height.medium,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: appleDesign.spacing.xl,
   },
   scrollView: {
     flex: 1,
@@ -322,12 +329,13 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR_BLUE,
   },
   title: {
-    fontSize: 34,
-    fontWeight: "bold",
-    letterSpacing: -0.5,
+    fontSize: appleDesign.typography.fontSize.largeTitle,
+    fontWeight: appleDesign.typography.fontWeight.heavy,
+    letterSpacing: appleDesign.typography.letterSpacing.tight,
+    lineHeight: appleDesign.typography.lineHeight.largeTitle,
   },
   titleCard: {
-    marginBottom: 20,
+    marginBottom: appleDesign.spacing.xl,
   },
   titleRow: {
     alignItems: "center",
@@ -335,41 +343,32 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   verseCard: {
-    borderRadius: 16,
-    marginBottom: 20,
+    borderRadius: appleDesign.borderRadius.lg,
+    marginBottom: appleDesign.spacing.xl,
     overflow: "hidden",
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-      },
-      android: {
-        elevation: 5,
-      },
-    }),
+    ...appleDesign.shadows.md,
   },
   verseGradient: {
     backgroundColor: COLOR_ORANGE,
     justifyContent: "center",
     minHeight: 200,
-    padding: 24,
+    padding: appleDesign.spacing.xxl,
   },
   verseReference: {
     color: COLOR_WHITE,
-    fontSize: 18,
-    fontWeight: "700",
-    letterSpacing: 0.8,
-    marginBottom: 16,
+    fontSize: appleDesign.typography.fontSize.callout,
+    fontWeight: appleDesign.typography.fontWeight.bold,
+    letterSpacing: appleDesign.typography.letterSpacing.wide,
+    lineHeight: appleDesign.typography.lineHeight.callout,
+    marginBottom: appleDesign.spacing.lg,
     textTransform: "uppercase",
   },
   verseText: {
     color: COLOR_WHITE,
     fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
-    fontSize: 20,
+    fontSize: appleDesign.typography.fontSize.title3,
     fontStyle: "italic",
-    fontWeight: "600",
+    fontWeight: appleDesign.typography.fontWeight.semibold,
     lineHeight: 30,
   },
 });

@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBibleStore } from "@/store/bibleStore";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
+import { appleDesign } from "@/theme/appleDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { MotiView } from "moti";
 import { bibleApiService } from "@/services/bibleApiService";
@@ -194,7 +195,6 @@ export default function ReadingPlanDay() {
             thickness={5}
             textStyle={{
               fontSize: 14,
-              fontFamily: "Montserrat-Bold",
               color: textColor,
             }}
           />
@@ -460,7 +460,6 @@ const styles = StyleSheet.create({
     }),
   },
   actionButtonText: {
-    fontFamily: "Montserrat-SemiBold",
     fontSize: 13,
   },
   actionsGrid: {
@@ -508,12 +507,10 @@ const styles = StyleSheet.create({
   },
   celebrationSubtext: {
     color: "rgba(255,255,255,0.9)",
-    fontFamily: "Montserrat-Medium",
     fontSize: 14,
   },
   celebrationText: {
     color: "#FFFFFF",
-    fontFamily: "Montserrat-Bold",
     fontSize: 20,
   },
   centerContent: {
@@ -535,7 +532,6 @@ const styles = StyleSheet.create({
   },
   completeButtonText: {
     color: "#FFFFFF",
-    fontFamily: "Montserrat-Bold",
     fontSize: 15,
   },
   completedBadge: {
@@ -551,7 +547,6 @@ const styles = StyleSheet.create({
   },
   completedText: {
     color: "#10b981",
-    fontFamily: "Montserrat-SemiBold",
     fontSize: 15,
   },
   container: {
@@ -580,7 +575,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   dayText: {
-    fontFamily: "Montserrat-Medium",
     fontSize: 13,
   },
   dot: {
@@ -590,7 +584,6 @@ const styles = StyleSheet.create({
     width: 3,
   },
   errorText: {
-    fontFamily: "Montserrat-Medium",
     fontSize: 14,
   },
   loadingContainer: {
@@ -601,7 +594,6 @@ const styles = StyleSheet.create({
     padding: 40,
   },
   loadingText: {
-    fontFamily: "Montserrat-Medium",
     fontSize: 13,
   },
   nextDayButton: {
@@ -617,11 +609,9 @@ const styles = StyleSheet.create({
   },
   nextDayText: {
     color: "#FFFFFF",
-    fontFamily: "Montserrat-Bold",
     fontSize: 14,
   },
   planName: {
-    fontFamily: "Montserrat-Bold",
     fontSize: 15,
     letterSpacing: -0.2,
     marginBottom: 4,
@@ -666,12 +656,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   progressStatLabel: {
-    fontFamily: "Montserrat-Medium",
     fontSize: 12,
     textAlign: "center",
   },
   progressStatValue: {
-    fontFamily: "Montserrat-Bold",
     fontSize: 18,
     marginBottom: 4,
   },
@@ -681,13 +669,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   progressTitle: {
-    fontFamily: "Montserrat-Bold",
     fontSize: 16,
     letterSpacing: -0.2,
     marginBottom: 16,
   },
   readingTitle: {
-    fontFamily: "Montserrat-Bold",
     fontSize: 22,
     letterSpacing: -0.5,
     lineHeight: 30,
@@ -704,7 +690,6 @@ const styles = StyleSheet.create({
   },
   referenceText: {
     color: "#667eea",
-    fontFamily: "Montserrat-SemiBold",
     fontSize: 13,
   },
   scrollContent: {
@@ -717,7 +702,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   verseContent: {
-    fontFamily: "Montserrat-Regular",
     fontSize: 16,
     letterSpacing: 0.2,
     lineHeight: 26,

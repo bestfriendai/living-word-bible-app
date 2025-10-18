@@ -57,13 +57,13 @@ export default function TabLayout() {
     >
       <NativeTabs.Trigger name="(home)">
         {Platform.select({
-          ios: <Icon sf="house" selectedColor={homeColor} />,
+          ios: <Icon sf="house.fill" selectedColor={homeColor} />,
           android: (
             <Icon
               src={
                 <VectorIcon
                   family={MaterialCommunityIcons as VectorIconFamily}
-                  name="home-heart-outline"
+                  name="home-heart"
                 />
               }
               selectedColor={homeColor}
@@ -76,13 +76,13 @@ export default function TabLayout() {
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="scripture">
         {Platform.select({
-          ios: <Icon sf="book" selectedColor={scriptureColor} />,
+          ios: <Icon sf="book.fill" selectedColor={scriptureColor} />,
           android: (
             <Icon
               src={
                 <VectorIcon
                   family={MaterialCommunityIcons as VectorIconFamily}
-                  name="book-open-outline"
+                  name="book-open-page-variant"
                 />
               }
               selectedColor={scriptureColor}
@@ -95,13 +95,13 @@ export default function TabLayout() {
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="devotional">
         {Platform.select({
-          ios: <Icon sf="heart.circle" selectedColor={devotionalColor} />,
+          ios: <Icon sf="heart.text.square.fill" selectedColor={devotionalColor} />,
           android: (
             <Icon
               src={
                 <VectorIcon
                   family={MaterialCommunityIcons as VectorIconFamily}
-                  name="meditation"
+                  name="flower-tulip"
                 />
               }
               selectedColor={devotionalColor}
@@ -116,13 +116,13 @@ export default function TabLayout() {
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="journal">
         {Platform.select({
-          ios: <Icon sf="hand.raised" selectedColor={prayerColor} />,
+          ios: <Icon sf="hand.raised.fill" selectedColor={prayerColor} />,
           android: (
             <Icon
               src={
                 <VectorIcon
                   family={MaterialCommunityIcons as VectorIconFamily}
-                  name="hand-heart-outline"
+                  name="hand-heart"
                 />
               }
               selectedColor={prayerColor}
@@ -137,7 +137,7 @@ export default function TabLayout() {
         {Platform.select({
           ios: (
             <Icon
-              sf="bubble.left.and.bubble.right"
+              sf="bubble.left.and.bubble.right.fill"
               selectedColor={prayerBuddyColor}
             />
           ),
@@ -146,7 +146,7 @@ export default function TabLayout() {
               src={
                 <VectorIcon
                   family={MaterialCommunityIcons as VectorIconFamily}
-                  name="robot-happy-outline"
+                  name="robot-happy"
                 />
               }
               selectedColor={prayerBuddyColor}

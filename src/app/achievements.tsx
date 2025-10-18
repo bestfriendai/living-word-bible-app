@@ -14,6 +14,7 @@ import { socialSharingService } from "@/services/socialSharingService";
 
 import type { Achievement } from "@/data/achievements";
 import { colors } from "@/theme/colors";
+import { appleDesign } from "@/theme/appleDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 export default function AchievementsScreen() {

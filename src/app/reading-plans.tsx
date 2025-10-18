@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBibleStore } from "@/store/bibleStore";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
+import { appleDesign } from "@/theme/appleDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { readingPlansData } from "@/data/readingPlans";
 import { MotiView } from "moti";
@@ -379,7 +380,6 @@ const styles = StyleSheet.create({
   },
   activeBadgeText: {
     color: "#FFFFFF",
-    fontFamily: "Montserrat-Bold",
     fontSize: 11,
     letterSpacing: 0.8,
   },
@@ -410,7 +410,6 @@ const styles = StyleSheet.create({
   },
   activePlanName: {
     color: "#FFFFFF",
-    fontFamily: "Montserrat-Bold",
     fontSize: 18,
     letterSpacing: -0.3,
     marginBottom: 12,
@@ -420,7 +419,6 @@ const styles = StyleSheet.create({
   },
   activeProgressText: {
     color: "rgba(255,255,255,0.9)",
-    fontFamily: "Montserrat-Medium",
     fontSize: 13,
   },
   container: {
@@ -440,7 +438,6 @@ const styles = StyleSheet.create({
     width: 6,
   },
   difficultyText: {
-    fontFamily: "Montserrat-SemiBold",
     fontSize: 12,
   },
   durationBadge: {
@@ -449,7 +446,6 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   durationText: {
-    fontFamily: "Montserrat-Medium",
     fontSize: 12,
   },
 
@@ -477,7 +473,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   filterText: {
-    fontFamily: "Montserrat-SemiBold",
     fontSize: 13,
   },
 
@@ -498,7 +493,6 @@ const styles = StyleSheet.create({
     }),
   },
   planDescription: {
-    fontFamily: "Montserrat-Regular",
     fontSize: 14,
     lineHeight: 20,
     marginBottom: 16,
@@ -512,7 +506,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   planName: {
-    fontFamily: "Montserrat-Bold",
     fontSize: 17,
     letterSpacing: -0.3,
     marginBottom: 8,
@@ -538,7 +531,6 @@ const styles = StyleSheet.create({
   },
   startButtonText: {
     color: "#667eea",
-    fontFamily: "Montserrat-Bold",
     fontSize: 14,
   },
 
@@ -566,7 +558,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   statsTitle: {
-    fontFamily: "Montserrat-Bold",
     fontSize: 16,
     letterSpacing: -0.2,
   },
@@ -587,12 +578,10 @@ const styles = StyleSheet.create({
     width: 40,
   },
   statValue: {
-    fontFamily: "Montserrat-Bold",
     fontSize: 20,
     marginBottom: 2,
   },
   statLabel: {
-    fontFamily: "Montserrat-Medium",
     fontSize: 11,
     textAlign: "center",
   },

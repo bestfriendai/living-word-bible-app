@@ -16,6 +16,7 @@ import { useBibleStore } from "@/store/bibleStore";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
 import { colors } from "@/theme/colors";
+import { appleDesign } from "@/theme/appleDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { MotiView } from "moti";
 import { hapticPatterns } from "@/utils/haptics";
@@ -443,41 +444,31 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   bentoCard: {
-    borderRadius: 20,
+    borderRadius: appleDesign.borderRadius.xl,
     overflow: "hidden",
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.06,
-        shadowRadius: 12,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
+    ...appleDesign.shadows.sm,
   },
   bentoCardGradient: {
-    borderRadius: 20,
-    gap: 8,
-    padding: 20,
+    borderRadius: appleDesign.borderRadius.xl,
+    gap: appleDesign.spacing.sm,
+    padding: appleDesign.spacing.xl,
   },
   bentoCardSmall: {
     minHeight: 120,
-    padding: 16,
+    padding: appleDesign.spacing.lg,
   },
   bentoCardWide: {
     minHeight: 140,
   },
   bentoGrid: {
-    gap: 12,
+    gap: appleDesign.spacing.md,
   },
   bentoIcon: {
     alignItems: "center",
-    borderRadius: 16,
+    borderRadius: appleDesign.borderRadius.lg,
     height: 56,
     justifyContent: "center",
-    marginBottom: 4,
+    marginBottom: appleDesign.spacing.xs,
     width: 56,
   },
   bentoIconBlue: {
@@ -491,10 +482,10 @@ const styles = StyleSheet.create({
   },
   bentoIconSmall: {
     alignItems: "center",
-    borderRadius: 14,
+    borderRadius: appleDesign.borderRadius.md,
     height: 48,
     justifyContent: "center",
-    marginBottom: 8,
+    marginBottom: appleDesign.spacing.sm,
     width: 48,
   },
   bentoIconViolet: {
@@ -502,26 +493,29 @@ const styles = StyleSheet.create({
   },
   bentoRow: {
     flexDirection: "row",
-    gap: 12,
+    gap: appleDesign.spacing.md,
   },
   bentoSmall: {
     flex: 1,
   },
   bentoSubtitle: {
-    fontFamily: "Montserrat-Medium",
-    fontSize: 15,
-    opacity: 0.8,
+    fontSize: appleDesign.typography.fontSize.subheadline,
+    fontWeight: appleDesign.typography.fontWeight.medium,
+    lineHeight: appleDesign.typography.lineHeight.subheadline,
+    opacity: appleDesign.opacity.strong,
   },
   bentoTitle: {
-    fontFamily: "Montserrat-Bold",
-    fontSize: 20,
-    letterSpacing: -0.3,
-    marginBottom: 4,
+    fontSize: appleDesign.typography.fontSize.title3,
+    fontWeight: appleDesign.typography.fontWeight.bold,
+    letterSpacing: appleDesign.typography.letterSpacing.tight,
+    lineHeight: appleDesign.typography.lineHeight.title3,
+    marginBottom: appleDesign.spacing.xs,
   },
   bentoTitleSmall: {
-    fontFamily: "Montserrat-Bold",
-    fontSize: 16,
-    letterSpacing: -0.2,
+    fontSize: appleDesign.typography.fontSize.headline,
+    fontWeight: appleDesign.typography.fontWeight.semibold,
+    letterSpacing: appleDesign.typography.letterSpacing.tight,
+    lineHeight: appleDesign.typography.lineHeight.headline,
   },
   bentoWide: {
     width: "100%",
@@ -531,46 +525,37 @@ const styles = StyleSheet.create({
   },
   featureCard: {
     alignItems: "center",
-    borderRadius: 16,
+    borderRadius: appleDesign.borderRadius.lg,
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 10,
-    padding: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.04,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 1,
-      },
-    }),
+    marginBottom: appleDesign.spacing.md,
+    padding: appleDesign.spacing.lg,
+    ...appleDesign.shadows.xs,
   },
   featureCardLeft: {
     alignItems: "center",
     flex: 1,
     flexDirection: "row",
-    gap: 12,
+    gap: appleDesign.spacing.md,
   },
   featureCardSubtitle: {
-    fontFamily: "Montserrat-Regular",
-    fontSize: 15,
-    lineHeight: 20,
+    fontSize: appleDesign.typography.fontSize.subheadline,
+    fontWeight: appleDesign.typography.fontWeight.regular,
+    lineHeight: appleDesign.typography.lineHeight.subheadline,
   },
   featureCardText: {
     flex: 1,
   },
   featureCardTitle: {
-    fontFamily: "Montserrat-SemiBold",
-    fontSize: 17,
-    letterSpacing: -0.2,
-    marginBottom: 2,
+    fontSize: appleDesign.typography.fontSize.headline,
+    fontWeight: appleDesign.typography.fontWeight.semibold,
+    letterSpacing: appleDesign.typography.letterSpacing.tight,
+    lineHeight: appleDesign.typography.lineHeight.headline,
+    marginBottom: appleDesign.spacing.xxs,
   },
   featureIcon: {
     alignItems: "center",
-    borderRadius: 14,
+    borderRadius: appleDesign.borderRadius.md,
     height: 48,
     justifyContent: "center",
     width: 48,
@@ -584,21 +569,22 @@ const styles = StyleSheet.create({
   featuredBadge: {
     alignItems: "center",
     backgroundColor: colors.background.overlay,
-    borderRadius: 12,
+    borderRadius: appleDesign.borderRadius.md,
     flexDirection: "row",
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    gap: appleDesign.spacing.xs,
+    paddingHorizontal: appleDesign.spacing.md,
+    paddingVertical: appleDesign.spacing.xs,
   },
   featuredBadgeText: {
     color: colors.text.inverse,
-    fontFamily: "Montserrat-Bold",
-    fontSize: 12,
-    letterSpacing: 0.8,
+    fontSize: appleDesign.typography.fontSize.caption1,
+    fontWeight: appleDesign.typography.fontWeight.bold,
+    letterSpacing: appleDesign.typography.letterSpacing.wide,
+    lineHeight: appleDesign.typography.lineHeight.caption1,
   },
   featuredCard: {
-    borderRadius: 20,
-    marginBottom: 24,
+    borderRadius: appleDesign.borderRadius.xl,
+    marginBottom: appleDesign.spacing.xxl,
     overflow: "hidden",
     ...Platform.select({
       ios: {
@@ -614,38 +600,40 @@ const styles = StyleSheet.create({
   },
   featuredGradient: {
     minHeight: 140,
-    padding: 20,
+    padding: appleDesign.spacing.xl,
   },
   featuredHeader: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 12,
+    marginBottom: appleDesign.spacing.md,
   },
   featuredReference: {
     color: colors.text.inverseLight,
-    fontFamily: "Montserrat-SemiBold",
-    fontSize: 15,
+    fontSize: appleDesign.typography.fontSize.subheadline,
+    fontWeight: appleDesign.typography.fontWeight.semibold,
+    lineHeight: appleDesign.typography.lineHeight.subheadline,
   },
   featuredVerse: {
     color: colors.text.inverse,
-    fontFamily: "Montserrat-Medium",
-    fontSize: 17,
-    lineHeight: 24,
-    marginBottom: 10,
+    fontSize: appleDesign.typography.fontSize.headline,
+    fontWeight: appleDesign.typography.fontWeight.medium,
+    lineHeight: appleDesign.typography.lineHeight.headline,
+    marginBottom: appleDesign.spacing.md,
   },
   greeting: {
-    fontFamily: "Montserrat-Medium",
-    fontSize: 15,
-    letterSpacing: 0.3,
-    marginBottom: 2,
+    fontSize: appleDesign.typography.fontSize.subheadline,
+    fontWeight: appleDesign.typography.fontWeight.medium,
+    letterSpacing: appleDesign.typography.letterSpacing.normal,
+    lineHeight: appleDesign.typography.lineHeight.subheadline,
+    marginBottom: appleDesign.spacing.xxs,
   },
   header: {
-    marginBottom: 20,
+    marginBottom: appleDesign.spacing.xl,
   },
   headerButtons: {
     flexDirection: "row" as const,
-    gap: 12,
+    gap: appleDesign.spacing.md,
   },
   headerContent: {
     alignItems: "center",
@@ -654,49 +642,41 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     alignItems: "center" as const,
-    borderRadius: 22,
-    height: 44,
+    borderRadius: appleDesign.borderRadius.round,
+    height: appleDesign.button.height.medium,
     justifyContent: "center" as const,
-    width: 44,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 1,
-      },
-    }),
+    width: appleDesign.button.height.medium,
+    ...appleDesign.shadows.xs,
   },
   pressedBento: {
-    opacity: 0.85,
+    opacity: appleDesign.opacity.strong,
   },
   pressedFeatured: {
     opacity: 0.9,
   },
   pressedOpacity: {
-    opacity: 0.7,
+    opacity: appleDesign.opacity.medium,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: appleDesign.spacing.xl,
   },
   scrollView: {
     flex: 1,
   },
   section: {
-    marginBottom: 28,
+    marginBottom: appleDesign.spacing.xxxl,
   },
   sectionTitle: {
-    fontFamily: "Montserrat-Bold",
-    fontSize: 19,
-    letterSpacing: -0.3,
-    marginBottom: 14,
+    fontSize: appleDesign.typography.fontSize.title2,
+    fontWeight: appleDesign.typography.fontWeight.bold,
+    letterSpacing: appleDesign.typography.letterSpacing.tight,
+    lineHeight: appleDesign.typography.lineHeight.title2,
+    marginBottom: appleDesign.spacing.md,
   },
   title: {
-    fontFamily: "Montserrat-Bold",
-    fontSize: 28,
-    letterSpacing: -0.5,
+    fontSize: appleDesign.typography.fontSize.title1,
+    fontWeight: appleDesign.typography.fontWeight.heavy,
+    letterSpacing: appleDesign.typography.letterSpacing.tight,
+    lineHeight: appleDesign.typography.lineHeight.title1,
   },
 });

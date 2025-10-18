@@ -20,6 +20,7 @@ import {
 
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
+import { appleDesign } from "@/theme/appleDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Animated, { FadeInDown, FadeIn } from "react-native-reanimated";
 import { geminiService, ChatMessage } from "@/services/geminiService";
@@ -1384,29 +1385,21 @@ const styles = StyleSheet.create({
   },
   avatar: {
     alignItems: "center",
-    borderRadius: 22,
-    height: 44,
+    borderRadius: appleDesign.borderRadius.round,
+    height: appleDesign.button.height.medium,
     justifyContent: "center",
-    width: 44,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 3,
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
+    width: appleDesign.button.height.medium,
+    ...appleDesign.shadows.sm,
   },
   avatarContainer: {
-    marginHorizontal: 10,
+    marginHorizontal: appleDesign.spacing.md,
   },
   charCount: {
-    fontSize: 12,
-    marginBottom: 8,
-    paddingHorizontal: 20,
+    fontSize: appleDesign.typography.fontSize.caption1,
+    fontWeight: appleDesign.typography.fontWeight.regular,
+    lineHeight: appleDesign.typography.lineHeight.caption1,
+    marginBottom: appleDesign.spacing.sm,
+    paddingHorizontal: appleDesign.spacing.xl,
     textAlign: "right",
   },
   container: {
@@ -1429,22 +1422,24 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   headerButton: {
-    padding: 8,
+    padding: appleDesign.spacing.sm,
   },
   headerButtonLast: {
-    marginRight: -8,
-    padding: 8,
+    marginRight: -appleDesign.spacing.sm,
+    padding: appleDesign.spacing.sm,
   },
   headerButtons: {
     flexDirection: "row",
-    gap: 8,
+    gap: appleDesign.spacing.sm,
   },
   input: {
     flex: 1,
-    fontSize: 19,
+    fontSize: appleDesign.typography.fontSize.title3,
+    fontWeight: appleDesign.typography.fontWeight.regular,
+    lineHeight: appleDesign.typography.lineHeight.title3,
     maxHeight: 140,
     minHeight: 60,
-    paddingVertical: 14,
+    paddingVertical: appleDesign.spacing.md,
   },
   inputContainer: {
     borderTopColor: colors.border.light,
@@ -1507,48 +1502,39 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   messageBubble: {
-    borderRadius: 22,
-    padding: 24,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.08,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
+    borderRadius: appleDesign.borderRadius.xl,
+    padding: appleDesign.spacing.xxl,
+    ...appleDesign.shadows.xs,
   },
   messageContentContainer: {
     flex: 1,
     maxWidth: "75%",
   },
   messageText: {
-    fontSize: 20,
-    lineHeight: 28,
-    marginBottom: 6,
+    fontSize: appleDesign.typography.fontSize.title3,
+    fontWeight: appleDesign.typography.fontWeight.regular,
+    lineHeight: appleDesign.typography.lineHeight.title2,
+    marginBottom: appleDesign.spacing.xs,
   },
   messageWrapper: {
     alignItems: "flex-end",
     flexDirection: "row",
-    marginBottom: 20,
+    marginBottom: appleDesign.spacing.xl,
   },
   messagesContainer: {
     flex: 1,
   },
   messagesContent: {
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingBottom: appleDesign.spacing.xl,
+    paddingHorizontal: appleDesign.spacing.xl,
+    paddingTop: appleDesign.spacing.xl,
   },
   modalContainer: {
     flex: 1,
   },
   modalContent: {
     flex: 1,
-    padding: 20,
+    padding: appleDesign.spacing.xl,
   },
   modalHeader: {
     alignItems: "center",
@@ -1556,11 +1542,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 20,
+    padding: appleDesign.spacing.xl,
   },
   modalTitle: {
-    fontSize: 22,
-    fontWeight: "700",
+    fontSize: appleDesign.typography.fontSize.title2,
+    fontWeight: appleDesign.typography.fontWeight.bold,
+    lineHeight: appleDesign.typography.lineHeight.title2,
   },
   offlineBar: {
     alignItems: "center",
