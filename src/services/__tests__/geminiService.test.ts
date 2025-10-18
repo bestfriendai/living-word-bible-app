@@ -1,4 +1,4 @@
-import { geminiService, GeminiService } from "../geminiService";
+import { GeminiService } from "../geminiService";
 
 // Mock the Google Generative AI
 jest.mock("@google/generative-ai", () => ({
@@ -243,10 +243,7 @@ describe("GeminiService", () => {
         },
       ];
 
-      const result = await service.chatWithPrayerBuddy(
-        "Things are better now",
-        chatHistory,
-      );
+      await service.chatWithPrayerBuddy("Things are better now", chatHistory);
 
       expect(mockModel.generateContent).toHaveBeenCalled();
       const callArg = mockModel.generateContent.mock.calls[0][0];

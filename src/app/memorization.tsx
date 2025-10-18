@@ -12,7 +12,6 @@ import {
   KeyboardAvoidingView,
   Modal,
   ActivityIndicator,
-  Animated,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeColor } from "@/components/Themed";
@@ -80,21 +79,21 @@ export default function Memorization() {
     lastReviewDate: null as string | null,
   });
   const [achievements, setAchievements] = useState<
-    Array<{
+    {
       id: string;
       title: string;
       description: string;
       unlocked: boolean;
       progress: number;
       icon: string;
-    }>
+    }[]
   >([]);
   const [analytics, setAnalytics] = useState({
     totalTimeSpent: 0,
     averageAccuracy: 0,
     versesReviewedToday: 0,
-    weeklyProgress: [] as Array<{ date: string; reviewCount: number }>,
-    categoryBreakdown: [] as Array<{ category: string; count: number }>,
+    weeklyProgress: [] as { date: string; reviewCount: number }[],
+    categoryBreakdown: [] as { category: string; count: number }[],
   });
 
   useEffect(() => {
@@ -155,7 +154,10 @@ export default function Memorization() {
     }
 
     try {
-      await memorizationService.addVerse(newVerseRef.trim(), newVerseText.trim());
+      await memorizationService.addVerse(
+        newVerseRef.trim(),
+        newVerseText.trim(),
+      );
       loadVerses();
       loadStats();
       setShowAddVerse(false);
@@ -244,10 +246,14 @@ export default function Memorization() {
     const timeSpent = Date.now() - reviewStartTime;
 
     try {
-      const updated = await memorizationService.reviewVerse(selectedVerse.id, quality, {
-        hintsUsed,
-        timeSpent,
-      });
+      const updated = await memorizationService.reviewVerse(
+        selectedVerse.id,
+        quality,
+        {
+          hintsUsed,
+          timeSpent,
+        },
+      );
 
       Alert.alert(
         "Review Recorded!",
@@ -310,9 +316,13 @@ export default function Memorization() {
     (v) => new Date(v.nextReviewDate) <= new Date() && !v.mastered,
   );
 
-  const exerciseTypes: Array<{ type: ExerciseType; label: string; icon: string }> = [
+  const exerciseTypes: { type: ExerciseType; label: string; icon: string }[] = [
     { type: "fill-blank", label: "Fill Blanks", icon: "form-textbox" },
-    { type: "first-letter", label: "First Letter", icon: "alpha-a-circle-outline" },
+    {
+      type: "first-letter",
+      label: "First Letter",
+      icon: "alpha-a-circle-outline",
+    },
     { type: "word-scramble", label: "Scramble", icon: "shuffle-variant" },
     { type: "progressive", label: "Progressive", icon: "eye-outline" },
     { type: "typing", label: "Type Full", icon: "keyboard-outline" },
@@ -453,7 +463,9 @@ export default function Memorization() {
                     </Text>
                     {verse.category && (
                       <View style={styles.categoryBadge}>
-                        <Text style={styles.categoryText}>{verse.category}</Text>
+                        <Text style={styles.categoryText}>
+                          {verse.category}
+                        </Text>
                       </View>
                     )}
                   </View>
@@ -473,7 +485,12 @@ export default function Memorization() {
                       {verse.level}
                     </Text>
                     {verse.accuracy !== undefined && verse.accuracy > 0 && (
-                      <Text style={[styles.accuracyText, { color: textColor + "80" }]}>
+                      <Text
+                        style={[
+                          styles.accuracyText,
+                          { color: textColor + "80" },
+                        ]}
+                      >
                         {verse.accuracy}% accuracy
                       </Text>
                     )}
@@ -513,7 +530,9 @@ export default function Memorization() {
                     </Text>
                     {verse.category && (
                       <View style={styles.categoryBadge}>
-                        <Text style={styles.categoryText}>{verse.category}</Text>
+                        <Text style={styles.categoryText}>
+                          {verse.category}
+                        </Text>
                       </View>
                     )}
                   </View>
@@ -533,7 +552,12 @@ export default function Memorization() {
                       {verse.level}
                     </Text>
                     {verse.accuracy !== undefined && verse.accuracy > 0 && (
-                      <Text style={[styles.accuracyText, { color: textColor + "80" }]}>
+                      <Text
+                        style={[
+                          styles.accuracyText,
+                          { color: textColor + "80" },
+                        ]}
+                      >
                         {verse.accuracy}% accuracy
                       </Text>
                     )}
@@ -593,11 +617,16 @@ export default function Memorization() {
             </TouchableOpacity>
             <View style={styles.reviewHeaderCenter}>
               <Text style={[styles.reviewTitle, { color: textColor }]}>
-                {selectedVerse?.currentExercise?.type === "fill-blank" && "Fill in Blanks"}
-                {selectedVerse?.currentExercise?.type === "first-letter" && "First Letters"}
-                {selectedVerse?.currentExercise?.type === "word-scramble" && "Word Scramble"}
-                {selectedVerse?.currentExercise?.type === "progressive" && "Progressive Reveal"}
-                {selectedVerse?.currentExercise?.type === "typing" && "Type Full Verse"}
+                {selectedVerse?.currentExercise?.type === "fill-blank" &&
+                  "Fill in Blanks"}
+                {selectedVerse?.currentExercise?.type === "first-letter" &&
+                  "First Letters"}
+                {selectedVerse?.currentExercise?.type === "word-scramble" &&
+                  "Word Scramble"}
+                {selectedVerse?.currentExercise?.type === "progressive" &&
+                  "Progressive Reveal"}
+                {selectedVerse?.currentExercise?.type === "typing" &&
+                  "Type Full Verse"}
               </Text>
               {hintsUsed > 0 && (
                 <Text style={[styles.hintsText, { color: textColor + "80" }]}>
@@ -669,7 +698,9 @@ export default function Memorization() {
                           { backgroundColor: cardBg },
                         ]}
                       >
-                        <Text style={[styles.userAnswerText, { color: textColor }]}>
+                        <Text
+                          style={[styles.userAnswerText, { color: textColor }]}
+                        >
                           {userAnswer}
                         </Text>
                       </View>
@@ -722,7 +753,8 @@ export default function Memorization() {
                         placeholder={
                           selectedVerse.currentExercise.type === "typing"
                             ? "Type the full verse..."
-                            : selectedVerse.currentExercise.type === "first-letter"
+                            : selectedVerse.currentExercise.type ===
+                                "first-letter"
                               ? "Type the full verse from the letters..."
                               : "Type the missing words..."
                         }
@@ -740,7 +772,9 @@ export default function Memorization() {
                   <View
                     style={[styles.answerCard, { backgroundColor: cardBg }]}
                   >
-                    <Text style={[styles.answerLabel, { color: textColor + "80" }]}>
+                    <Text
+                      style={[styles.answerLabel, { color: textColor + "80" }]}
+                    >
                       Answer:
                     </Text>
                     <Text style={[styles.answerText, { color: textColor }]}>

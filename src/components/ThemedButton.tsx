@@ -108,11 +108,7 @@ export function ThemedButton({
     <TouchableOpacity
       onPress={onPress}
       disabled={isDisabled}
-      style={[
-        getButtonStyles(),
-        isDisabled && styles.disabled,
-        style,
-      ]}
+      style={[getButtonStyles(), isDisabled && styles.disabled, style]}
       activeOpacity={0.7}
     >
       {loading ? (
@@ -158,16 +154,20 @@ const styles = StyleSheet.create({
   icon: {
     marginRight: 8,
   },
+  // Size styles - These are accessed dynamically via styles[`size_${size}`]
+  // eslint-disable-next-line react-native/no-unused-styles
   size_large: {
     minHeight: 56,
     paddingHorizontal: 32,
     paddingVertical: 16,
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   size_medium: {
     minHeight: 48,
     paddingHorizontal: 24,
     paddingVertical: 12,
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   size_small: {
     minHeight: 40,
     paddingHorizontal: 16,
@@ -176,12 +176,16 @@ const styles = StyleSheet.create({
   text: {
     fontWeight: "700",
   },
+  // Text size styles - These are accessed dynamically via styles[`text_${size}`]
+  // eslint-disable-next-line react-native/no-unused-styles
   text_large: {
     fontSize: 18,
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   text_medium: {
     fontSize: 16,
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   text_small: {
     fontSize: 14,
   },

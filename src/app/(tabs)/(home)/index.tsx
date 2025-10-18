@@ -15,34 +15,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBibleStore } from "@/store/bibleStore";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
+import { colors } from "@/theme/colors";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { MotiView } from "moti";
 import { hapticPatterns } from "@/utils/haptics";
 import { FeaturedVerseSkeleton } from "@/components/SkeletonLoader";
-
-// Gradient and color constants
-const GRADIENT_PURPLE = {
-  colors: ["#667eea", "#764ba2"] as const,
-  start: { x: 0, y: 0 },
-  end: { x: 1, y: 1 },
-};
-
-const GRADIENT_BLUE_LIGHT = {
-  colors: ["rgba(59, 130, 246, 0.15)", "rgba(59, 130, 246, 0.05)"] as const,
-  start: { x: 0, y: 0 },
-  end: { x: 1, y: 1 },
-};
-
-const ICON_COLORS = {
-  blue: "#3b82f6",
-  green: "#10b981",
-  orange: "#fb923c",
-  pink: "#ec4899",
-  purpleAlt: "#a855f7",
-  violet: "#8b5cf6",
-  white: "#FFFFFF",
-  whiteTransparent: "rgba(255,255,255,0.6)",
-};
 
 export default function Home() {
   const insets = useSafeAreaInsets();
@@ -148,7 +125,10 @@ export default function Home() {
                 />
               </Pressable>
               <Pressable
-                onPress={() => hapticPatterns.buttonPress()}
+                onPress={async () => {
+                  await hapticPatterns.buttonPress();
+                  router.push("/profile");
+                }}
                 style={({ pressed }) => [
                   styles.iconButton,
                   { backgroundColor: cardBg },
@@ -185,9 +165,9 @@ export default function Home() {
               ]}
             >
               <LinearGradient
-                colors={GRADIENT_PURPLE.colors}
-                start={GRADIENT_PURPLE.start}
-                end={GRADIENT_PURPLE.end}
+                colors={[colors.primary, colors.purple]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
                 style={styles.featuredGradient}
               >
                 <View style={styles.featuredHeader}>
@@ -195,14 +175,14 @@ export default function Home() {
                     <MaterialCommunityIcons
                       name="star-four-points"
                       size={12}
-                      color={ICON_COLORS.white}
+                      color={colors.text.inverse}
                     />
                     <Text style={styles.featuredBadgeText}>TODAY</Text>
                   </View>
                   <MaterialCommunityIcons
                     name="chevron-right"
                     size={20}
-                    color={ICON_COLORS.whiteTransparent}
+                    color={colors.text.inverseLight}
                   />
                 </View>
                 <Text style={styles.featuredVerse} numberOfLines={3}>
@@ -243,16 +223,16 @@ export default function Home() {
                 ]}
               >
                 <LinearGradient
-                  colors={GRADIENT_BLUE_LIGHT.colors}
-                  start={GRADIENT_BLUE_LIGHT.start}
-                  end={GRADIENT_BLUE_LIGHT.end}
+                  colors={[colors.primaryLight, colors.primary]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
                   style={styles.bentoCardGradient}
                 >
                   <View style={[styles.bentoIcon, styles.bentoIconBlue]}>
                     <MaterialCommunityIcons
                       name="book-search"
                       size={28}
-                      color={ICON_COLORS.blue}
+                      color={colors.primary}
                     />
                   </View>
                   <Text style={[styles.bentoTitle, { color: textColor }]}>
@@ -292,7 +272,7 @@ export default function Home() {
                     <MaterialCommunityIcons
                       name="calendar-check"
                       size={24}
-                      color={ICON_COLORS.green}
+                      color={colors.success}
                     />
                   </View>
                   <Text style={[styles.bentoTitleSmall, { color: textColor }]}>
@@ -326,7 +306,7 @@ export default function Home() {
                     <MaterialCommunityIcons
                       name="hand-heart"
                       size={24}
-                      color={ICON_COLORS.purpleAlt}
+                      color={colors.secondary}
                     />
                   </View>
                   <Text style={[styles.bentoTitleSmall, { color: textColor }]}>
@@ -358,7 +338,7 @@ export default function Home() {
                     <MaterialCommunityIcons
                       name="brain"
                       size={24}
-                      color={ICON_COLORS.violet}
+                      color={colors.secondary}
                     />
                   </View>
                   <Text style={[styles.bentoTitleSmall, { color: textColor }]}>
@@ -391,7 +371,7 @@ export default function Home() {
                   <MaterialCommunityIcons
                     name="robot-love"
                     size={24}
-                    color={ICON_COLORS.pink}
+                    color={colors.accentPink}
                   />
                 </View>
                 <View style={styles.featureCardText}>
@@ -431,7 +411,7 @@ export default function Home() {
                   <MaterialCommunityIcons
                     name="meditation"
                     size={24}
-                    color={ICON_COLORS.orange}
+                    color={colors.warning}
                   />
                 </View>
                 <View style={styles.featureCardText}>
@@ -501,13 +481,13 @@ const styles = StyleSheet.create({
     width: 56,
   },
   bentoIconBlue: {
-    backgroundColor: "#3b82f620",
+    backgroundColor: colors.primaryLight,
   },
   bentoIconGreen: {
-    backgroundColor: "#10b98120",
+    backgroundColor: colors.successLight,
   },
   bentoIconPurpleAlt: {
-    backgroundColor: "#a855f720",
+    backgroundColor: colors.secondaryLight,
   },
   bentoIconSmall: {
     alignItems: "center",
@@ -518,7 +498,7 @@ const styles = StyleSheet.create({
     width: 48,
   },
   bentoIconViolet: {
-    backgroundColor: "#8b5cf620",
+    backgroundColor: colors.secondaryLight,
   },
   bentoRow: {
     flexDirection: "row",
@@ -529,18 +509,18 @@ const styles = StyleSheet.create({
   },
   bentoSubtitle: {
     fontFamily: "Montserrat-Medium",
-    fontSize: 13,
+    fontSize: 15,
     opacity: 0.8,
   },
   bentoTitle: {
     fontFamily: "Montserrat-Bold",
-    fontSize: 18,
+    fontSize: 20,
     letterSpacing: -0.3,
     marginBottom: 4,
   },
   bentoTitleSmall: {
     fontFamily: "Montserrat-Bold",
-    fontSize: 14,
+    fontSize: 16,
     letterSpacing: -0.2,
   },
   bentoWide: {
@@ -576,15 +556,15 @@ const styles = StyleSheet.create({
   },
   featureCardSubtitle: {
     fontFamily: "Montserrat-Regular",
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 15,
+    lineHeight: 20,
   },
   featureCardText: {
     flex: 1,
   },
   featureCardTitle: {
     fontFamily: "Montserrat-SemiBold",
-    fontSize: 15,
+    fontSize: 17,
     letterSpacing: -0.2,
     marginBottom: 2,
   },
@@ -596,14 +576,14 @@ const styles = StyleSheet.create({
     width: 48,
   },
   featureIconOrange: {
-    backgroundColor: "rgba(251, 146, 60, 0.1)",
+    backgroundColor: colors.warningLightBg,
   },
   featureIconPink: {
-    backgroundColor: "rgba(236, 72, 153, 0.1)",
+    backgroundColor: colors.accentPinkBg,
   },
   featuredBadge: {
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: colors.background.overlay,
     borderRadius: 12,
     flexDirection: "row",
     gap: 4,
@@ -611,9 +591,9 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   featuredBadgeText: {
-    color: "#FFFFFF",
+    color: colors.text.inverse,
     fontFamily: "Montserrat-Bold",
-    fontSize: 11,
+    fontSize: 12,
     letterSpacing: 0.8,
   },
   featuredCard: {
@@ -643,43 +623,34 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   featuredReference: {
-    color: "rgba(255, 255, 255, 0.85)",
+    color: colors.text.inverseLight,
     fontFamily: "Montserrat-SemiBold",
-    fontSize: 13,
+    fontSize: 15,
   },
   featuredVerse: {
-    color: "#FFFFFF",
+    color: colors.text.inverse,
     fontFamily: "Montserrat-Medium",
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 17,
+    lineHeight: 24,
     marginBottom: 10,
   },
   greeting: {
     fontFamily: "Montserrat-Medium",
-    fontSize: 13,
+    fontSize: 15,
     letterSpacing: 0.3,
     marginBottom: 2,
   },
   header: {
     marginBottom: 20,
   },
+  headerButtons: {
+    flexDirection: "row" as const,
+    gap: 12,
+  },
   headerContent: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-  },
-  pressedBento: {
-    opacity: 0.85,
-  },
-  pressedFeatured: {
-    opacity: 0.9,
-  },
-  pressedOpacity: {
-    opacity: 0.7,
-  },
-  headerButtons: {
-    flexDirection: "row" as const,
-    gap: 12,
   },
   iconButton: {
     alignItems: "center" as const,
@@ -699,23 +670,14 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  profileButton: {
-    alignItems: "center",
-    borderRadius: 22,
-    height: 44,
-    justifyContent: "center",
-    width: 44,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 1,
-      },
-    }),
+  pressedBento: {
+    opacity: 0.85,
+  },
+  pressedFeatured: {
+    opacity: 0.9,
+  },
+  pressedOpacity: {
+    opacity: 0.7,
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -728,13 +690,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontFamily: "Montserrat-Bold",
-    fontSize: 17,
+    fontSize: 19,
     letterSpacing: -0.3,
     marginBottom: 14,
   },
   title: {
     fontFamily: "Montserrat-Bold",
-    fontSize: 26,
+    fontSize: 28,
     letterSpacing: -0.5,
   },
 });

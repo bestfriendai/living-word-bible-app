@@ -30,6 +30,7 @@ async function initializeGemini(): Promise<void> {
 }
 
 export interface BibleVerse {
+  id: string;
   reference: string;
   text: string;
   context: string;
@@ -206,6 +207,7 @@ Important:
       // Return fallback verses
       return [
         {
+          id: "phil-4-6-7",
           reference: "Philippians 4:6-7",
           text: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus.",
           context:

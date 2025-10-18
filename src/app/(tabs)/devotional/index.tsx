@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     color: COLOR_WHITE,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "600",
   },
   actionButtons: {
@@ -271,13 +271,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   date: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 6,
   },
   devotionalTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
-    lineHeight: 32,
+    lineHeight: 34,
   },
   header: {
     marginBottom: 24,
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
     paddingVertical: 60,
   },
   loadingText: {
-    fontSize: 16,
+    fontSize: 18,
     marginTop: 12,
   },
   reflectionSection: {
@@ -296,12 +296,12 @@ const styles = StyleSheet.create({
   },
   reflectionText: {
     fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
-    fontSize: 16,
+    fontSize: 18,
     letterSpacing: 0.2,
-    lineHeight: 26,
+    lineHeight: 28,
   },
   reflectionTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
     marginBottom: 16,
   },
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR_BLUE,
   },
   title: {
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: "bold",
     letterSpacing: -0.5,
   },
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
   },
   verseReference: {
     color: COLOR_WHITE,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "700",
     letterSpacing: 0.8,
     marginBottom: 16,
@@ -367,9 +367,9 @@ const styles = StyleSheet.create({
   verseText: {
     color: COLOR_WHITE,
     fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
-    fontSize: 18,
+    fontSize: 20,
     fontStyle: "italic",
     fontWeight: "600",
-    lineHeight: 28,
+    lineHeight: 30,
   },
 });

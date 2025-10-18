@@ -263,6 +263,10 @@ export default function ReadingPlanDay() {
           <TouchableOpacity
             style={[styles.actionButton, { backgroundColor: cardBg }]}
             activeOpacity={0.7}
+            onPress={() => {
+              // TODO: Implement notes functionality
+              console.log("Add note for:", currentReading?.reference);
+            }}
           >
             <MaterialCommunityIcons
               name="note-text-outline"
@@ -277,6 +281,10 @@ export default function ReadingPlanDay() {
           <TouchableOpacity
             style={[styles.actionButton, { backgroundColor: cardBg }]}
             activeOpacity={0.7}
+            onPress={() => {
+              // TODO: Implement bookmark functionality
+              console.log("Bookmark:", currentReading?.reference);
+            }}
           >
             <MaterialCommunityIcons
               name="bookmark-outline"
@@ -291,6 +299,10 @@ export default function ReadingPlanDay() {
           <TouchableOpacity
             style={[styles.actionButton, { backgroundColor: cardBg }]}
             activeOpacity={0.7}
+            onPress={() => {
+              // TODO: Implement share functionality
+              console.log("Share:", currentReading?.reference);
+            }}
           >
             <MaterialCommunityIcons
               name="share-variant-outline"
@@ -302,6 +314,57 @@ export default function ReadingPlanDay() {
             </Text>
           </TouchableOpacity>
         </View>
+
+        {/* Progress Overview */}
+        <MotiView
+          from={{ opacity: 0, translateY: 10 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: "timing", duration: 400, delay: 300 }}
+          style={[styles.progressOverview, { backgroundColor: cardBg }]}
+        >
+          <Text style={[styles.progressTitle, { color: textColor }]}>
+            Reading Progress
+          </Text>
+          <View style={styles.progressStats}>
+            <View style={styles.progressStat}>
+              <Text style={[styles.progressStatValue, { color: textColor }]}>
+                {readingPlan.readings.filter((r) => r.isCompleted).length}
+              </Text>
+              <Text
+                style={[styles.progressStatLabel, { color: textSecondary }]}
+              >
+                Days Completed
+              </Text>
+            </View>
+            <View style={styles.progressDivider} />
+            <View style={styles.progressStat}>
+              <Text style={[styles.progressStatValue, { color: textColor }]}>
+                {readingPlan.duration - readingPlan.currentDay + 1}
+              </Text>
+              <Text
+                style={[styles.progressStatLabel, { color: textSecondary }]}
+              >
+                Days Remaining
+              </Text>
+            </View>
+            <View style={styles.progressDivider} />
+            <View style={styles.progressStat}>
+              <Text style={[styles.progressStatValue, { color: textColor }]}>
+                {Math.round(
+                  (readingPlan.readings.filter((r) => r.isCompleted).length /
+                    readingPlan.duration) *
+                    100,
+                )}
+                %
+              </Text>
+              <Text
+                style={[styles.progressStatLabel, { color: textSecondary }]}
+              >
+                Complete
+              </Text>
+            </View>
+          </View>
+        </MotiView>
       </ScrollView>
 
       {/* Bottom Action Bar */}
@@ -566,14 +629,61 @@ const styles = StyleSheet.create({
   progressBar: {
     marginBottom: 24,
   },
+  progressDivider: {
+    backgroundColor: "#e5e7eb",
+    height: "70%",
+    marginHorizontal: 16,
+    width: 1,
+  },
   progressInfo: {
     flex: 1,
     marginRight: 16,
+  },
+  progressOverview: {
+    borderRadius: 16,
+    marginBottom: 16,
+    padding: 18,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.04,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
   },
   progressSection: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  progressStat: {
+    alignItems: "center",
+    flex: 1,
+  },
+  progressStatLabel: {
+    fontFamily: "Montserrat-Medium",
+    fontSize: 12,
+    textAlign: "center",
+  },
+  progressStatValue: {
+    fontFamily: "Montserrat-Bold",
+    fontSize: 18,
+    marginBottom: 4,
+  },
+  progressStats: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  progressTitle: {
+    fontFamily: "Montserrat-Bold",
+    fontSize: 16,
+    letterSpacing: -0.2,
     marginBottom: 16,
   },
   readingTitle: {

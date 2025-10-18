@@ -21,12 +21,8 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { geminiService } from "@/services/geminiService";
 import { useSpeechToText } from "@/utils/speechToText";
-
-// Color constants
-const COLOR_WHITE = "#fff";
-const COLOR_PURPLE = "#a855f7";
-const COLOR_GREEN = "#10b981";
-const COLOR_PINK = "#ec4899";
+import { socialSharingService } from "@/services/socialSharingService";
+import { colors } from "@/theme/colors";
 
 export default function Journal() {
   const insets = useSafeAreaInsets();
@@ -170,6 +166,19 @@ export default function Journal() {
     }
   };
 
+  const handleShareJournalEntry = async (entry: any) => {
+    try {
+      await socialSharingService.shareJournalEntry(
+        entry.title,
+        entry.content,
+        entry.category,
+        entry.isAnswered,
+      );
+    } catch (error) {
+      console.error("Error sharing journal entry:", error);
+    }
+  };
+
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <Stack.Screen
@@ -201,7 +210,7 @@ export default function Journal() {
               <MaterialCommunityIcons
                 name="auto-fix"
                 size={28}
-                color={COLOR_WHITE}
+                color={colors.text.inverse}
               />
             </TouchableOpacity>
             <TouchableOpacity
@@ -214,7 +223,7 @@ export default function Journal() {
               <MaterialCommunityIcons
                 name="plus"
                 size={32}
-                color={COLOR_WHITE}
+                color={colors.text.inverse}
               />
             </TouchableOpacity>
           </View>
@@ -231,7 +240,7 @@ export default function Journal() {
                 <MaterialCommunityIcons
                   name="chart-arc"
                   size={40}
-                  color={COLOR_WHITE}
+                  color={colors.text.inverse}
                 />
                 <View style={styles.insightsTextContainer}>
                   <Text style={styles.insightsTitle}>Prayer Insights</Text>
@@ -243,7 +252,7 @@ export default function Journal() {
               <MaterialCommunityIcons
                 name="arrow-right"
                 size={28}
-                color={COLOR_WHITE}
+                color={colors.text.inverse}
               />
             </View>
           </TouchableOpacity>
@@ -256,7 +265,7 @@ export default function Journal() {
               <MaterialCommunityIcons
                 name="notebook-outline"
                 size={64}
-                color={COLOR_PURPLE}
+                color={colors.secondary}
               />
             </View>
             <Text style={[styles.emptyTitle, { color: textColor }]}>
@@ -291,16 +300,30 @@ export default function Journal() {
                         {formatDate(entry.createdAt)}
                       </Text>
                     </View>
-                    <TouchableOpacity
-                      onPress={() => handleDeletePrayer(entry.id, entry.title)}
-                      style={styles.deleteButton}
-                    >
-                      <MaterialCommunityIcons
-                        name="delete-outline"
-                        size={28}
-                        color={textColor + "70"}
-                      />
-                    </TouchableOpacity>
+                    <View style={styles.entryHeaderRight}>
+                      <TouchableOpacity
+                        onPress={() => handleShareJournalEntry(entry)}
+                        style={styles.shareButton}
+                      >
+                        <MaterialCommunityIcons
+                          name="share-variant"
+                          size={28}
+                          color={textColor + "70"}
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() =>
+                          handleDeletePrayer(entry.id, entry.title)
+                        }
+                        style={styles.deleteButton}
+                      >
+                        <MaterialCommunityIcons
+                          name="delete-outline"
+                          size={28}
+                          color={textColor + "70"}
+                        />
+                      </TouchableOpacity>
+                    </View>
                   </View>
                   <Text
                     style={[styles.entryContent, { color: textColor + "D0" }]}
@@ -399,8 +422,8 @@ export default function Journal() {
                   styles.micButton,
                   isListening && styles.micButtonActive,
                   {
-                    backgroundColor: isListening ? "#ef4444" : cardBg,
-                    borderColor: isListening ? "#ef4444" : textColor + "30",
+                    backgroundColor: isListening ? colors.error : cardBg,
+                    borderColor: isListening ? colors.error : textColor + "30",
                   },
                 ]}
                 onPress={handleVoiceInput}
@@ -408,7 +431,7 @@ export default function Journal() {
                 <MaterialCommunityIcons
                   name={isListening ? "stop" : "microphone"}
                   size={24}
-                  color={isListening ? "#fff" : textColor}
+                  color={isListening ? colors.text.inverse : textColor}
                 />
               </TouchableOpacity>
             </View>
@@ -418,7 +441,7 @@ export default function Journal() {
                 <MaterialCommunityIcons
                   name="microphone"
                   size={16}
-                  color="#ef4444"
+                  color={colors.error}
                 />
                 <Text style={[styles.listeningText, { color: textColor }]}>
                   Listening... speak your prayer
@@ -463,7 +486,7 @@ export default function Journal() {
                 onPress={handleSaveGeneratedPrayer}
                 style={styles.modalHeaderButton}
               >
-                <Text style={[styles.saveButton, { color: COLOR_PURPLE }]}>
+                <Text style={[styles.saveButton, { color: colors.secondary }]}>
                   Save
                 </Text>
               </TouchableOpacity>
@@ -484,7 +507,7 @@ export default function Journal() {
                     <MaterialCommunityIcons
                       name="auto-fix"
                       size={40}
-                      color={COLOR_WHITE}
+                      color={colors.text.inverse}
                     />
                   </View>
                   <Text style={[styles.aiTitle, { color: textColor }]}>
@@ -528,13 +551,16 @@ export default function Journal() {
                 >
                   <View style={styles.generateButtonContent}>
                     {isGenerating ? (
-                      <ActivityIndicator color={COLOR_WHITE} size="large" />
+                      <ActivityIndicator
+                        color={colors.text.inverse}
+                        size="large"
+                      />
                     ) : (
                       <>
                         <MaterialCommunityIcons
                           name="auto-fix"
                           size={24}
-                          color={COLOR_WHITE}
+                          color={colors.text.inverse}
                         />
                         <Text style={styles.generateButtonText}>
                           Generate Prayer
@@ -579,7 +605,7 @@ export default function Journal() {
                               <MaterialCommunityIcons
                                 name="book-open-variant"
                                 size={14}
-                                color={COLOR_PURPLE}
+                                color={colors.secondary}
                               />
                               <Text style={styles.verseTagText}>{verse}</Text>
                             </View>
@@ -648,7 +674,7 @@ export default function Journal() {
           >
             {isLoadingInsights ? (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={COLOR_GREEN} />
+                <ActivityIndicator size="large" color={colors.success} />
                 <Text style={[styles.loadingText, { color: textColor }]}>
                   Analyzing your prayers...
                 </Text>
@@ -684,7 +710,7 @@ export default function Journal() {
                         <MaterialCommunityIcons
                           name="tag-multiple"
                           size={28}
-                          color={COLOR_PURPLE}
+                          color={colors.secondary}
                         />
                         <Text
                           style={[styles.insightTitle, { color: textColor }]}
@@ -712,7 +738,7 @@ export default function Journal() {
                       <MaterialCommunityIcons
                         name="heart"
                         size={28}
-                        color={COLOR_PINK}
+                        color={colors.accentPink}
                       />
                       <Text style={[styles.insightTitle, { color: textColor }]}>
                         Encouragement
@@ -755,7 +781,7 @@ const styles = StyleSheet.create({
   },
   aiButton: {
     alignItems: "center",
-    backgroundColor: COLOR_PURPLE,
+    backgroundColor: colors.secondary,
     borderRadius: 30,
     height: 60,
     justifyContent: "center",
@@ -797,20 +823,20 @@ const styles = StyleSheet.create({
   },
   aiInput: {
     borderRadius: 12,
-    fontSize: 18,
+    fontSize: 19,
     marginBottom: 24,
     minHeight: 180,
     padding: 20,
     textAlignVertical: "top",
   },
   aiSubtitle: {
-    fontSize: 18,
-    lineHeight: 26,
+    fontSize: 19,
+    lineHeight: 28,
     maxWidth: 320,
     textAlign: "center",
   },
   aiTitle: {
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: "bold",
     marginBottom: 8,
   },
@@ -819,7 +845,7 @@ const styles = StyleSheet.create({
   },
   contentInput: {
     borderRadius: 12,
-    fontSize: 18,
+    fontSize: 19,
     minHeight: 250,
     padding: 20,
     paddingRight: 70,
@@ -832,14 +858,14 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   emptyButton: {
-    backgroundColor: "#a855f7",
+    backgroundColor: colors.secondary,
     borderRadius: 12,
     paddingHorizontal: 24,
     paddingVertical: 12,
   },
   emptyButtonText: {
-    color: "#fff",
-    fontSize: 16,
+    color: colors.text.inverse,
+    fontSize: 18,
     fontWeight: "600",
   },
   emptyHeaderSpace: {
@@ -859,13 +885,13 @@ const styles = StyleSheet.create({
     paddingVertical: 64,
   },
   emptySubtitle: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 24,
     maxWidth: 280,
     textAlign: "center",
   },
   emptyTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
     marginBottom: 8,
   },
@@ -888,11 +914,11 @@ const styles = StyleSheet.create({
     }),
   },
   entryContent: {
-    fontSize: 18,
-    lineHeight: 28,
+    fontSize: 19,
+    lineHeight: 30,
   },
   entryDate: {
-    fontSize: 16,
+    fontSize: 17,
   },
   entryHeader: {
     alignItems: "flex-start",
@@ -903,8 +929,12 @@ const styles = StyleSheet.create({
   entryHeaderLeft: {
     flex: 1,
   },
+  entryHeaderRight: {
+    alignItems: "center",
+    flexDirection: "row",
+  },
   entryTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
     marginBottom: 4,
   },
@@ -936,14 +966,14 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   generateButtonDisabledBg: {
-    backgroundColor: "#a855f780",
+    backgroundColor: colors.secondaryLight80,
   },
   generateButtonEnabledBg: {
-    backgroundColor: "#a855f7",
+    backgroundColor: colors.secondary,
   },
   generateButtonText: {
-    color: "#fff",
-    fontSize: 20,
+    color: colors.text.inverse,
+    fontSize: 22,
     fontWeight: "bold",
   },
   header: {
@@ -973,11 +1003,11 @@ const styles = StyleSheet.create({
     marginBottom: 28,
   },
   insightText: {
-    fontSize: 18,
-    lineHeight: 28,
+    fontSize: 19,
+    lineHeight: 30,
   },
   insightTitle: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "bold",
   },
   insightsCard: {
@@ -1010,16 +1040,16 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   insightsSubtitle: {
-    color: "#ffffff",
-    fontSize: 16,
-    lineHeight: 22,
+    color: colors.text.inverse,
+    fontSize: 18,
+    lineHeight: 24,
   },
   insightsTextContainer: {
     flex: 1,
   },
   insightsTitle: {
-    color: "#fff",
-    fontSize: 24,
+    color: colors.text.inverse,
+    fontSize: 26,
     fontWeight: "bold",
     marginBottom: 6,
   },
@@ -1032,7 +1062,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   listeningText: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "600",
   },
   loadingContainer: {
@@ -1042,7 +1072,7 @@ const styles = StyleSheet.create({
     paddingVertical: 64,
   },
   loadingText: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: "500",
   },
   micButton: {
@@ -1070,7 +1100,7 @@ const styles = StyleSheet.create({
   micButtonActive: {
     ...Platform.select({
       ios: {
-        shadowColor: "#ef4444",
+        shadowColor: colors.error,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 8,
@@ -1105,20 +1135,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   modalTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
   },
   prayerBadge: {
     alignSelf: "flex-start",
-    backgroundColor: "#a855f7",
+    backgroundColor: colors.secondary,
     borderRadius: 12,
     marginBottom: 16,
     paddingHorizontal: 12,
     paddingVertical: 6,
   },
   prayerBadgeText: {
-    color: "#fff",
-    fontSize: 12,
+    color: colors.text.inverse,
+    fontSize: 13,
     fontWeight: "700",
     letterSpacing: 1,
   },
@@ -1128,12 +1158,12 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   prayerText: {
-    fontSize: 18,
-    lineHeight: 28,
+    fontSize: 19,
+    lineHeight: 30,
     marginBottom: 20,
   },
   prayerTitle: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: "bold",
     marginBottom: 16,
   },
@@ -1146,11 +1176,11 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   regenerateButtonText: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: "600",
   },
   saveButton: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "600",
   },
   scrollContent: {
@@ -1158,6 +1188,9 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  shareButton: {
+    padding: 12,
   },
   statCard: {
     alignItems: "center",
@@ -1179,24 +1212,24 @@ const styles = StyleSheet.create({
     }),
   },
   statCardBlue: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: colors.primary,
   },
   statCardGreen: {
-    backgroundColor: "#10b981",
+    backgroundColor: colors.success,
   },
   statLabel: {
-    color: "#ffffff",
-    fontSize: 16,
+    color: colors.text.inverse,
+    fontSize: 18,
     fontWeight: "600",
   },
   statNumber: {
-    color: "#fff",
-    fontSize: 40,
+    color: colors.text.inverse,
+    fontSize: 42,
     fontWeight: "bold",
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 4,
   },
   themeTag: {
@@ -1207,7 +1240,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   themeText: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: "600",
   },
   themesList: {
@@ -1216,13 +1249,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    fontSize: 42,
+    fontSize: 44,
     fontWeight: "bold",
     letterSpacing: -1,
   },
   titleInput: {
     borderRadius: 12,
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
     marginBottom: 20,
     minHeight: 56,
@@ -1238,14 +1271,14 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   verseTagText: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "600",
   },
   versesSection: {
     marginTop: 8,
   },
   versesSectionTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "600",
     marginBottom: 12,
   },

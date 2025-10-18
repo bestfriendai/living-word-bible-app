@@ -135,7 +135,7 @@ class SpeechToTextService {
     try {
       const result = await ExpoSpeechRecognitionModule.getPermissionsAsync();
       return result;
-    } catch (error) {
+    } catch {
       return { granted: false, canAskAgain: true };
     }
   }

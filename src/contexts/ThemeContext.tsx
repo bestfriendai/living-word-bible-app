@@ -30,7 +30,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const loadThemePreference = async () => {
       try {
         const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
-        if (savedTheme && (savedTheme === "light" || savedTheme === "dark" || savedTheme === "system")) {
+        if (
+          savedTheme &&
+          (savedTheme === "light" ||
+            savedTheme === "dark" ||
+            savedTheme === "system")
+        ) {
           setThemeModeState(savedTheme as ThemeMode);
         }
       } catch (error) {

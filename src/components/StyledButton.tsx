@@ -67,22 +67,28 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     justifyContent: "center",
   },
-  // Variants
+  // Variants - These are accessed dynamically via styles[variant]
+  // eslint-disable-next-line react-native/no-unused-styles
   primary: {
     backgroundColor: colors.primary,
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   secondary: {
     backgroundColor: colors.secondary,
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   success: {
     backgroundColor: colors.success,
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   error: {
     backgroundColor: colors.error,
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   warning: {
     backgroundColor: colors.warning,
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   accent: {
     backgroundColor: colors.accent,
   },
@@ -90,30 +96,36 @@ const styles = StyleSheet.create({
     backgroundColor: colors.border.light,
     opacity: 0.6,
   },
-  // Sizes
+  // Sizes - These are accessed dynamically via styles[`${size}Button`]
+  // eslint-disable-next-line react-native/no-unused-styles
   smButton: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   mdButton: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   lgButton: {
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.lg,
   },
-  // Text styles
+  // Text styles - These are accessed dynamically via styles[`${size}Text`]
   text: {
     color: colors.white,
     fontWeight: "600",
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   smText: {
     fontSize: fontSize.sm,
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   mdText: {
     fontSize: fontSize.md,
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   lgText: {
     fontSize: fontSize.lg,
   },

@@ -29,14 +29,14 @@ export const theme = {
     text: { light: "#1a1a1a", dark: "#FFFFFF" },
     textSecondary: { light: "#6b7280", dark: "#A0A0A0" },
     textTertiary: { light: "#9ca3af", dark: "#707070" },
-    background: { light: "#FAFAFA", dark: "#000000" },          // Pure black
+    background: { light: "#FAFAFA", dark: "#000000" }, // Pure black
     backgroundSecondary: {
       light: "#FFFFFF",
-      dark: "#1a1a1a",                                          // Card backgrounds
+      dark: "#1a1a1a", // Card backgrounds
     },
     backgroundTertiary: {
       light: "#F5F5F5",
-      dark: "#0a0a0a",                                          // Subtle variation
+      dark: "#0a0a0a", // Subtle variation
     },
     backgroundElement: {
       light: "#F8F9FA",

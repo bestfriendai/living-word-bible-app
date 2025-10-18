@@ -36,12 +36,12 @@ export default function TabLayout() {
 
   const labelSelectedStyle =
     Platform.OS === "ios"
-      ? { fontSize: 12, fontWeight: "600" as const }
-      : { fontSize: 14 };
+      ? { fontSize: 13, fontWeight: "600" as const }
+      : { fontSize: 15 };
 
   const labelStyle = {
     color: inactiveTintColor,
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: "500" as const,
   };
 
@@ -135,7 +135,12 @@ export default function TabLayout() {
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="prayer-buddy">
         {Platform.select({
-          ios: <Icon sf="bubble.left.and.bubble.right" selectedColor={prayerBuddyColor} />,
+          ios: (
+            <Icon
+              sf="bubble.left.and.bubble.right"
+              selectedColor={prayerBuddyColor}
+            />
+          ),
           android: (
             <Icon
               src={
@@ -148,7 +153,12 @@ export default function TabLayout() {
             />
           ),
         })}
-        <Label selectedStyle={{ ...labelSelectedStyle, color: prayerBuddyColor }}>
+        <Label
+          selectedStyle={{
+            ...labelSelectedStyle,
+            color: prayerBuddyColor,
+          }}
+        >
           AI Buddy
         </Label>
       </NativeTabs.Trigger>

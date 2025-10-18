@@ -1,4 +1,4 @@
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import React, { useState, useRef, useEffect } from "react";
 import {
   View,
@@ -17,7 +17,7 @@ import {
   useColorScheme,
   Modal,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -30,6 +30,7 @@ import { validators } from "@/utils/validation";
 import { networkService } from "@/utils/network";
 import Markdown from "react-native-markdown-display";
 import { useSpeechToText } from "@/utils/speechToText";
+import { colors } from "@/theme/colors";
 
 // Quick reply suggestions based on conversation context
 const QUICK_REPLIES = {
@@ -100,32 +101,32 @@ const getMarkdownStyles = (
 ) => ({
   body: {
     color: textColor,
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
   },
   heading1: {
     color: textColor,
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "700" as const,
-    marginTop: 8,
-    marginBottom: 12,
+    marginTop: 10,
+    marginBottom: 14,
   },
   heading2: {
     color: textColor,
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "700" as const,
-    marginTop: 8,
-    marginBottom: 8,
+    marginTop: 10,
+    marginBottom: 10,
   },
   heading3: {
     color: textColor,
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: "600" as const,
-    marginTop: 6,
-    marginBottom: 6,
+    marginTop: 8,
+    marginBottom: 8,
   },
   strong: {
-    color: "#a855f7", // Purple for emphasis
+    color: colors.secondary, // Purple for emphasis
     fontWeight: "700" as const,
   },
   em: {
@@ -134,10 +135,10 @@ const getMarkdownStyles = (
   },
   paragraph: {
     marginTop: 0,
-    marginBottom: 12,
+    marginBottom: 14,
     color: textColor,
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
   },
   bullet_list: {
     marginTop: 4,
@@ -152,20 +153,21 @@ const getMarkdownStyles = (
     marginBottom: 6,
   },
   bullet_list_icon: {
-    color: "#a855f7",
+    color: colors.secondary,
     fontSize: 16,
     marginLeft: 0,
     marginRight: 8,
   },
   ordered_list_icon: {
-    color: "#a855f7",
+    color: colors.secondary,
     fontSize: 16,
     marginLeft: 0,
     marginRight: 8,
   },
   blockquote: {
-    backgroundColor: colorScheme === "dark" ? "#a855f720" : "#a855f710",
-    borderLeftColor: "#a855f7",
+    backgroundColor:
+      colorScheme === "dark" ? colors.secondaryLight : colors.secondaryLight,
+    borderLeftColor: colors.secondary,
     borderLeftWidth: 4,
     marginLeft: 0,
     marginRight: 0,
@@ -175,8 +177,9 @@ const getMarkdownStyles = (
     borderRadius: 8,
   },
   code_inline: {
-    backgroundColor: colorScheme === "dark" ? "#00000040" : "#00000010",
-    color: "#a855f7",
+    backgroundColor:
+      colorScheme === "dark" ? colors.dark.card : colors.background.tertiary,
+    color: colors.secondary,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -184,13 +187,15 @@ const getMarkdownStyles = (
     fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
   },
   code_block: {
-    backgroundColor: colorScheme === "dark" ? "#00000040" : "#00000010",
+    backgroundColor:
+      colorScheme === "dark" ? colors.dark.card : colors.background.tertiary,
     padding: 12,
     borderRadius: 8,
     marginVertical: 8,
   },
   fence: {
-    backgroundColor: colorScheme === "dark" ? "#00000040" : "#00000010",
+    backgroundColor:
+      colorScheme === "dark" ? colors.dark.card : colors.background.tertiary,
     padding: 12,
     borderRadius: 8,
     marginVertical: 8,
@@ -207,7 +212,8 @@ const getMarkdownStyles = (
     marginVertical: 8,
   },
   thead: {
-    backgroundColor: colorScheme === "dark" ? "#00000040" : "#00000010",
+    backgroundColor:
+      colorScheme === "dark" ? colors.dark.card : colors.background.tertiary,
   },
   tr: {
     borderBottomWidth: 1,
@@ -223,7 +229,7 @@ const getMarkdownStyles = (
     color: textColor,
   },
   link: {
-    color: "#3b82f6",
+    color: colors.primary,
     textDecorationLine: "underline" as const,
   },
   text: {
@@ -232,8 +238,6 @@ const getMarkdownStyles = (
 });
 
 export default function PrayerBuddy() {
-  const insets = useSafeAreaInsets();
-  const router = useRouter();
   const colorScheme = useColorScheme() as "light" | "dark" | null;
   const backgroundColor = useThemeColor(theme.color.background);
   const textColor = useThemeColor(theme.color.text);
@@ -271,16 +275,16 @@ export default function PrayerBuddy() {
   // Speech-to-text
   const { isListening, startListening, stopListening, resetTranscript } =
     useSpeechToText({
-    onResult: (text, isFinal) => {
-      if (isFinal) {
-        setInputText((prev) => (prev ? `${prev} ${text}` : text));
-        resetTranscript();
-      }
-    },
-    onError: (error) => {
-      Alert.alert("Voice Input Error", error.message);
-    },
-  });
+      onResult: (text, isFinal) => {
+        if (isFinal) {
+          setInputText((prev) => (prev ? `${prev} ${text}` : text));
+          resetTranscript();
+        }
+      },
+      onError: (error) => {
+        Alert.alert("Voice Input Error", error.message);
+      },
+    });
 
   // Check network status
   useEffect(() => {
@@ -325,7 +329,7 @@ export default function PrayerBuddy() {
       keyboardWillShow.remove();
       keyboardWillHide.remove();
     };
-  }, []);
+  }, [keyboardHeight]);
 
   useEffect(() => {
     // Auto-scroll when new messages arrive
@@ -713,22 +717,22 @@ export default function PrayerBuddy() {
           headerLargeTitle: true,
           headerTransparent: false,
           headerRight: () => (
-            <View style={{ flexDirection: "row", gap: 8 }}>
+            <View style={styles.headerButtons}>
               <TouchableOpacity
                 onPress={() => setShowSearch(!showSearch)}
-                style={{ padding: 8 }}
+                style={styles.headerButton}
                 accessibilityLabel="Search conversation"
                 accessibilityRole="button"
               >
                 <MaterialCommunityIcons
                   name="magnify"
                   size={24}
-                  color={showSearch ? "#a855f7" : textColor}
+                  color={showSearch ? colors.secondary : textColor}
                 />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setShowSavedMessages(true)}
-                style={{ padding: 8 }}
+                style={styles.headerButton}
                 accessibilityLabel="View saved messages"
                 accessibilityRole="button"
               >
@@ -740,7 +744,7 @@ export default function PrayerBuddy() {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={generateInsights}
-                style={{ padding: 8 }}
+                style={styles.headerButton}
                 accessibilityLabel="Generate insights"
                 accessibilityRole="button"
               >
@@ -772,7 +776,7 @@ export default function PrayerBuddy() {
                     },
                   );
                 }}
-                style={{ padding: 8, marginRight: -8 }}
+                style={styles.headerButtonLast}
                 accessibilityLabel="More options"
                 accessibilityRole="button"
               >
@@ -789,8 +793,12 @@ export default function PrayerBuddy() {
 
       {/* Offline Indicator */}
       {!isOnline && (
-        <View style={[styles.offlineBar, { backgroundColor: "#f59e0b" }]}>
-          <MaterialCommunityIcons name="wifi-off" size={16} color="#fff" />
+        <View style={[styles.offlineBar, { backgroundColor: colors.warning }]}>
+          <MaterialCommunityIcons
+            name="wifi-off"
+            size={16}
+            color={colors.text.inverse}
+          />
           <Text style={styles.offlineText}>No internet connection</Text>
         </View>
       )}
@@ -828,7 +836,7 @@ export default function PrayerBuddy() {
 
       {/* Chat Messages */}
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={styles.keyboardContainer}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
       >
@@ -863,17 +871,20 @@ export default function PrayerBuddy() {
                 {message.role === "assistant" && (
                   <View style={styles.avatarContainer}>
                     <View
-                      style={[styles.avatar, { backgroundColor: "#a855f7" }]}
+                      style={[
+                        styles.avatar,
+                        { backgroundColor: colors.secondary },
+                      ]}
                     >
                       <MaterialCommunityIcons
-                        name="hand-peace"
-                        size={24}
-                        color="#fff"
+                        name="hands-pray"
+                        size={26}
+                        color={colors.text.inverse}
                       />
                     </View>
                   </View>
                 )}
-                <View style={{ flex: 1, maxWidth: "70%" }}>
+                <View style={styles.messageContentContainer}>
                   <View
                     style={[
                       styles.messageBubble,
@@ -882,12 +893,17 @@ export default function PrayerBuddy() {
                         : [styles.assistantBubble, { backgroundColor: cardBg }],
                     ]}
                   >
+                    {message.role === "assistant" && (
+                      <View style={styles.prayerEmojiHeader}>
+                        <Text style={styles.prayerEmoji}>🙏</Text>
+                      </View>
+                    )}
                     {message.isSaved && (
                       <View style={styles.savedBadge}>
                         <MaterialCommunityIcons
                           name="bookmark"
                           size={14}
-                          color="#a855f7"
+                          color={colors.secondary}
                         />
                         <Text style={styles.savedText}>Saved</Text>
                       </View>
@@ -946,7 +962,7 @@ export default function PrayerBuddy() {
                       <MaterialCommunityIcons
                         name="account"
                         size={24}
-                        color="#fff"
+                        color={colors.text.inverse}
                       />
                     </View>
                   </View>
@@ -958,15 +974,18 @@ export default function PrayerBuddy() {
           {isTyping && (
             <Animated.View entering={FadeIn} style={styles.typingIndicator}>
               <View style={styles.avatarContainer}>
-                <View style={[styles.avatar, { backgroundColor: "#a855f7" }]}>
+                <View
+                  style={[styles.avatar, { backgroundColor: colors.secondary }]}
+                >
                   <MaterialCommunityIcons
-                    name="hand-heart"
-                    size={24}
-                    color="#fff"
+                    name="hands-pray"
+                    size={26}
+                    color={colors.text.inverse}
                   />
                 </View>
               </View>
               <View style={[styles.typingBubble, { backgroundColor: cardBg }]}>
+                <Text style={styles.typingEmoji}>🙏</Text>
                 <ActivityIndicator size="small" color={textColor} />
                 <Text style={[styles.typingText, { color: textColor }]}>
                   Prayer Buddy is typing...
@@ -996,7 +1015,7 @@ export default function PrayerBuddy() {
                     <MaterialCommunityIcons
                       name={template.icon as any}
                       size={24}
-                      color="#a855f7"
+                      color={colors.secondary}
                     />
                     <Text style={[styles.templateText, { color: textColor }]}>
                       {template.text}
@@ -1036,7 +1055,7 @@ export default function PrayerBuddy() {
             </Animated.View>
           )}
 
-          <View style={{ height: 20 }} />
+          <View style={styles.spacer} />
         </ScrollView>
 
         {/* Input Bar */}
@@ -1044,15 +1063,13 @@ export default function PrayerBuddy() {
           style={[
             styles.inputContainer,
             { backgroundColor: cardBg },
-            {
-              paddingBottom: Platform.OS === "ios" ? Math.max(insets.bottom, 20) + 49 : 65,
-            },
+            styles.inputPadding,
           ]}
         >
           {isListening && (
             <View style={styles.listeningIndicator}>
-              <ActivityIndicator size="small" color="#ef4444" />
-              <Text style={[styles.listeningText, { color: "#ef4444" }]}>
+              <ActivityIndicator size="small" color={colors.error} />
+              <Text style={[styles.listeningText, { color: colors.error }]}>
                 Listening... Tap mic to stop
               </Text>
             </View>
@@ -1062,7 +1079,7 @@ export default function PrayerBuddy() {
               style={[
                 styles.charCount,
                 {
-                  color: remainingChars < 20 ? "#ef4444" : textColor + "60",
+                  color: remainingChars < 20 ? colors.error : textColor + "60",
                 },
               ]}
             >
@@ -1080,14 +1097,14 @@ export default function PrayerBuddy() {
             >
               <MaterialCommunityIcons
                 name={isListening ? "microphone" : "microphone-outline"}
-                size={24}
-                color={isListening ? "#ef4444" : textColor}
+                size={26}
+                color={isListening ? colors.error : textColor}
               />
             </TouchableOpacity>
             <TextInput
               ref={inputRef}
               style={[styles.input, { color: textColor }]}
-              placeholder="Share what's on your heart..."
+              placeholder="🙏 Share what's on your heart..."
               placeholderTextColor={textColor + "50"}
               value={inputText}
               onChangeText={setInputText}
@@ -1101,7 +1118,6 @@ export default function PrayerBuddy() {
               maxLength={MAX_INPUT_LENGTH}
               editable={!isTyping && isOnline}
               returnKeyType="send"
-              blurOnSubmit={false}
               onSubmitEditing={() => {
                 if (inputText.trim()) {
                   handleSend();
@@ -1130,15 +1146,19 @@ export default function PrayerBuddy() {
                   {
                     backgroundColor:
                       !inputText.trim() || isTyping || !isOnline
-                        ? "#a855f780"
-                        : "#a855f7",
+                        ? colors.secondaryLight80
+                        : colors.secondary,
                   },
                 ]}
               >
                 {isTyping ? (
-                  <ActivityIndicator size="small" color="#fff" />
+                  <ActivityIndicator size="small" color={colors.text.inverse} />
                 ) : (
-                  <MaterialCommunityIcons name="send" size={28} color="#fff" />
+                  <MaterialCommunityIcons
+                    name="send"
+                    size={30}
+                    color={colors.text.inverse}
+                  />
                 )}
               </View>
             </TouchableOpacity>
@@ -1185,7 +1205,7 @@ export default function PrayerBuddy() {
                     { color: textColor + "40" },
                   ]}
                 >
-                  Long press any message and select "Save Message"
+                  Long press any message and select &quot;Save Message&quot;
                 </Text>
               </View>
             ) : (
@@ -1198,7 +1218,7 @@ export default function PrayerBuddy() {
                     <MaterialCommunityIcons
                       name={msg.role === "assistant" ? "hand-peace" : "account"}
                       size={20}
-                      color="#a855f7"
+                      color={colors.secondary}
                     />
                     <Text
                       style={[styles.savedMessageRole, { color: textColor }]}
@@ -1249,7 +1269,7 @@ export default function PrayerBuddy() {
           <ScrollView style={styles.modalContent}>
             {isGeneratingInsights ? (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#a855f7" />
+                <ActivityIndicator size="large" color={colors.secondary} />
                 <Text style={[styles.loadingText, { color: textColor }]}>
                   Analyzing your conversation...
                 </Text>
@@ -1317,7 +1337,10 @@ export default function PrayerBuddy() {
                       (verse: string, idx: number) => (
                         <Text
                           key={idx}
-                          style={[styles.insightListItem, { color: "#3b82f6" }]}
+                          style={[
+                            styles.insightListItem,
+                            { color: colors.primary },
+                          ]}
                         >
                           • {verse}
                         </Text>
@@ -1361,10 +1384,21 @@ const styles = StyleSheet.create({
   },
   avatar: {
     alignItems: "center",
-    borderRadius: 20,
-    height: 40,
+    borderRadius: 22,
+    height: 44,
     justifyContent: "center",
-    width: 40,
+    width: 44,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 3,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
   },
   avatarContainer: {
     marginHorizontal: 10,
@@ -1372,8 +1406,8 @@ const styles = StyleSheet.create({
   charCount: {
     fontSize: 12,
     marginBottom: 8,
-    textAlign: "right",
     paddingHorizontal: 20,
+    textAlign: "right",
   },
   container: {
     flex: 1,
@@ -1381,31 +1415,45 @@ const styles = StyleSheet.create({
   emptyState: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 60,
     paddingHorizontal: 40,
+    paddingVertical: 60,
   },
   emptyStateSubtext: {
     fontSize: 14,
-    textAlign: "center",
     marginTop: 8,
+    textAlign: "center",
   },
   emptyStateText: {
     fontSize: 18,
     fontWeight: "600",
     marginTop: 20,
   },
+  headerButton: {
+    padding: 8,
+  },
+  headerButtonLast: {
+    marginRight: -8,
+    padding: 8,
+  },
+  headerButtons: {
+    flexDirection: "row",
+    gap: 8,
+  },
   input: {
     flex: 1,
-    fontSize: 18,
-    maxHeight: 120,
-    minHeight: 56,
-    paddingVertical: 12,
+    fontSize: 19,
+    maxHeight: 140,
+    minHeight: 60,
+    paddingVertical: 14,
   },
   inputContainer: {
-    borderTopColor: "#00000010",
+    borderTopColor: colors.border.light,
     borderTopWidth: 1,
     paddingHorizontal: 20,
     paddingTop: 16,
+  },
+  inputPadding: {
+    paddingBottom: Platform.OS === "ios" ? 69 : 65,
   },
   inputWrapper: {
     alignItems: "flex-end",
@@ -1417,8 +1465,8 @@ const styles = StyleSheet.create({
   },
   insightCard: {
     borderRadius: 12,
-    padding: 20,
     marginBottom: 16,
+    padding: 20,
   },
   insightLabel: {
     fontSize: 14,
@@ -1435,12 +1483,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
   },
+  keyboardContainer: {
+    flex: 1,
+  },
   listeningIndicator: {
-    flexDirection: "row",
     alignItems: "center",
+    flexDirection: "row",
     gap: 8,
-    paddingHorizontal: 20,
     marginBottom: 8,
+    paddingHorizontal: 20,
   },
   listeningText: {
     fontSize: 14,
@@ -1456,13 +1507,28 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   messageBubble: {
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: 22,
+    padding: 24,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  messageContentContainer: {
+    flex: 1,
+    maxWidth: "75%",
   },
   messageText: {
-    fontSize: 18,
-    lineHeight: 26,
-    marginBottom: 4,
+    fontSize: 20,
+    lineHeight: 28,
+    marginBottom: 6,
   },
   messageWrapper: {
     alignItems: "flex-end",
@@ -1473,9 +1539,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   messagesContent: {
+    paddingBottom: 20,
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 20,
   },
   modalContainer: {
     flex: 1,
@@ -1485,12 +1551,12 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalHeader: {
+    alignItems: "center",
+    borderBottomColor: colors.border.light,
+    borderBottomWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
     padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#00000010",
   },
   modalTitle: {
     fontSize: 22,
@@ -1504,13 +1570,20 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   offlineText: {
-    color: "#fff",
+    color: colors.text.inverse,
     fontSize: 14,
     fontWeight: "600",
   },
-  quickRepliesContainer: {
-    marginTop: 16,
+  prayerEmoji: {
+    fontSize: 20,
+  },
+  prayerEmojiHeader: {
+    alignItems: "flex-start",
     marginBottom: 8,
+  },
+  quickRepliesContainer: {
+    marginBottom: 8,
+    marginTop: 16,
   },
   quickRepliesGrid: {
     flexDirection: "row",
@@ -1528,13 +1601,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   quickReplyText: {
-    fontSize: 15,
+    fontSize: 16,
   },
   reactionBubble: {
     borderRadius: 12,
+    marginRight: 4,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    marginRight: 4,
   },
   reactionText: {
     fontSize: 16,
@@ -1542,58 +1615,58 @@ const styles = StyleSheet.create({
   reactionsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: 4,
     marginLeft: 8,
+    marginTop: 4,
   },
   savedBadge: {
-    flexDirection: "row",
     alignItems: "center",
+    flexDirection: "row",
     gap: 4,
     marginBottom: 8,
   },
   savedMessageCard: {
     borderRadius: 12,
-    padding: 16,
     marginBottom: 12,
+    padding: 16,
   },
   savedMessageContent: {
     fontSize: 16,
     lineHeight: 24,
   },
   savedMessageHeader: {
-    flexDirection: "row",
     alignItems: "center",
+    flexDirection: "row",
     gap: 8,
     marginBottom: 12,
   },
   savedMessageRole: {
+    flex: 1,
     fontSize: 16,
     fontWeight: "600",
-    flex: 1,
   },
   savedMessageTime: {
     fontSize: 13,
   },
   savedText: {
+    color: colors.secondary,
     fontSize: 12,
     fontWeight: "600",
-    color: "#a855f7",
   },
   searchBar: {
-    flexDirection: "row",
     alignItems: "center",
+    borderBottomColor: colors.border.light,
+    borderBottomWidth: 1,
+    flexDirection: "row",
     gap: 12,
     paddingHorizontal: 20,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#00000010",
   },
   searchInput: {
     flex: 1,
     fontSize: 16,
   },
   sendButton: {
-    borderRadius: 30,
+    borderRadius: 32,
     overflow: "hidden",
   },
   sendButtonDisabled: {
@@ -1601,20 +1674,34 @@ const styles = StyleSheet.create({
   },
   sendButtonGradient: {
     alignItems: "center",
-    height: 60,
+    height: 64,
     justifyContent: "center",
-    width: 60,
+    width: 64,
+    ...Platform.select({
+      ios: {
+        shadowColor: colors.secondary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+  spacer: {
+    height: 20,
   },
   tag: {
-    backgroundColor: "#a855f720",
+    backgroundColor: colors.secondaryLight,
     borderRadius: 16,
+    marginBottom: 8,
+    marginRight: 8,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    marginRight: 8,
-    marginBottom: 8,
   },
   tagText: {
-    color: "#a855f7",
+    color: colors.secondary,
     fontSize: 14,
     fontWeight: "600",
   },
@@ -1635,12 +1722,12 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   templateText: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "600",
   },
   templatesContainer: {
-    marginTop: 16,
     marginBottom: 8,
+    marginTop: 16,
   },
   templatesTitle: {
     fontSize: 16,
@@ -1648,15 +1735,29 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   timeText: {
-    fontSize: 13,
+    fontSize: 14,
   },
   typingBubble: {
     alignItems: "center",
     borderBottomLeftRadius: 4,
-    borderRadius: 20,
+    borderRadius: 22,
     flexDirection: "row",
     gap: 12,
-    padding: 20,
+    padding: 24,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  typingEmoji: {
+    fontSize: 18,
   },
   typingIndicator: {
     alignItems: "flex-end",
@@ -1668,17 +1769,17 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
   userBubble: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: colors.primary,
     borderBottomRightRadius: 4,
   },
   userMessageText: {
-    color: "#fff",
+    color: colors.text.inverse,
   },
   userMessageWrapper: {
     justifyContent: "flex-end",
   },
   userTimeText: {
-    color: "#ffffff90",
+    color: colors.text.inverseSecondary,
   },
   voiceButton: {
     padding: 8,

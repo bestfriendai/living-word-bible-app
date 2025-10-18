@@ -14,6 +14,8 @@ export const colors = {
   secondaryLight80: "#a855f780",
   secondaryDark: "#9333ea",
 
+  purple: "#8b5cf6",
+
   // Semantic colors
   success: "#10b981",
   successLight: "#10b98120",
@@ -53,39 +55,39 @@ export const colors = {
   // Dark mode colors - Comprehensive palette
   dark: {
     // Backgrounds
-    background: "#000000",           // Pure black background
-    backgroundSecondary: "#0a0a0a",  // Near black for subtle differentiation
-    backgroundTertiary: "#141414",   // Slightly lighter for layered UI
+    background: "#000000", // Pure black background
+    backgroundSecondary: "#0a0a0a", // Near black for subtle differentiation
+    backgroundTertiary: "#141414", // Slightly lighter for layered UI
 
     // Cards and surfaces
-    card: "#1a1a1a",                 // Standard card background
-    cardElevated: "#262626",         // Elevated/focused cards
-    cardHover: "#2a2a2a",            // Hover state
+    card: "#1a1a1a", // Standard card background
+    cardElevated: "#262626", // Elevated/focused cards
+    cardHover: "#2a2a2a", // Hover state
 
     // Borders
-    border: "#333333",               // Default border
-    borderLight: "#262626",          // Subtle borders
-    borderDark: "#404040",           // Prominent borders
+    border: "#333333", // Default border
+    borderLight: "#262626", // Subtle borders
+    borderDark: "#404040", // Prominent borders
 
     // Text
-    text: "#FFFFFF",                 // Primary text
-    textSecondary: "#A0A0A0",        // Secondary text
-    textTertiary: "#707070",         // Tertiary/disabled text
-    textInverse: "#000000",          // Text on light backgrounds (buttons)
+    text: "#FFFFFF", // Primary text
+    textSecondary: "#A0A0A0", // Secondary text
+    textTertiary: "#707070", // Tertiary/disabled text
+    textInverse: "#000000", // Text on light backgrounds (buttons)
 
     // Inputs
-    inputBackground: "#1a1a1a",      // Input field backgrounds
-    inputBorder: "#333333",          // Input borders
-    inputBorderFocused: "#667eea",   // Focused input border
-    inputPlaceholder: "#666666",     // Placeholder text
+    inputBackground: "#1a1a1a", // Input field backgrounds
+    inputBorder: "#333333", // Input borders
+    inputBorderFocused: "#667eea", // Focused input border
+    inputPlaceholder: "#666666", // Placeholder text
 
     // Overlays
-    overlay: "rgba(0, 0, 0, 0.8)",   // Modal overlays
-    scrim: "rgba(0, 0, 0, 0.5)",     // Background scrims
+    overlay: "rgba(0, 0, 0, 0.8)", // Modal overlays
+    scrim: "rgba(0, 0, 0, 0.5)", // Background scrims
 
     // Special
-    divider: "#262626",              // Divider lines
-    shadow: "rgba(0, 0, 0, 0.9)",    // Shadow color (darker for depth)
+    divider: "#262626", // Divider lines
+    shadow: "rgba(0, 0, 0, 0.9)", // Shadow color (darker for depth)
   },
 
   // Border colors

@@ -44,22 +44,19 @@ function InnerLayout() {
   const pathName = usePathname();
 
   // Now we can import and use our theme context
-  const { isDark } = require("@/contexts/ThemeContext").useTheme();
+  const { useTheme } = require("@/contexts/ThemeContext");
+  const { isDark } = useTheme();
 
   useEffect(() => {
     if (Platform.OS === "android") {
-      NavigationBar.setButtonStyleAsync(
-        isDark ? "light" : "dark",
-      );
+      NavigationBar.setButtonStyleAsync(isDark ? "light" : "dark");
     }
   }, [isDark]);
 
   // Keep the root view background color in sync with the current theme
   useEffect(() => {
     setBackgroundColorAsync(
-      isDark
-        ? theme.color.background.dark
-        : theme.color.background.light,
+      isDark ? theme.color.background.dark : theme.color.background.light,
     );
   }, [isDark]);
 
@@ -83,9 +80,7 @@ function InnerLayout() {
   }, [lastNotificationResponse]);
 
   return (
-    <NavigationThemeProvider
-      value={isDark ? DarkTheme : DefaultTheme}
-    >
+    <NavigationThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
       <StatusBar style={isDark ? "light" : "dark"} />
 
       <ErrorBoundary>

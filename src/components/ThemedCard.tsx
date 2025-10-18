@@ -1,10 +1,5 @@
 import React, { ReactNode } from "react";
-import {
-  View,
-  StyleSheet,
-  ViewStyle,
-  Platform,
-} from "react-native";
+import { View, StyleSheet, ViewStyle, Platform } from "react-native";
 import { useThemeColor } from "./Themed";
 import { theme } from "@/theme";
 

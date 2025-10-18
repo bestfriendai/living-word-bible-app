@@ -22,6 +22,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { geminiService, VerseExplanation } from "@/services/geminiService";
 import { TranslationSwitcher } from "@/components/TranslationSwitcher";
 import { VerseActionsSheet } from "@/components/VerseActionsSheet";
+import VerseHighlighter from "@/components/VerseHighlighter";
 import { hapticPatterns } from "@/utils/haptics";
 import { VerseCardSkeleton } from "@/components/SkeletonLoader";
 import { useSpeechToText } from "@/utils/speechToText";
@@ -41,11 +42,18 @@ export default function Scripture() {
   const [refreshing, setRefreshing] = useState(false);
   const [showActionsSheet, setShowActionsSheet] = useState(false);
   const [actionSheetVerse, setActionSheetVerse] = useState<any>(null);
+  const [showHighlighter, setShowHighlighter] = useState(false);
+  const [highlighterVerse, setHighlighterVerse] = useState<any>(null);
 
   const searchResults = useBibleStore((state) => state.searchResults);
   const isSearching = useBibleStore((state) => state.isSearching);
   const searchVerses = useBibleStore((state) => state.searchVerses);
   const saveVerse = useBibleStore((state) => state.saveVerse);
+  const addHighlight = useBibleStore((state) => state.addHighlight);
+  const removeHighlight = useBibleStore((state) => state.removeHighlight);
+  const getHighlightByVerse = useBibleStore(
+    (state) => state.getHighlightByVerse,
+  );
 
   // Speech-to-text hook
   const { isListening, startListening, stopListening, resetTranscript } =
@@ -181,8 +189,8 @@ export default function Scripture() {
             onPress={handleVoiceInput}
           >
             <MaterialCommunityIcons
-              name={isListening ? "stop" : "microphone"}
-              size={24}
+              name={isListening ? "microphone" : "microphone-outline"}
+              size={20}
               color={isListening ? "#fff" : textColor}
             />
           </TouchableOpacity>
@@ -263,77 +271,134 @@ export default function Scripture() {
             <Text style={[styles.resultsTitle, { color: textColor }]}>
               {searchResults.length} verses found
             </Text>
-            {searchResults.map((verse, index) => (
-              <Animated.View
-                key={`${verse.reference}-${index}`}
-                entering={FadeInDown.delay(index * 100)}
-              >
-                <View style={[styles.verseCard, { backgroundColor: cardBg }]}>
-                  <View style={styles.verseHeader}>
-                    <Text
-                      style={[
-                        styles.verseReference,
-                        { color: theme.color.reactBlue.dark },
-                      ]}
-                    >
-                      {verse.reference}
-                    </Text>
-                  </View>
-                  <Text style={[styles.verseText, { color: textColor }]}>
-                    &quot;{verse.text}&quot;
-                  </Text>
-                  {verse.context && (
-                    <View
-                      style={[
-                        styles.contextBox,
-                        { backgroundColor: backgroundColor },
-                      ]}
-                    >
-                      <Text style={[styles.contextLabel, { color: textColor }]}>
-                        Context:
-                      </Text>
-                      <Text style={[styles.contextText, { color: textColor }]}>
-                        {verse.context}
-                      </Text>
-                    </View>
-                  )}
-                  {verse.relevance && (
-                    <View style={styles.relevanceBox}>
-                      <Text
-                        style={[styles.relevanceText, { color: textColor }]}
-                      >
-                        {verse.relevance}
-                      </Text>
-                    </View>
-                  )}
-                  <Pressable
-                    onPress={() => {
-                      hapticPatterns.buttonPress();
-                      setActionSheetVerse(verse);
-                      setShowActionsSheet(true);
-                    }}
-                    style={({ pressed }) => [
-                      styles.saveButton,
-                      pressed && { opacity: 0.85 },
+            {searchResults.map((verse, index) => {
+              const existingHighlight = getHighlightByVerse(
+                verse.id || verse.reference,
+              );
+              const highlightColors = {
+                yellow: "#FEF3C7",
+                blue: "#DBEAFE",
+                green: "#D1FAE5",
+                red: "#FEE2E2",
+                purple: "#EDE9FE",
+                orange: "#FED7AA",
+              };
+
+              return (
+                <Animated.View
+                  key={`${verse.reference}-${index}`}
+                  entering={FadeInDown.delay(index * 100)}
+                >
+                  <View
+                    style={[
+                      styles.verseCard,
+                      {
+                        backgroundColor: cardBg,
+                        borderLeftWidth: existingHighlight ? 4 : 0,
+                        borderLeftColor: existingHighlight
+                          ? highlightColors[existingHighlight.color]
+                          : "transparent",
+                      },
                     ]}
                   >
-                    <View
-                      style={[
-                        styles.saveButtonInner,
-                        { backgroundColor: "#667eea" },
-                      ]}
-                    >
-                      <MaterialCommunityIcons
-                        name="dots-horizontal-circle-outline"
-                        size={28}
-                        color="#fff"
-                      />
-                      <Text style={styles.saveButtonText}>Verse Actions</Text>
+                    <View style={styles.verseHeader}>
+                      <Text
+                        style={[
+                          styles.verseReference,
+                          { color: theme.color.reactBlue.dark },
+                        ]}
+                      >
+                        {verse.reference}
+                      </Text>
                     </View>
-                  </Pressable>
-                </View>
-              </Animated.View>
-            ))}
+                    <Text style={[styles.verseText, { color: textColor }]}>
+                      &quot;{verse.text}&quot;
+                    </Text>
+                    {verse.context && (
+                      <View
+                        style={[
+                          styles.contextBox,
+                          { backgroundColor: backgroundColor },
+                        ]}
+                      >
+                        <Text
+                          style={[styles.contextLabel, { color: textColor }]}
+                        >
+                          Context:
+                        </Text>
+                        <Text
+                          style={[styles.contextText, { color: textColor }]}
+                        >
+                          {verse.context}
+                        </Text>
+                      </View>
+                    )}
+                    {verse.relevance && (
+                      <View style={styles.relevanceBox}>
+                        <Text
+                          style={[styles.relevanceText, { color: textColor }]}
+                        >
+                          {verse.relevance}
+                        </Text>
+                      </View>
+                    )}
+                    <View style={styles.verseActions}>
+                      <Pressable
+                        onPress={() => {
+                          hapticPatterns.buttonPress();
+                          const [book, chapterVerse] =
+                            verse.reference.split(" ");
+                          const [chapter, verseNum] = chapterVerse.split(":");
+                          setHighlighterVerse({
+                            id: verse.id || verse.reference,
+                            book,
+                            chapter: parseInt(chapter),
+                            verse: parseInt(verseNum),
+                            reference: verse.reference,
+                          });
+                          setShowHighlighter(true);
+                        }}
+                        style={({ pressed }) => [
+                          styles.actionButton,
+                          pressed && { opacity: 0.85 },
+                          existingHighlight && {
+                            backgroundColor:
+                              highlightColors[existingHighlight.color],
+                          },
+                        ]}
+                      >
+                        <MaterialCommunityIcons
+                          name={
+                            existingHighlight ? "bookmark" : "bookmark-outline"
+                          }
+                          size={20}
+                          color={existingHighlight ? "#000" : "#fff"}
+                        />
+                      </Pressable>
+
+                      <Pressable
+                        onPress={() => {
+                          hapticPatterns.buttonPress();
+                          setActionSheetVerse(verse);
+                          setShowActionsSheet(true);
+                        }}
+                        style={({ pressed }) => [
+                          styles.actionButton,
+                          styles.moreButton,
+                          pressed && { opacity: 0.85 },
+                        ]}
+                      >
+                        <MaterialCommunityIcons
+                          name="dots-horizontal"
+                          size={20}
+                          color="#fff"
+                        />
+                      </Pressable>
+                    </View>
+                  </View>
+                </Animated.View>
+              );
+            })}
           </View>
         )}
       </ScrollView>
@@ -586,11 +651,42 @@ export default function Scripture() {
           }
         }}
       />
+
+      {/* Verse Highlighter Modal */}
+      <VerseHighlighter
+        visible={showHighlighter}
+        verseId={highlighterVerse?.id || ""}
+        book={highlighterVerse?.book || ""}
+        chapter={highlighterVerse?.chapter || 0}
+        verse={highlighterVerse?.verse || 0}
+        existingHighlight={
+          highlighterVerse
+            ? getHighlightByVerse(highlighterVerse.id)
+            : undefined
+        }
+        onClose={() => {
+          setShowHighlighter(false);
+          setHighlighterVerse(null);
+        }}
+        onSave={(highlight) => {
+          addHighlight(highlight);
+        }}
+        onDelete={(highlightId) => {
+          removeHighlight(highlightId);
+        }}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  actionButton: {
+    alignItems: "center",
+    backgroundColor: "#667eea",
+    borderRadius: 20,
+    justifyContent: "center",
+    padding: 8,
+  },
   container: {
     flex: 1,
   },
@@ -600,15 +696,15 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   contextLabel: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: "700",
     letterSpacing: 0.5,
     marginBottom: 8,
     textTransform: "uppercase",
   },
   contextText: {
-    fontSize: 18,
-    lineHeight: 28,
+    fontSize: 19,
+    lineHeight: 30,
   },
   emptyIcon: {
     alignItems: "center",
@@ -624,13 +720,13 @@ const styles = StyleSheet.create({
     paddingVertical: 48,
   },
   emptySubtitle: {
-    fontSize: 18,
-    lineHeight: 26,
+    fontSize: 19,
+    lineHeight: 28,
     maxWidth: 300,
     textAlign: "center",
   },
   emptyTitle: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: "bold",
     marginBottom: 12,
   },
@@ -646,11 +742,11 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   explanationText: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 18,
+    lineHeight: 26,
   },
   explanationTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
   },
   header: {
@@ -674,7 +770,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   listeningText: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "600",
   },
   loadingContainer: {
@@ -684,7 +780,7 @@ const styles = StyleSheet.create({
     paddingVertical: 64,
   },
   loadingText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "500",
   },
   micButton: {
@@ -739,7 +835,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
   },
   modalVerseGradient: {
@@ -763,16 +859,19 @@ const styles = StyleSheet.create({
   },
   modalVerseReference: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "700",
     marginBottom: 12,
     opacity: 0.9,
   },
   modalVerseText: {
     color: "#fff",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "500",
-    lineHeight: 28,
+    lineHeight: 30,
+  },
+  moreButton: {
+    backgroundColor: "#6b7280",
   },
   relatedVerseTag: {
     alignItems: "center",
@@ -783,7 +882,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   relatedVerseText: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "600",
   },
   relatedVersesList: {
@@ -796,39 +895,21 @@ const styles = StyleSheet.create({
   },
   relevanceText: {
     flex: 1,
-    fontSize: 18,
-    lineHeight: 28,
+    fontSize: 19,
+    lineHeight: 30,
   },
   resultsContainer: {
     marginTop: 16,
   },
   resultsTitle: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "700",
     marginBottom: 24,
-  },
-  saveButton: {
-    borderRadius: 16,
-    marginTop: 24,
-    overflow: "hidden",
-  },
-  saveButtonInner: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 12,
-    justifyContent: "center",
-    minHeight: 60,
-    paddingHorizontal: 24,
-    paddingVertical: 18,
-  },
-  saveButtonText: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "700",
   },
   scrollContent: {
     paddingHorizontal: 20,
   },
+
   scrollView: {
     flex: 1,
   },
@@ -851,7 +932,7 @@ const styles = StyleSheet.create({
   },
   searchButtonText: {
     color: "#fff",
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "700",
   },
   searchContainer: {
@@ -861,14 +942,14 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   searchInput: {
-    fontSize: 18,
-    lineHeight: 26,
+    fontSize: 19,
+    lineHeight: 28,
     minHeight: 120,
     paddingRight: 60,
     textAlignVertical: "top",
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 4,
   },
   themeTag: {
@@ -877,7 +958,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   themeText: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "600",
   },
   themesList: {
@@ -886,9 +967,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    fontSize: 42,
+    fontSize: 44,
     fontWeight: "bold",
     letterSpacing: -1,
+  },
+  verseActions: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 16,
   },
   verseCard: {
     borderRadius: 20,
@@ -913,14 +999,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   verseReference: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "700",
   },
   verseText: {
     fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
-    fontSize: 20,
+    fontSize: 22,
     fontStyle: "italic",
-    lineHeight: 34,
+    lineHeight: 36,
     marginBottom: 24,
   },
 });

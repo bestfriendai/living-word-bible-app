@@ -5,15 +5,15 @@ import {
   StyleSheet,
   Modal,
   Pressable,
-  Share,
   useColorScheme,
   Platform,
+  Alert,
 } from "react-native";
 import { BlurView } from "expo-blur";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MotiView } from "moti";
 import { hapticPatterns } from "@/utils/haptics";
-import * as Clipboard from "expo-clipboard";
+import { socialSharingService } from "@/services/socialSharingService";
 
 interface VerseActionsSheetProps {
   visible: boolean;
@@ -46,20 +46,37 @@ export function VerseActionsSheet({
 
   const handleCopy = async () => {
     hapticPatterns.buttonPress();
-    await Clipboard.setStringAsync(`"${verse.text}" - ${verse.reference}`);
-    hapticPatterns.taskComplete();
-    onClose();
+    try {
+      await socialSharingService.copyToClipboard({
+        text: `"${verse.text}" - ${verse.reference}`,
+        type: "verse",
+      });
+      hapticPatterns.taskComplete();
+      Alert.alert("Copied!", "Verse copied to clipboard");
+      onClose();
+    } catch (error) {
+      console.error("Error copying:", error);
+      Alert.alert("Error", "Failed to copy verse to clipboard");
+    }
   };
 
   const handleShare = async () => {
     hapticPatterns.buttonPress();
     try {
-      await Share.share({
-        message: `"${verse.text}"\n\n${verse.reference}\n\nShared from Living Word Bible App`,
-      });
+      const success = await socialSharingService.shareVerse(
+        verse.reference,
+        verse.text,
+      );
+
+      if (success) {
+        hapticPatterns.taskComplete();
+      } else {
+        Alert.alert("Sharing", "Verse copied to clipboard instead");
+      }
       onClose();
     } catch (error) {
       console.error("Error sharing:", error);
+      Alert.alert("Error", "Failed to share verse");
     }
   };
 

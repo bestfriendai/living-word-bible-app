@@ -342,10 +342,11 @@ export class MemorizationService {
     // Create stages revealing more words gradually
     for (let i = 1; i <= words.length; i++) {
       const revealed = words.slice(0, i).join(" ");
-      const hidden = words.slice(i).map(() => "___").join(" ");
-      stages.push(
-        i < words.length ? `${revealed} ${hidden}` : words.join(" "),
-      );
+      const hidden = words
+        .slice(i)
+        .map(() => "___")
+        .join(" ");
+      stages.push(i < words.length ? `${revealed} ${hidden}` : words.join(" "));
     }
 
     return { stages };
@@ -457,14 +458,14 @@ export class MemorizationService {
    * Get achievements
    */
   async getAchievements(): Promise<
-    Array<{
+    {
       id: string;
       title: string;
       description: string;
       unlocked: boolean;
       progress: number;
       icon: string;
-    }>
+    }[]
   > {
     const stats = await this.getStats();
     const { currentStreak } = await this.getStreak();
@@ -538,8 +539,8 @@ export class MemorizationService {
     totalTimeSpent: number; // in minutes
     averageAccuracy: number;
     versesReviewedToday: number;
-    weeklyProgress: Array<{ date: string; reviewCount: number }>;
-    categoryBreakdown: Array<{ category: string; count: number }>;
+    weeklyProgress: { date: string; reviewCount: number }[];
+    categoryBreakdown: { category: string; count: number }[];
   }> {
     const totalTimeSpent = this.verses.reduce(
       (sum, v) => sum + (v.timeSpent || 0),
@@ -563,7 +564,7 @@ export class MemorizationService {
     }).length;
 
     // Weekly progress (last 7 days)
-    const weeklyProgress: Array<{ date: string; reviewCount: number }> = [];
+    const weeklyProgress: { date: string; reviewCount: number }[] = [];
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);

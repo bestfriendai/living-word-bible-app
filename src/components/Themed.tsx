@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Text,
-  View,
-  TextStyle,
-  PressableProps,
-  Pressable,
-} from "react-native";
+import { Text, View, TextStyle, PressableProps, Pressable } from "react-native";
 import Animated from "react-native-reanimated";
 
 import { theme } from "../theme";

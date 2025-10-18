@@ -60,7 +60,8 @@ export const validators = {
     if (!/[A-Za-z]/.test(trimmed) || !/\d/.test(trimmed)) {
       return {
         isValid: false,
-        error: 'Reference must include both book name and chapter (e.g., "John 3")',
+        error:
+          'Reference must include both book name and chapter (e.g., "John 3")',
       };
     }
 
@@ -245,7 +246,10 @@ export const validators = {
   /**
    * Validate number is positive integer
    */
-  positiveInteger(value: number, fieldName: string = "Value"): ValidationResult {
+  positiveInteger(
+    value: number,
+    fieldName: string = "Value",
+  ): ValidationResult {
     if (typeof value !== "number" || isNaN(value)) {
       return { isValid: false, error: `${fieldName} must be a number` };
     }
@@ -297,9 +301,7 @@ export const validators = {
  * }
  * ```
  */
-export function validateAll(
-  validations: ValidationResult[],
-): ValidationResult {
+export function validateAll(validations: ValidationResult[]): ValidationResult {
   const errors = validations.filter((v) => !v.isValid).map((v) => v.error);
 
   if (errors.length === 0) {
