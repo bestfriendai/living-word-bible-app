@@ -93,6 +93,9 @@ export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   timestamp: string;
+  id?: string; // Unique identifier for each message
+  isSaved?: boolean; // Whether message is bookmarked
+  reactions?: string[]; // Array of emoji reactions
 }
 
 export interface SermonNotes {
@@ -503,30 +506,87 @@ Be encouraging and specific. Return ONLY valid JSON.`;
     chatHistory: ChatMessage[] = [],
   ): Promise<string> {
     try {
+      await this.ensureInitialized();
+
       const historyContext = chatHistory
-        .slice(-6)
+        .slice(-10)
         .map(
           (msg) =>
             `${msg.role === "user" ? "User" : "Prayer Buddy"}: ${msg.content}`,
         )
         .join("\n");
 
-      const prompt = `You are a compassionate Prayer Buddy assistant helping someone with their spiritual journey.
+      const prompt = `You are a compassionate, knowledgeable Prayer Buddy assistant powered by AI to support people in their spiritual journey. You have deep Biblical knowledge and pastoral care training.
 
-Previous conversation:
-${historyContext}
+**Previous Conversation:**
+${historyContext || "This is the first message."}
 
-User's message: "${message}"
+**User's Message:** "${message}"
 
-Respond with encouragement, Biblical wisdom, and practical guidance. Be warm, supportive, and Christ-like. Keep responses concise (2-3 sentences) unless detailed explanation is needed.
+**Instructions for Your Response:**
 
-Your response:`;
+1. **Be Warm & Personal:** Address their heart and emotions with empathy
+2. **Provide Biblical Wisdom:** Include relevant scripture references when appropriate
+3. **Give Practical Guidance:** Offer actionable steps they can take
+4. **Structure Your Response:** Use markdown formatting for clarity:
+   - Use **bold** for key points
+   - Use bullet points (•) or numbered lists for steps
+   - Use > blockquotes for scripture verses
+   - Use headings (##) only when organizing longer responses
+5. **Length Guidelines:**
+   - For simple questions: 2-4 sentences
+   - For prayer requests: Include a brief prayer (3-5 sentences)
+   - For Bible questions: Provide context and explanation (1-2 paragraphs)
+   - For struggles/concerns: Offer encouragement + scripture + action steps
+
+**Response Style Examples:**
+
+For prayer requests:
+"I'm lifting you up in prayer right now 🙏
+
+**Prayer:**
+Heavenly Father, I ask that You wrap [their concern] in Your loving arms. Grant them Your **peace that surpasses understanding** and wisdom for the path ahead. May they feel Your presence deeply. Amen.
+
+**Relevant Scripture:**
+> *"Cast all your anxiety on Him because He cares for you."* - 1 Peter 5:7
+
+Is there a specific aspect of this situation you'd like to pray about more?"
+
+For Bible questions:
+"Great question! Let me help explain that passage.
+
+**Context:** [Brief background]
+
+**Meaning:** [Explanation with key insights in **bold**]
+
+**Application:** Here's how this applies to your life:
+• [Practical point 1]
+• [Practical point 2]
+
+**Related Verses:** [Reference 1], [Reference 2]"
+
+For encouragement:
+"I hear you, and what you're feeling is completely valid ❤️
+
+**Remember:** [Encouraging truth]
+
+**God's Promise:**
+> *"[Relevant verse]"* - [Reference]
+
+**Next Steps:**
+1. [Practical action]
+2. [Spiritual practice]
+3. [Community connection]
+
+You're not alone in this journey. How can I continue supporting you?"
+
+**Your Response:**`;
 
       const result = await this.model.generateContent(prompt);
       return result.response.text().trim();
     } catch (error) {
       console.error("Error in prayer buddy chat:", error);
-      return "I'm here to support you in prayer. How can I help you today?";
+      return "I'm here to support you in prayer. I'm experiencing a technical issue right now, but please know that God hears your prayers directly. Try sharing your heart with me again, and I'll do my best to respond. 🙏";
     }
   }
 
@@ -696,6 +756,66 @@ Make it practical, Biblical, and actionable. Return ONLY valid JSON.`;
           "Study the verses mentioned",
         ],
         suggestedReadings: ["Romans 8", "James 1"],
+      };
+    }
+  }
+
+  /**
+   * Generate conversation insights and summary
+   */
+  async generateConversationInsights(messages: ChatMessage[]): Promise<{
+    summary: string;
+    keyTopics: string[];
+    prayersDiscussed: string[];
+    versesMentioned: string[];
+    suggestedNextSteps: string[];
+  }> {
+    try {
+      await this.ensureInitialized();
+
+      const conversationText = messages
+        .map(
+          (msg) =>
+            `${msg.role === "user" ? "User" : "Prayer Buddy"}: ${msg.content}`,
+        )
+        .join("\n");
+
+      const prompt = `Analyze this Prayer Buddy conversation and provide insights:
+
+${conversationText}
+
+Respond ONLY with valid JSON (NO markdown):
+{
+  "summary": "2-3 sentence summary of the conversation",
+  "keyTopics": ["topic1", "topic2", "topic3"],
+  "prayersDiscussed": ["prayer topic 1", "prayer topic 2"],
+  "versesMentioned": ["Reference 1", "Reference 2"],
+  "suggestedNextSteps": ["action 1", "action 2", "action 3"]
+}
+
+Be encouraging and insightful. Return ONLY valid JSON.`;
+
+      const result = await this.model.generateContent(prompt);
+      const text = result.response.text();
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+
+      if (jsonMatch) {
+        return JSON.parse(this.cleanJsonString(jsonMatch[0]));
+      }
+      throw new Error("Invalid response");
+    } catch (error) {
+      console.error("Error generating conversation insights:", error);
+      return {
+        summary:
+          "You had a meaningful conversation about faith and spiritual growth.",
+        keyTopics: ["Faith", "Prayer", "Guidance"],
+        prayersDiscussed: ["Spiritual growth", "Daily guidance"],
+        versesMentioned: [],
+        suggestedNextSteps: [
+          "Continue in daily prayer",
+          "Read suggested scriptures",
+          "Reflect on insights gained",
+        ],
       };
     }
   }

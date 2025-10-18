@@ -3,13 +3,13 @@
  * Provides offline detection and connection monitoring
  */
 
-import * as Network from "expo-network";
+import NetInfo, { NetInfoState } from "@react-native-community/netinfo";
 import { useEffect, useState } from "react";
 
 export interface NetworkState {
   isConnected: boolean | null;
   isInternetReachable: boolean | null;
-  type: Network.NetworkStateType;
+  type: string | null;
 }
 
 /**
@@ -22,7 +22,7 @@ export const networkService = {
    */
   async isOnline(): Promise<boolean> {
     try {
-      const state = await Network.getNetworkStateAsync();
+      const state = await NetInfo.fetch();
       return state.isConnected ?? false;
     } catch (error) {
       console.warn("[Network] Failed to check connection status:", error);
@@ -37,13 +37,10 @@ export const networkService = {
    */
   async isInternetReachable(): Promise<boolean> {
     try {
-      const state = await Network.getNetworkStateAsync();
+      const state = await NetInfo.fetch();
       return state.isInternetReachable ?? false;
     } catch (error) {
-      console.warn(
-        "[Network] Failed to check internet reachability:",
-        error,
-      );
+      console.warn("[Network] Failed to check internet reachability:", error);
       return false;
     }
   },
@@ -54,18 +51,18 @@ export const networkService = {
    */
   async getNetworkState(): Promise<NetworkState> {
     try {
-      const state = await Network.getNetworkStateAsync();
+      const state = await NetInfo.fetch();
       return {
         isConnected: state.isConnected ?? null,
         isInternetReachable: state.isInternetReachable ?? null,
-        type: state.type,
+        type: state.type || null,
       };
     } catch (error) {
       console.error("[Network] Failed to get network state:", error);
       return {
         isConnected: null,
         isInternetReachable: null,
-        type: Network.NetworkStateType.UNKNOWN,
+        type: null,
       };
     }
   },
@@ -76,8 +73,8 @@ export const networkService = {
    */
   async getIpAddress(): Promise<string | null> {
     try {
-      const ip = await Network.getIpAddressAsync();
-      return ip;
+      const state = await NetInfo.fetch();
+      return (state.details as any)?.ipAddress || null;
     } catch (error) {
       console.warn("[Network] Failed to get IP address:", error);
       return null;
@@ -157,30 +154,23 @@ export function useNetworkStatus(): NetworkState {
   const [networkState, setNetworkState] = useState<NetworkState>({
     isConnected: null,
     isInternetReachable: null,
-    type: Network.NetworkStateType.UNKNOWN,
+    type: null,
   });
 
   useEffect(() => {
     // Initial check
     networkService.getNetworkState().then(setNetworkState);
 
-    // Poll for changes (since expo-network doesn't provide event listeners)
-    const interval = setInterval(async () => {
-      const state = await networkService.getNetworkState();
-      setNetworkState((prev) => {
-        // Only update if changed to avoid unnecessary re-renders
-        if (
-          prev.isConnected !== state.isConnected ||
-          prev.isInternetReachable !== state.isInternetReachable ||
-          prev.type !== state.type
-        ) {
-          return state;
-        }
-        return prev;
+    // Subscribe to network state changes
+    const unsubscribe = NetInfo.addEventListener((state: NetInfoState) => {
+      setNetworkState({
+        isConnected: state.isConnected ?? null,
+        isInternetReachable: state.isInternetReachable ?? null,
+        type: state.type || null,
       });
-    }, 5000); // Check every 5 seconds
+    });
 
-    return () => clearInterval(interval);
+    return () => unsubscribe();
   }, []);
 
   return networkState;
