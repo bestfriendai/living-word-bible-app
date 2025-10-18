@@ -105,11 +105,7 @@ export default function ReadingPlans() {
         showsVerticalScrollIndicator={false}
       >
         {/* Reading Stats */}
-        <MotiView
-          from={{ opacity: 0, translateY: -10 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: "spring", damping: 15 }}
-        >
+        <View>
           <View style={[styles.statsCard, { backgroundColor: cardBg }]}>
             <View style={styles.statsHeader}>
               <Text style={[styles.statsTitle, { color: textColor }]}>
@@ -179,11 +175,7 @@ export default function ReadingPlans() {
 
         {/* Active Plan */}
         {activeReadingPlan && readingPlans.length > 0 && (
-          <MotiView
-            from={{ opacity: 0, scale: 0.95, translateY: -10 }}
-            animate={{ opacity: 1, scale: 1, translateY: 0 }}
-            transition={{ type: "spring", damping: 15, delay: 100 }}
-          >
+          <View>
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={() => handleContinuePlan(readingPlans[0].id)}
@@ -278,17 +270,7 @@ export default function ReadingPlans() {
         {/* Plans List */}
         <View style={styles.plansList}>
           {filteredPlans.map((plan, index) => (
-            <MotiView
-              key={plan.id}
-              from={{ opacity: 0, translateY: 20 }}
-              animate={{ opacity: 1, translateY: 0 }}
-              transition={{
-                type: "spring",
-                damping: 20,
-                delay: index * 80,
-              }}
-            >
-              <View style={[styles.planCard, { backgroundColor: cardBg }]}>
+              <View key={plan.id} style={[styles.planCard, { backgroundColor: cardBg }]}>
                 <View style={styles.planHeader}>
                   <View style={styles.planMeta}>
                     <View
@@ -358,7 +340,6 @@ export default function ReadingPlans() {
                   />
                 </TouchableOpacity>
               </View>
-            </View>
           ))}
         </View>
       </ScrollView>
