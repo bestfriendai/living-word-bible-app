@@ -358,6 +358,8 @@ Be scholarly yet accessible. Return ONLY valid JSON.`;
     count: number = 5,
   ): Promise<BibleStudyQuestion[]> {
     try {
+      await this.ensureInitialized();
+
       const prompt = `Generate ${count} Bible study questions for: ${verseReference}
 
 Mix of reflection, analysis, application, and memory questions.
@@ -650,6 +652,8 @@ Make it personal, Biblical, and encouraging. Return ONLY valid JSON.`;
     versesMentioned: string[],
   ): Promise<SermonNotes> {
     try {
+      await this.ensureInitialized();
+
       const prompt = `You are a sermon notes assistant. Help organize these notes from a sermon:
 
 Topic: "${sermonTopic}"
@@ -704,6 +708,8 @@ Make it practical, Biblical, and actionable. Return ONLY valid JSON.`;
     targetLanguage: SupportedLanguage,
   ): Promise<string> {
     try {
+      await this.ensureInitialized();
+
       const prompt = `Translate the following Biblical text to ${targetLanguage}. Maintain the spiritual and theological meaning:
 
 "${text}"

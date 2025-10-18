@@ -21,6 +21,7 @@ import { bibleDatabase } from "@/services/bibleDatabase";
 import { bibleApiService } from "@/services/bibleApiService";
 import { geminiService } from "@/services/geminiService";
 import { logEnvValidation } from "@/utils/validateEnv";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 SplashScreen.setOptions({
   duration: 200,
@@ -130,14 +131,16 @@ export default function Layout() {
         >
           <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
 
-          <Stack>
-            <Stack.Screen
-              name="(tabs)"
-              options={{
-                headerShown: false,
-              }}
-            />
-          </Stack>
+          <ErrorBoundary>
+            <Stack>
+              <Stack.Screen
+                name="(tabs)"
+                options={{
+                  headerShown: false,
+                }}
+              />
+            </Stack>
+          </ErrorBoundary>
         </ThemeProvider>
       </ActionSheetProvider>
     </GestureHandlerRootView>
