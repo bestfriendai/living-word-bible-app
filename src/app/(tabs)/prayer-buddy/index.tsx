@@ -710,20 +710,8 @@ export default function PrayerBuddy() {
           },
           headerTintColor: textColor,
           headerShadowVisible: false,
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={{ padding: 8, marginLeft: -8 }}
-              accessibilityLabel="Go back"
-              accessibilityRole="button"
-            >
-              <MaterialCommunityIcons
-                name="arrow-left"
-                size={28}
-                color={textColor}
-              />
-            </TouchableOpacity>
-          ),
+          headerLargeTitle: true,
+          headerTransparent: false,
           headerRight: () => (
             <View style={{ flexDirection: "row", gap: 8 }}>
               <TouchableOpacity
@@ -1057,7 +1045,7 @@ export default function PrayerBuddy() {
             styles.inputContainer,
             { backgroundColor: cardBg },
             {
-              paddingBottom: Platform.OS === "ios" ? insets.bottom : 16,
+              paddingBottom: Platform.OS === "ios" ? Math.max(insets.bottom, 20) + 49 : 65,
             },
           ]}
         >
