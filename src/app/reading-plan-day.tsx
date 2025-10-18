@@ -132,11 +132,7 @@ export default function ReadingPlanDay() {
 
       {/* Celebration Overlay */}
       {showCelebration && (
-        <MotiView
-          from={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ type: "spring", damping: 12 }}
+        <View
           style={styles.celebrationOverlay}
         >
           <LinearGradient
@@ -163,11 +159,7 @@ export default function ReadingPlanDay() {
         showsVerticalScrollIndicator={false}
       >
         {/* Progress Header */}
-        <MotiView
-          from={{ opacity: 0, translateY: -10 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: "timing", duration: 400 }}
-          style={styles.progressSection}
+        <View style={styles.progressSection}
         >
           <View style={styles.progressInfo}>
             <Text style={[styles.planName, { color: textColor }]}>
@@ -212,11 +204,7 @@ export default function ReadingPlanDay() {
         />
 
         {/* Reading Title */}
-        <MotiView
-          from={{ opacity: 0, translateY: 10 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: "timing", duration: 400, delay: 100 }}
-          style={styles.titleSection}
+        <View style={styles.titleSection}
         >
           <Text style={[styles.readingTitle, { color: textColor }]}>
             {currentReading.title || currentReading.reference}
@@ -232,11 +220,7 @@ export default function ReadingPlanDay() {
         </View>
 
         {/* Verse Content */}
-        <MotiView
-          from={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ type: "timing", duration: 500, delay: 200 }}
-          style={[styles.contentCard, { backgroundColor: cardBg }]}
+        <View style={[styles.contentCard, { backgroundColor: cardBg }]}
         >
           {loading ? (
             <View style={styles.loadingContainer}>
@@ -315,11 +299,7 @@ export default function ReadingPlanDay() {
         </View>
 
         {/* Progress Overview */}
-        <MotiView
-          from={{ opacity: 0, translateY: 10 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: "timing", duration: 400, delay: 300 }}
-          style={[styles.progressOverview, { backgroundColor: cardBg }]}
+        <View style={[styles.progressOverview, { backgroundColor: cardBg }]}
         >
           <Text style={[styles.progressTitle, { color: textColor }]}>
             Reading Progress
@@ -367,11 +347,7 @@ export default function ReadingPlanDay() {
       </ScrollView>
 
       {/* Bottom Action Bar */}
-      <MotiView
-        from={{ opacity: 0, translateY: 100 }}
-        animate={{ opacity: 1, translateY: 0 }}
-        transition={{ type: "spring", damping: 20, delay: 300 }}
-        style={[
+      <View style={[
           styles.bottomBar,
           {
             backgroundColor: cardBg,
