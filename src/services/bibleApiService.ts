@@ -4,14 +4,62 @@ import { secureEnv } from "../utils/secureEnv";
 // API.Bible endpoints
 const API_BASE_URL = "https://api.scripture.api.bible/v1";
 
-// Bible IDs for different translations on API.Bible
+// Bible IDs for different translations on API.Bible (from API.Bible documentation)
 const TRANSLATION_IDS: Record<string, string> = {
   KJV: "de4e12af7f28f599-02", // King James Version
   NIV: "06125adad2d5898a-01", // New International Version (Reader's Edition)
   ESV: "f421fe261da7624f-01", // English Standard Version
   NLT: "7142879509583d59-01", // New Living Translation
   NKJV: "fb5c4bb8b5e0ba0c-01", // New King James Version
+  NASB: "de4e12af7f28f599-03", // New American Standard Bible
+  AMP: "65eec8e0b60e656b-01", // Amplified Bible
+  MSG: "9879dbb7cfe39e4d-04", // The Message
+  CEV: "06125adad2d5898a-02", // Contemporary English Version
+  GNT: "d81b73ce0f197c11-01", // Good News Translation
 };
+
+// API Response types based on API.Bible specification
+export interface BibleApiVerse {
+  id: string;
+  orgId: string;
+  bibleId: string;
+  bookId: string;
+  chapterId: string;
+  reference: string;
+  text: string;
+}
+
+export interface BibleApiPassage {
+  id: string;
+  orgId: string;
+  bibleId: string;
+  bookId: string;
+  chapterId: string;
+  reference: string;
+  content: string;
+}
+
+export interface BibleApiSearchResponse {
+  data: {
+    query: string;
+    limit: number;
+    offset: number;
+    total: number;
+    verses?: BibleApiVerse[];
+    passages?: BibleApiPassage[];
+  };
+}
+
+export interface BibleApiChapterResponse {
+  data: {
+    id: string;
+    bibleId: string;
+    number: string;
+    bookId: string;
+    content: string;
+    reference: string;
+  };
+}
 
 export class BibleApiService {
   private apiKey: string = "";
@@ -21,7 +69,9 @@ export class BibleApiService {
    */
   async initialize(): Promise<void> {
     this.apiKey = await secureEnv.getApiKey("bible");
-    console.log(`📖 Bible API Key loaded: ${this.apiKey ? `${this.apiKey.substring(0, 8)}...` : "NOT FOUND"}`);
+    console.log(
+      `📖 Bible API Key loaded: ${this.apiKey ? `${this.apiKey.substring(0, 8)}...` : "NOT FOUND"}`,
+    );
   }
 
   /**
@@ -41,7 +91,10 @@ export class BibleApiService {
   }
 
   /**
-   * Fetch a specific verse
+   * Fetch a specific verse using API.Bible search endpoint
+   * @param reference - Bible reference (e.g., "John 3:16")
+   * @param translation - Bible translation code
+   * @returns Promise<string> - The verse text
    */
   async getVerse(
     reference: string,
@@ -53,19 +106,21 @@ export class BibleApiService {
     }
 
     try {
-      const bibleId = TRANSLATION_IDS[translation] || TRANSLATION_IDS.KJV;
+      const bibleId = TRANSLATION_IDS[translation] || TRANSLATION_IDS.NIV;
       const url = `${API_BASE_URL}/bibles/${bibleId}/search?query=${encodeURIComponent(reference)}&limit=1`;
 
       const response = await fetch(url, { headers: this.getHeaders() });
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`API request failed: ${response.status}`, errorText);
+        console.error(
+          `Bible API request failed: ${response.status}`,
+          errorText,
+        );
         throw new Error(`API request failed: ${response.status}`);
       }
 
-      const data = await response.json();
-      console.log("Bible API search response:", JSON.stringify(data, null, 2));
+      const data: BibleApiSearchResponse = await response.json();
 
       // API.Bible search can return either verses or passages
       // Check for passages first (contains HTML content)
@@ -78,6 +133,7 @@ export class BibleApiService {
         return this.cleanVerseText(data.data.verses[0].text);
       }
 
+      console.warn(`No results found for ${reference} in ${translation}`);
       throw new Error("Verse not found");
     } catch (error) {
       console.error("Error fetching verse from API:", error);
@@ -86,28 +142,37 @@ export class BibleApiService {
   }
 
   /**
-   * Fetch an entire chapter
+   * Fetch an entire chapter from API.Bible
+   * @param bookId - Book ID (e.g., "JHN" for John)
+   * @param chapter - Chapter number
+   * @param translation - Bible translation code
+   * @returns Promise with chapter data
    */
   async getChapter(
     bookId: string,
     chapter: number,
     translation: string = "NIV",
-  ): Promise<any> {
+  ): Promise<BibleApiChapterResponse["data"]> {
     if (!this.isConfigured()) {
       throw new Error("Bible API key not configured");
     }
 
     try {
-      const bibleId = TRANSLATION_IDS[translation] || TRANSLATION_IDS.KJV;
-      const url = `${API_BASE_URL}/bibles/${bibleId}/chapters/${bookId}.${chapter}?include-verse-spans=true`;
+      const bibleId = TRANSLATION_IDS[translation] || TRANSLATION_IDS.NIV;
+      const url = `${API_BASE_URL}/bibles/${bibleId}/chapters/${bookId}.${chapter}?content-type=json&include-verse-spans=true&include-verse-numbers=true`;
 
       const response = await fetch(url, { headers: this.getHeaders() });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error(
+          `Chapter API request failed: ${response.status}`,
+          errorText,
+        );
         throw new Error(`API request failed: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data: BibleApiChapterResponse = await response.json();
       return data.data;
     } catch (error) {
       console.error("Error fetching chapter from API:", error);
@@ -346,32 +411,277 @@ export class BibleApiService {
   }
 
   /**
-   * Download and cache a full book of the Bible
-   * This is a utility function for progressive Bible downloads
+   * Download and cache a full book of the Bible for offline access
+   * @param bookId - Database book ID (numeric)
+   * @param bookCode - API.Bible book code (e.g., "JHN" for John)
+   * @param bookName - Human-readable book name
+   * @param chapters - Number of chapters in the book
+   * @param translation - Bible translation code
+   * @param onProgress - Optional callback for progress updates
    */
   async downloadBook(
     bookId: number,
+    bookCode: string,
     bookName: string,
     chapters: number,
     translation: string = "NIV",
+    onProgress?: (current: number, total: number) => void,
   ): Promise<void> {
+    if (!this.isConfigured()) {
+      throw new Error(
+        "Bible API key not configured. Cannot download offline content.",
+      );
+    }
+
     console.log(`📥 Downloading ${bookName} (${translation})...`);
 
-    // This is a placeholder - actual implementation would fetch from Bible API
-    // and parse the response to extract individual verses
-
     try {
-      // In a real implementation, you would:
-      // 1. Loop through each chapter
-      // 2. Fetch the chapter from the API
-      // 3. Parse the verses
-      // 4. Insert them into the database
+      const verses: {
+        bookId: number;
+        chapter: number;
+        verse: number;
+        text: string;
+        translation: string;
+      }[] = [];
 
-      console.log(`✅ ${bookName} downloaded successfully`);
+      // Download each chapter
+      for (let chapterNum = 1; chapterNum <= chapters; chapterNum++) {
+        try {
+          const chapterData = await this.getChapter(
+            bookCode,
+            chapterNum,
+            translation,
+          );
+
+          // Parse verses from chapter content
+          // API.Bible returns HTML/text content, we need to parse it
+          const chapterVerses = this.parseChapterVerses(
+            chapterData.content,
+            bookId,
+            chapterNum,
+            translation,
+          );
+
+          verses.push(...chapterVerses);
+
+          // Report progress
+          if (onProgress) {
+            onProgress(chapterNum, chapters);
+          }
+
+          console.log(`  ✓ Chapter ${chapterNum}/${chapters}`);
+
+          // Add small delay to respect rate limits (avoid 429 errors)
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        } catch (error) {
+          console.error(`  ✗ Failed to download chapter ${chapterNum}:`, error);
+          // Continue with next chapter even if one fails
+        }
+      }
+
+      // Bulk insert verses into database
+      if (verses.length > 0) {
+        await bibleDatabase.bulkInsertVerses(verses);
+        console.log(
+          `✅ ${bookName} downloaded successfully (${verses.length} verses)`,
+        );
+      } else {
+        console.warn(`⚠️ No verses were downloaded for ${bookName}`);
+      }
     } catch (error) {
       console.error(`❌ Error downloading ${bookName}:`, error);
       throw error;
     }
+  }
+
+  /**
+   * Parse verses from chapter HTML/text content
+   * This is a basic parser - may need enhancement based on actual API response format
+   */
+  private parseChapterVerses(
+    content: string,
+    bookId: number,
+    chapter: number,
+    translation: string,
+  ): {
+    bookId: number;
+    chapter: number;
+    verse: number;
+    text: string;
+    translation: string;
+  }[] {
+    const verses: {
+      bookId: number;
+      chapter: number;
+      verse: number;
+      text: string;
+      translation: string;
+    }[] = [];
+
+    // Remove HTML tags and parse verse spans
+    // API.Bible uses <span class="verse-num">1</span> for verse numbers
+    const versePattern =
+      /<span[^>]*class="verse-num"[^>]*>(\d+)<\/span>\s*([^<]+)/g;
+    let match;
+
+    while ((match = versePattern.exec(content)) !== null) {
+      const verseNum = parseInt(match[1]);
+      const verseText = this.cleanVerseText(match[2]);
+
+      if (verseText.trim()) {
+        verses.push({
+          bookId,
+          chapter,
+          verse: verseNum,
+          text: verseText,
+          translation,
+        });
+      }
+    }
+
+    // Fallback: if no verses parsed, try splitting by numbers
+    if (verses.length === 0) {
+      const cleanContent = this.cleanVerseText(content);
+      const parts = cleanContent.split(/(\d+)/);
+
+      for (let i = 1; i < parts.length; i += 2) {
+        const verseNum = parseInt(parts[i]);
+        const verseText = parts[i + 1]?.trim();
+
+        if (verseText && verseNum > 0) {
+          verses.push({
+            bookId,
+            chapter,
+            verse: verseNum,
+            text: verseText,
+            translation,
+          });
+        }
+      }
+    }
+
+    return verses;
+  }
+
+  /**
+   * Advanced search with filters
+   * @param query - Search query
+   * @param options - Search options
+   * @returns Promise with search results
+   */
+  async advancedSearch(
+    query: string,
+    options: {
+      translation?: string;
+      limit?: number;
+      offset?: number;
+      sort?: "relevance" | "canonical" | "reverse-canonical";
+      fuzziness?: "AUTO" | "0" | "1" | "2";
+    } = {},
+  ): Promise<BibleApiSearchResponse["data"]> {
+    if (!this.isConfigured()) {
+      throw new Error("Bible API key not configured");
+    }
+
+    const {
+      translation = "NIV",
+      limit = 10,
+      offset = 0,
+      sort = "relevance",
+      fuzziness = "AUTO",
+    } = options;
+
+    try {
+      const bibleId = TRANSLATION_IDS[translation] || TRANSLATION_IDS.NIV;
+      const params = new URLSearchParams({
+        query,
+        limit: limit.toString(),
+        offset: offset.toString(),
+        sort,
+        fuzziness,
+      });
+
+      const url = `${API_BASE_URL}/bibles/${bibleId}/search?${params}`;
+      const response = await fetch(url, { headers: this.getHeaders() });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(
+          `Search API request failed: ${response.status}`,
+          errorText,
+        );
+        throw new Error(`API request failed: ${response.status}`);
+      }
+
+      const data: BibleApiSearchResponse = await response.json();
+      return data.data;
+    } catch (error) {
+      console.error("Error performing advanced search:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get list of available Bible translations
+   * @returns Promise with list of Bibles
+   */
+  async getAvailableBibles(): Promise<
+    {
+      id: string;
+      name: string;
+      abbreviation: string;
+      language: string;
+    }[]
+  > {
+    if (!this.isConfigured()) {
+      // Return hardcoded list when API key not configured
+      return Object.entries(TRANSLATION_IDS).map(([abbr, id]) => ({
+        id,
+        name: this.getTranslationName(abbr),
+        abbreviation: abbr,
+        language: "eng",
+      }));
+    }
+
+    try {
+      const url = `${API_BASE_URL}/bibles`;
+      const response = await fetch(url, { headers: this.getHeaders() });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.data || [];
+    } catch (error) {
+      console.error("Error fetching available Bibles:", error);
+      // Return fallback list
+      return Object.entries(TRANSLATION_IDS).map(([abbr, id]) => ({
+        id,
+        name: this.getTranslationName(abbr),
+        abbreviation: abbr,
+        language: "eng",
+      }));
+    }
+  }
+
+  /**
+   * Get human-readable name for translation code
+   */
+  private getTranslationName(code: string): string {
+    const names: Record<string, string> = {
+      KJV: "King James Version",
+      NIV: "New International Version",
+      ESV: "English Standard Version",
+      NLT: "New Living Translation",
+      NKJV: "New King James Version",
+      NASB: "New American Standard Bible",
+      AMP: "Amplified Bible",
+      MSG: "The Message",
+      CEV: "Contemporary English Version",
+      GNT: "Good News Translation",
+    };
+    return names[code] || code;
   }
 
   /**
