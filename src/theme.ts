@@ -26,24 +26,24 @@ export const theme = {
       light: "rgba(255,255,255,0)",
       dark: "rgba(0,0,0,0)",
     },
-    text: { light: "#1a1a1a", dark: "#F5F5F5" },
-    textSecondary: { light: "#6b7280", dark: "#9ca3af" },
-    textTertiary: { light: "#9ca3af", dark: "#6b7280" },
-    background: { light: "#FAFAFA", dark: "#0a0a0a" },
+    text: { light: "#1a1a1a", dark: "#FFFFFF" },
+    textSecondary: { light: "#6b7280", dark: "#A0A0A0" },
+    textTertiary: { light: "#9ca3af", dark: "#707070" },
+    background: { light: "#FAFAFA", dark: "#000000" },          // Pure black
     backgroundSecondary: {
       light: "#FFFFFF",
-      dark: "#1a1a1a",
+      dark: "#1a1a1a",                                          // Card backgrounds
     },
     backgroundTertiary: {
       light: "#F5F5F5",
-      dark: "#141414",
+      dark: "#0a0a0a",                                          // Subtle variation
     },
     backgroundElement: {
       light: "#F8F9FA",
       dark: "#141414",
     },
-    border: { light: "#E5E7EB", dark: "#374151" },
-    borderLight: { light: "#F3F4F6", dark: "#1F2937" },
+    border: { light: "#E5E7EB", dark: "#333333" },
+    borderLight: { light: "#F3F4F6", dark: "#262626" },
 
     // Brand colors
     primary: { light: "#667eea", dark: "#818cf8" },

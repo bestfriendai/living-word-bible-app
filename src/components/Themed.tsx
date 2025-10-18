@@ -2,7 +2,6 @@ import React from "react";
 import {
   Text,
   View,
-  useColorScheme,
   TextStyle,
   PressableProps,
   Pressable,
@@ -10,6 +9,7 @@ import {
 import Animated from "react-native-reanimated";
 
 import { theme } from "../theme";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -31,9 +31,8 @@ export type TextProps = ThemeProps & {
 export type ViewProps = ThemeProps & View["props"] & { animated?: boolean };
 
 export function useThemeColor<T, U>(props: { light: T; dark: U }) {
-  const theme = useColorScheme() ?? "light";
-  // const theme = "dark";
-  return props[theme];
+  const { isDark } = useTheme();
+  return isDark ? props.dark : props.light;
 }
 
 export function ThemedText(props: TextProps) {

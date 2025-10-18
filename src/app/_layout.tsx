@@ -1,14 +1,14 @@
 import {
   DarkTheme,
   DefaultTheme,
-  ThemeProvider,
+  ThemeProvider as NavigationThemeProvider,
 } from "@react-navigation/native";
 import { usePathname, useRouter } from "expo-router";
 import { Stack } from "expo-router/stack";
 import { StatusBar } from "expo-status-bar";
 import * as NavigationBar from "expo-navigation-bar";
 import { useEffect } from "react";
-import { Platform, StyleSheet, useColorScheme } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { setBackgroundColorAsync } from "expo-system-ui";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -22,6 +22,7 @@ import { bibleApiService } from "@/services/bibleApiService";
 import { geminiService } from "@/services/geminiService";
 import { logEnvValidation } from "@/utils/validateEnv";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 SplashScreen.setOptions({
   duration: 200,
@@ -38,27 +39,29 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export default function Layout() {
+function InnerLayout() {
   const router = useRouter();
   const pathName = usePathname();
-  const colorScheme = useColorScheme() || "light";
+
+  // Now we can import and use our theme context
+  const { isDark } = require("@/contexts/ThemeContext").useTheme();
 
   useEffect(() => {
     if (Platform.OS === "android") {
       NavigationBar.setButtonStyleAsync(
-        colorScheme === "light" ? "dark" : "light",
+        isDark ? "light" : "dark",
       );
     }
-  }, [colorScheme]);
+  }, [isDark]);
 
   // Keep the root view background color in sync with the current theme
   useEffect(() => {
     setBackgroundColorAsync(
-      colorScheme === "dark"
+      isDark
         ? theme.color.background.dark
         : theme.color.background.light,
     );
-  }, [colorScheme]);
+  }, [isDark]);
 
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
   useEffect(() => {
@@ -79,6 +82,27 @@ export default function Layout() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastNotificationResponse]);
 
+  return (
+    <NavigationThemeProvider
+      value={isDark ? DarkTheme : DefaultTheme}
+    >
+      <StatusBar style={isDark ? "light" : "dark"} />
+
+      <ErrorBoundary>
+        <Stack>
+          <Stack.Screen
+            name="(tabs)"
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack>
+      </ErrorBoundary>
+    </NavigationThemeProvider>
+  );
+}
+
+export default function Layout() {
   // Validate environment variables and initialize Bible database on app start
   useEffect(() => {
     // Validate environment variables securely
@@ -125,24 +149,11 @@ export default function Layout() {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <ActionSheetProvider>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-
-          <ErrorBoundary>
-            <Stack>
-              <Stack.Screen
-                name="(tabs)"
-                options={{
-                  headerShown: false,
-                }}
-              />
-            </Stack>
-          </ErrorBoundary>
-        </ThemeProvider>
-      </ActionSheetProvider>
+      <ThemeProvider>
+        <ActionSheetProvider>
+          <InnerLayout />
+        </ActionSheetProvider>
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 }
