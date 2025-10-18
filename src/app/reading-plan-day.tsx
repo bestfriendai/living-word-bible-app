@@ -16,7 +16,6 @@ import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
 import { appleDesign } from "@/theme/appleDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { MotiView } from "moti";
 import { bibleApiService } from "@/services/bibleApiService";
 import * as Progress from "react-native-progress";
 import * as Haptics from "expo-haptics";
@@ -152,7 +151,7 @@ export default function ReadingPlanDay() {
             <Text style={styles.celebrationText}>Day Complete!</Text>
             <Text style={styles.celebrationSubtext}>Keep it up</Text>
           </LinearGradient>
-        </MotiView>
+        </View>
       )}
 
       <ScrollView
@@ -198,7 +197,7 @@ export default function ReadingPlanDay() {
               color: textColor,
             }}
           />
-        </MotiView>
+        </View>
 
         {/* Progress Bar */}
         <Progress.Bar
@@ -230,7 +229,7 @@ export default function ReadingPlanDay() {
             />
             <Text style={styles.referenceText}>{currentReading.reference}</Text>
           </View>
-        </MotiView>
+        </View>
 
         {/* Verse Content */}
         <MotiView
@@ -256,7 +255,7 @@ export default function ReadingPlanDay() {
               </Text>
             </ScrollView>
           )}
-        </MotiView>
+        </View>
 
         {/* Quick Actions */}
         <View style={styles.actionsGrid}>
@@ -364,7 +363,7 @@ export default function ReadingPlanDay() {
               </Text>
             </View>
           </View>
-        </MotiView>
+        </View>
       </ScrollView>
 
       {/* Bottom Action Bar */}
@@ -433,7 +432,7 @@ export default function ReadingPlanDay() {
             )}
           </View>
         )}
-      </MotiView>
+      </View>
     </View>
   );
 }

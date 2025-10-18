@@ -79,7 +79,7 @@ export const appleDesign = {
     round: 9999,
   },
 
-  // Shadows - Subtle, layered shadows like iOS
+  // Shadows - Premium 2025 depth with enhanced shadow layers
   shadows: {
     none: {
       shadowColor: "transparent",
@@ -92,8 +92,8 @@ export const appleDesign = {
       ios: {
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.04,
-        shadowRadius: 2,
+        shadowOpacity: 0.05,
+        shadowRadius: 3,
       },
       android: {
         elevation: 1,
@@ -103,8 +103,8 @@ export const appleDesign = {
       ios: {
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 4,
+        shadowOpacity: 0.08,
+        shadowRadius: 6,
       },
       android: {
         elevation: 2,
@@ -114,8 +114,8 @@ export const appleDesign = {
       ios: {
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
       },
       android: {
         elevation: 4,
@@ -125,8 +125,8 @@ export const appleDesign = {
       ios: {
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.1,
-        shadowRadius: 16,
+        shadowOpacity: 0.12,
+        shadowRadius: 20,
       },
       android: {
         elevation: 8,
@@ -135,12 +135,35 @@ export const appleDesign = {
     xl: Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 12 },
-        shadowOpacity: 0.12,
-        shadowRadius: 24,
+        shadowOffset: { width: 0, height: 16 },
+        shadowOpacity: 0.15,
+        shadowRadius: 32,
       },
       android: {
         elevation: 12,
+      },
+    }),
+    // 2025 Premium shadow styles with color tints
+    glow: Platform.select({
+      ios: {
+        shadowColor: "#667eea",
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.25,
+        shadowRadius: 20,
+      },
+      android: {
+        elevation: 10,
+      },
+    }),
+    glowPurple: Platform.select({
+      ios: {
+        shadowColor: "#a855f7",
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.3,
+        shadowRadius: 24,
+      },
+      android: {
+        elevation: 10,
       },
     }),
   },

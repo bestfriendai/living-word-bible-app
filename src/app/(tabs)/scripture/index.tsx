@@ -19,7 +19,7 @@ import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
 import { appleDesign } from "@/theme/appleDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import Animated, { FadeInDown } from "react-native-reanimated";
+// Removed excessive animations for 2025 modern design
 import { geminiService, VerseExplanation } from "@/services/geminiService";
 import { TranslationSwitcher } from "@/components/TranslationSwitcher";
 import { VerseActionsSheet } from "@/components/VerseActionsSheet";
@@ -286,11 +286,8 @@ export default function Scripture() {
               };
 
               return (
-                <Animated.View
-                  key={`${verse.reference}-${index}`}
-                  entering={FadeInDown.delay(index * 100)}
-                >
                   <View
+                    key={`${verse.reference}-${index}`}
                     style={[
                       styles.verseCard,
                       {
@@ -397,7 +394,6 @@ export default function Scripture() {
                       </Pressable>
                     </View>
                   </View>
-                </Animated.View>
               );
             })}
           </View>
@@ -977,10 +973,20 @@ const styles = StyleSheet.create({
     marginTop: appleDesign.spacing.lg,
   },
   verseCard: {
-    borderRadius: appleDesign.borderRadius.xl,
-    marginBottom: appleDesign.spacing.xxl,
-    padding: appleDesign.spacing.xxxl,
-    ...appleDesign.shadows.sm,
+    borderRadius: appleDesign.borderRadius.lg,
+    marginBottom: appleDesign.spacing.lg,
+    padding: appleDesign.spacing.xl,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.04,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
   },
   verseHeader: {
     alignItems: "center",

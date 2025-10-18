@@ -18,7 +18,6 @@ import { theme } from "@/theme";
 import { colors } from "@/theme/colors";
 import { appleDesign } from "@/theme/appleDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { MotiView } from "moti";
 import { hapticPatterns } from "@/utils/haptics";
 import { FeaturedVerseSkeleton } from "@/components/SkeletonLoader";
 
@@ -92,12 +91,7 @@ export default function Home() {
         }
       >
         {/* Header */}
-        <MotiView
-          from={{ opacity: 0, translateY: -20 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: "timing", duration: 600 }}
-          style={styles.header}
-        >
+        <View style={styles.header}>
           <View style={styles.headerContent}>
             <View>
               <Text style={[styles.greeting, { color: textTertiary }]}>
@@ -144,18 +138,13 @@ export default function Home() {
               </Pressable>
             </View>
           </View>
-        </MotiView>
+        </View>
 
         {/* Today's Verse - Featured Card */}
         {isLoadingVerse ? (
           <FeaturedVerseSkeleton />
         ) : verseOfTheDay ? (
-          <MotiView
-            from={{ opacity: 0, scale: 0.95, translateY: 20 }}
-            animate={{ opacity: 1, scale: 1, translateY: 0 }}
-            transition={{ type: "spring", damping: 15, delay: 150 }}
-          >
-            <Pressable
+          <Pressable
               onPress={() => {
                 hapticPatterns.buttonPress();
                 router.push("/devotional");
@@ -194,7 +183,6 @@ export default function Home() {
                 </Text>
               </LinearGradient>
             </Pressable>
-          </MotiView>
         ) : null}
 
         {/* Quick Access - Bento Grid */}
@@ -205,12 +193,7 @@ export default function Home() {
 
           <View style={styles.bentoGrid}>
             {/* Scripture - Wide Card (2x1) */}
-            <MotiView
-              from={{ opacity: 0, translateY: 20 }}
-              animate={{ opacity: 1, translateY: 0 }}
-              transition={{ type: "spring", damping: 18, delay: 250 }}
-              style={styles.bentoWide}
-            >
+            <View style={styles.bentoWide}>
               <Pressable
                 onPress={() => {
                   hapticPatterns.buttonPress();
@@ -246,17 +229,12 @@ export default function Home() {
                   </Text>
                 </LinearGradient>
               </Pressable>
-            </MotiView>
+            </View>
 
             {/* Row 2 - Three small cards */}
             <View style={styles.bentoRow}>
               {/* Reading Plans */}
-              <MotiView
-                from={{ opacity: 0, translateY: 20 }}
-                animate={{ opacity: 1, translateY: 0 }}
-                transition={{ type: "spring", damping: 18, delay: 300 }}
-                style={styles.bentoSmall}
-              >
+              <View style={styles.bentoSmall}>
                 <Pressable
                   onPress={() => {
                     hapticPatterns.buttonPress();
@@ -280,15 +258,10 @@ export default function Home() {
                     Plans
                   </Text>
                 </Pressable>
-              </MotiView>
+              </View>
 
               {/* Prayer Journal */}
-              <MotiView
-                from={{ opacity: 0, translateY: 20 }}
-                animate={{ opacity: 1, translateY: 0 }}
-                transition={{ type: "spring", damping: 18, delay: 350 }}
-                style={styles.bentoSmall}
-              >
+              <View style={styles.bentoSmall}>
                 <Pressable
                   onPress={() => {
                     hapticPatterns.buttonPress();
@@ -314,15 +287,10 @@ export default function Home() {
                     Prayer
                   </Text>
                 </Pressable>
-              </MotiView>
+              </View>
 
               {/* Memorization */}
-              <MotiView
-                from={{ opacity: 0, translateY: 20 }}
-                animate={{ opacity: 1, translateY: 0 }}
-                transition={{ type: "spring", damping: 18, delay: 400 }}
-                style={styles.bentoSmall}
-              >
+              <View style={styles.bentoSmall}>
                 <Pressable
                   onPress={() => {
                     hapticPatterns.buttonPress();
@@ -346,7 +314,7 @@ export default function Home() {
                     Memory
                   </Text>
                 </Pressable>
-              </MotiView>
+              </View>
             </View>
           </View>
         </View>
@@ -357,12 +325,7 @@ export default function Home() {
             AI Tools
           </Text>
 
-          <MotiView
-            from={{ opacity: 0, translateY: 20 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: "spring", damping: 20, delay: 450 }}
-          >
-            <TouchableOpacity
+          <TouchableOpacity
               activeOpacity={0.7}
               style={[styles.featureCard, { backgroundColor: cardBg }]}
               onPress={() => router.push("/prayer-buddy")}
@@ -395,14 +358,8 @@ export default function Home() {
                 color={textTertiary}
               />
             </TouchableOpacity>
-          </MotiView>
 
-          <MotiView
-            from={{ opacity: 0, translateY: 20 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: "spring", damping: 20, delay: 500 }}
-          >
-            <TouchableOpacity
+          <TouchableOpacity
               activeOpacity={0.7}
               style={[styles.featureCard, { backgroundColor: cardBg }]}
               onPress={() => router.push("/devotional")}
@@ -435,7 +392,6 @@ export default function Home() {
                 color={textTertiary}
               />
             </TouchableOpacity>
-          </MotiView>
         </View>
       </ScrollView>
     </View>
@@ -444,9 +400,19 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   bentoCard: {
-    borderRadius: appleDesign.borderRadius.xl,
+    borderRadius: appleDesign.borderRadius.lg,
     overflow: "hidden",
-    ...appleDesign.shadows.sm,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.04,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
   },
   bentoCardGradient: {
     borderRadius: appleDesign.borderRadius.xl,
@@ -454,7 +420,7 @@ const styles = StyleSheet.create({
     padding: appleDesign.spacing.xl,
   },
   bentoCardSmall: {
-    minHeight: 120,
+    minHeight: 110,
     padding: appleDesign.spacing.lg,
   },
   bentoCardWide: {
@@ -465,11 +431,11 @@ const styles = StyleSheet.create({
   },
   bentoIcon: {
     alignItems: "center",
-    borderRadius: appleDesign.borderRadius.lg,
-    height: 56,
+    borderRadius: appleDesign.borderRadius.md,
+    height: 52,
     justifyContent: "center",
-    marginBottom: appleDesign.spacing.xs,
-    width: 56,
+    marginBottom: appleDesign.spacing.sm,
+    width: 52,
   },
   bentoIconBlue: {
     backgroundColor: colors.primaryLight,
@@ -482,11 +448,11 @@ const styles = StyleSheet.create({
   },
   bentoIconSmall: {
     alignItems: "center",
-    borderRadius: appleDesign.borderRadius.md,
-    height: 48,
+    borderRadius: appleDesign.borderRadius.sm,
+    height: 44,
     justifyContent: "center",
     marginBottom: appleDesign.spacing.sm,
-    width: 48,
+    width: 44,
   },
   bentoIconViolet: {
     backgroundColor: colors.secondaryLight,
@@ -525,12 +491,22 @@ const styles = StyleSheet.create({
   },
   featureCard: {
     alignItems: "center",
-    borderRadius: appleDesign.borderRadius.lg,
+    borderRadius: appleDesign.borderRadius.md,
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: appleDesign.spacing.md,
     padding: appleDesign.spacing.lg,
-    ...appleDesign.shadows.xs,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.03,
+        shadowRadius: 6,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
   },
   featureCardLeft: {
     alignItems: "center",
@@ -583,18 +559,18 @@ const styles = StyleSheet.create({
     lineHeight: appleDesign.typography.lineHeight.caption1,
   },
   featuredCard: {
-    borderRadius: appleDesign.borderRadius.xl,
+    borderRadius: appleDesign.borderRadius.xxl,
     marginBottom: appleDesign.spacing.xxl,
     overflow: "hidden",
     ...Platform.select({
       ios: {
         shadowColor: "#667eea",
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.3,
-        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.12,
+        shadowRadius: 24,
       },
       android: {
-        elevation: 8,
+        elevation: 4,
       },
     }),
   },
@@ -646,7 +622,17 @@ const styles = StyleSheet.create({
     height: appleDesign.button.height.medium,
     justifyContent: "center" as const,
     width: appleDesign.button.height.medium,
-    ...appleDesign.shadows.xs,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.03,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
   },
   pressedBento: {
     opacity: appleDesign.opacity.strong,

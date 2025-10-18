@@ -285,11 +285,7 @@ export default function Journal() {
         ) : (
           <View style={styles.entriesContainer}>
             {journalEntries.map((entry, index) => (
-              <Animated.View
-                key={entry.id}
-                entering={FadeInDown.delay(index * 50)}
-              >
-                <View style={[styles.entryCard, { backgroundColor: cardBg }]}>
+                <View key={entry.id} style={[styles.entryCard, { backgroundColor: cardBg }]}>
                   <View style={styles.entryHeader}>
                     <View style={styles.entryHeaderLeft}>
                       <Text style={[styles.entryTitle, { color: textColor }]}>
@@ -333,7 +329,6 @@ export default function Journal() {
                     {entry.content}
                   </Text>
                 </View>
-              </Animated.View>
             ))}
           </View>
         )}

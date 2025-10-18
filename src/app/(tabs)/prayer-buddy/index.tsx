@@ -806,8 +806,7 @@ export default function PrayerBuddy() {
 
       {/* Search Bar */}
       {showSearch && (
-        <Animated.View
-          entering={FadeInDown}
+        <View
           style={[styles.searchBar, { backgroundColor: cardBg }]}
         >
           <MaterialCommunityIcons
@@ -832,7 +831,7 @@ export default function PrayerBuddy() {
               />
             </TouchableOpacity>
           )}
-        </Animated.View>
+        </View>
       )}
 
       {/* Chat Messages */}
@@ -860,8 +859,7 @@ export default function PrayerBuddy() {
               accessibilityRole="button"
               accessibilityHint="Long press for message actions"
             >
-              <Animated.View
-                entering={FadeInDown.delay(index * 50)}
+              <View
                 style={[
                   styles.messageWrapper,
                   message.role === "user"
@@ -968,12 +966,12 @@ export default function PrayerBuddy() {
                     </View>
                   </View>
                 )}
-              </Animated.View>
+              </View>
             </TouchableOpacity>
           ))}
 
           {isTyping && (
-            <Animated.View entering={FadeIn} style={styles.typingIndicator}>
+            <View style={styles.typingIndicator}>
               <View style={styles.avatarContainer}>
                 <View
                   style={[styles.avatar, { backgroundColor: colors.secondary }]}
@@ -992,13 +990,12 @@ export default function PrayerBuddy() {
                   Prayer Buddy is typing...
                 </Text>
               </View>
-            </Animated.View>
+            </View>
           )}
 
           {/* Prayer Templates */}
           {!isTyping && messages.length <= 2 && (
-            <Animated.View
-              entering={FadeInDown.delay(300)}
+            <View
               style={styles.templatesContainer}
             >
               <Text style={[styles.templatesTitle, { color: textColor }]}>
@@ -1024,13 +1021,13 @@ export default function PrayerBuddy() {
                   </TouchableOpacity>
                 ))}
               </View>
-            </Animated.View>
+            </View>
           )}
 
           {/* Quick Replies */}
           {showQuickReplies && !isTyping && (
-            <Animated.View
-              entering={FadeInDown.delay(200)}
+            <View
+              
               style={styles.quickRepliesContainer}
             >
               <Text
@@ -1053,7 +1050,7 @@ export default function PrayerBuddy() {
                   </TouchableOpacity>
                 ))}
               </View>
-            </Animated.View>
+            </View>
           )}
 
           <View style={styles.spacer} />

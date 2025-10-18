@@ -4,33 +4,42 @@
  */
 
 export const colors = {
-  // Primary colors
-  primary: "#3b82f6",
-  primaryLight: "#3b82f620",
-  primaryDark: "#2563eb",
+  // Primary colors - Modern 2025 deep blue/purple spectrum
+  primary: "#4F46E5", // Deep indigo
+  primaryLight: "#6366F1", // Lighter indigo
+  primaryDark: "#4338CA", // Darker indigo
+  primaryGlow: "rgba(79, 70, 229, 0.15)",
 
-  secondary: "#a855f7",
-  secondaryLight: "#a855f720",
-  secondaryLight80: "#a855f780",
-  secondaryDark: "#9333ea",
+  secondary: "#8B5CF6", // Vibrant purple
+  secondaryLight: "#A78BFA", // Light purple
+  secondaryLight80: "rgba(139, 92, 246, 0.8)",
+  secondaryDark: "#7C3AED", // Deep purple
+  secondaryGlow: "rgba(139, 92, 246, 0.2)",
 
-  purple: "#8b5cf6",
+  purple: "#9333EA", // Rich purple
+  purpleLight: "#A855F7", // Light purple variant
+  purpleGlow: "rgba(147, 51, 234, 0.2)",
 
-  // Semantic colors
-  success: "#10b981",
-  successLight: "#10b98120",
+  // Semantic colors - Enhanced 2025 palette
+  success: "#10B981", // Emerald green
+  successLight: "#34D399",
+  successGlow: "rgba(16, 185, 129, 0.15)",
 
-  warning: "#f59e0b",
-  warningLight: "#fb923c",
-  warningLightBg: "rgba(251, 146, 60, 0.1)",
+  warning: "#F59E0B", // Amber
+  warningLight: "#FBBF24",
+  warningLightBg: "rgba(245, 158, 11, 0.12)",
 
-  error: "#ef4444",
-  errorLight: "#ef444420",
+  error: "#EF4444", // Red
+  errorLight: "#F87171",
+  errorGlow: "rgba(239, 68, 68, 0.15)",
 
-  // Accent colors
-  accent: "#667eea",
-  accentPink: "#ec4899",
-  accentPinkBg: "rgba(236, 72, 153, 0.1)",
+  // Accent colors - Sophisticated 2025 accents
+  accent: "#6366F1", // Modern indigo
+  accentCyan: "#06B6D4", // Cyan for contrast
+  accentPink: "#EC4899", // Hot pink
+  accentPinkBg: "rgba(236, 72, 153, 0.12)",
+  accentTeal: "#14B8A6", // Modern teal
+  accentTealGlow: "rgba(20, 184, 166, 0.15)",
 
   // Text colors
   text: {

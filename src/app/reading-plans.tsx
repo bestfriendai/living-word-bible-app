@@ -16,7 +16,6 @@ import { theme } from "@/theme";
 import { appleDesign } from "@/theme/appleDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { readingPlansData } from "@/data/readingPlans";
-import { MotiView } from "moti";
 import * as Progress from "react-native-progress";
 
 export default function ReadingPlans() {
@@ -176,7 +175,7 @@ export default function ReadingPlans() {
               </View>
             </View>
           </View>
-        </MotiView>
+        </View>
 
         {/* Active Plan */}
         {activeReadingPlan && readingPlans.length > 0 && (
@@ -235,7 +234,7 @@ export default function ReadingPlans() {
                 </View>
               </LinearGradient>
             </TouchableOpacity>
-          </MotiView>
+          </View>
         )}
 
         {/* Category Filters */}
@@ -359,7 +358,7 @@ export default function ReadingPlans() {
                   />
                 </TouchableOpacity>
               </View>
-            </MotiView>
+            </View>
           ))}
         </View>
       </ScrollView>
