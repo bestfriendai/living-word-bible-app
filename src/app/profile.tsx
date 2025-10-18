@@ -9,18 +9,17 @@ import {
   Alert,
   Image,
   TextInput,
-  Dimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
-import { appleDesign } from "@/theme/appleDesign";
 import { spacing, borderRadius, fontSize, fontWeight } from "@/theme/spacing";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
+import { colors } from "@/theme/colors";
 
 interface UserProfile {
   fullName: string;
@@ -176,10 +175,10 @@ export default function ProfileScreen() {
     return "📖";
   };
 
-  const primaryColor = useThemeColor(theme.color.primary);
-  const secondaryColor = theme.color.purple;
-  const accentColor = theme.color.violet;
-  const errorColor = useThemeColor(theme.color.danger);
+  const primaryColor = colors.primary;
+  const secondaryColor = colors.secondary;
+  const accentColor = colors.purple;
+  const errorColor = colors.error;
 
   return (
     <View
@@ -213,11 +212,19 @@ export default function ProfileScreen() {
                 end={{ x: 1, y: 1 }}
                 style={styles.avatarPlaceholder}
               >
-                <MaterialCommunityIcons name="account" size={48} color="#fff" />
+                <MaterialCommunityIcons
+                  name="account"
+                  size={48}
+                  color={colors.white}
+                />
               </LinearGradient>
             )}
             <View style={styles.editAvatarIcon}>
-              <MaterialCommunityIcons name="camera" size={16} color="#fff" />
+              <MaterialCommunityIcons
+                name="camera"
+                size={16}
+                color={colors.white}
+              />
             </View>
           </TouchableOpacity>
 
@@ -236,7 +243,7 @@ export default function ProfileScreen() {
                   <MaterialCommunityIcons
                     name="check"
                     size={24}
-                    color={theme.color.success.light}
+                    color={colors.success}
                   />
                 </TouchableOpacity>
               </View>
@@ -258,18 +265,12 @@ export default function ProfileScreen() {
             <Text style={[styles.profileEmail, { color: textColor + "80" }]}>
               {profile.email}
             </Text>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: spacing.xs,
-              }}
-            >
+            <View style={styles.memberSinceContainer}>
               <MaterialCommunityIcons
                 name="calendar"
                 size={14}
                 color={textColor + "60"}
-                style={{ marginRight: spacing.xs }}
+                style={styles.calendarIcon}
               />
               <Text style={[styles.memberSince, { color: textColor + "60" }]}>
                 Member since {formatDate(profile.joinedAt)}
@@ -578,8 +579,6 @@ export default function ProfileScreen() {
   );
 }
 
-const { width } = Dimensions.get("window");
-
 const styles = StyleSheet.create({
   actionItem: {
     alignItems: "center",
@@ -609,6 +608,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 100,
   },
+  calendarIcon: {
+    marginRight: spacing.xs,
+  },
   container: {
     flex: 1,
   },
@@ -618,7 +620,7 @@ const styles = StyleSheet.create({
   },
   editAvatarIcon: {
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.6)",
+    backgroundColor: colors.black + "99",
     borderRadius: borderRadius.full,
     bottom: 0,
     height: 28,
@@ -641,6 +643,11 @@ const styles = StyleSheet.create({
   },
   memberSince: {
     fontSize: fontSize.xs,
+    marginTop: spacing.xs,
+  },
+  memberSinceContainer: {
+    alignItems: "center",
+    flexDirection: "row",
     marginTop: spacing.xs,
   },
   nameContainer: {
@@ -679,7 +686,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
     marginTop: spacing.lg,
     padding: spacing.lg,
-    shadowColor: "#000",
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -689,7 +696,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     marginBottom: spacing.lg,
     padding: spacing.xs,
-    shadowColor: "#000",
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
@@ -743,7 +750,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     flex: 1,
     padding: spacing.lg,
-    shadowColor: "#000",
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,

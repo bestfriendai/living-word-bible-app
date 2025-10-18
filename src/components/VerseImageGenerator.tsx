@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Modal,
   Pressable,
-  useColorScheme,
   Alert,
   ScrollView,
 } from "react-native";
@@ -13,6 +12,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { captureRef } from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
+import { colors } from "@/theme/colors";
+import { spacing, borderRadius } from "@/theme/spacing";
+import { useThemeColor } from "./Themed";
+import { theme } from "@/theme";
 
 interface VerseImageGeneratorProps {
   reference: string;
@@ -28,12 +31,36 @@ type GradientTheme = {
 };
 
 const gradientThemes: GradientTheme[] = [
-  { name: "Purple Dream", colors: ["#667eea", "#764ba2"], textColor: "#fff" },
-  { name: "Ocean Blue", colors: ["#2E3192", "#1BFFFF"], textColor: "#fff" },
-  { name: "Sunset", colors: ["#f97316", "#ea580c"], textColor: "#fff" },
-  { name: "Forest", colors: ["#134E5E", "#71B280"], textColor: "#fff" },
-  { name: "Rose Gold", colors: ["#F857A6", "#FF5858"], textColor: "#fff" },
-  { name: "Sky", colors: ["#56CCF2", "#2F80ED"], textColor: "#fff" },
+  {
+    name: "Purple Dream",
+    colors: [colors.primary, colors.secondary],
+    textColor: colors.text.inverse,
+  },
+  {
+    name: "Ocean Blue",
+    colors: [colors.primary, colors.accentCyan],
+    textColor: colors.text.inverse,
+  },
+  {
+    name: "Sunset",
+    colors: [colors.warning, colors.warningLight],
+    textColor: colors.text.inverse,
+  },
+  {
+    name: "Forest",
+    colors: [colors.success, colors.accentTeal],
+    textColor: colors.text.inverse,
+  },
+  {
+    name: "Rose Gold",
+    colors: [colors.accentPink, colors.error],
+    textColor: colors.text.inverse,
+  },
+  {
+    name: "Sky",
+    colors: [colors.accentCyan, colors.primary],
+    textColor: colors.text.inverse,
+  },
 ];
 
 export function VerseImageGenerator({
@@ -45,8 +72,9 @@ export function VerseImageGenerator({
   const viewRef = useRef<View>(null);
   const [selectedTheme, setSelectedTheme] = useState(gradientThemes[0]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+
+  const textColor = useThemeColor(theme.color.text);
+  const cardBg = useThemeColor(theme.color.backgroundSecondary);
 
   const handleShare = async () => {
     if (!viewRef.current) return;
@@ -117,24 +145,17 @@ export function VerseImageGenerator({
       onRequestClose={onClose}
     >
       <View style={styles.modalContainer}>
-        <View
-          style={[
-            styles.modalContent,
-            { backgroundColor: isDark ? "#1a1a1a" : "#fff" },
-          ]}
-        >
+        <View style={[styles.modalContent, { backgroundColor: cardBg }]}>
           {/* Header */}
           <View style={styles.header}>
-            <Text
-              style={[styles.headerTitle, { color: isDark ? "#fff" : "#000" }]}
-            >
+            <Text style={[styles.headerTitle, { color: textColor }]}>
               Create Verse Image
             </Text>
             <Pressable onPress={onClose} style={styles.closeButton}>
               <MaterialCommunityIcons
                 name="close"
                 size={32}
-                color={isDark ? "#fff" : "#000"}
+                color={textColor}
               />
             </Pressable>
           </View>
@@ -182,9 +203,7 @@ export function VerseImageGenerator({
 
           {/* Theme Selector */}
           <View style={styles.themesSection}>
-            <Text
-              style={[styles.sectionTitle, { color: isDark ? "#fff" : "#000" }]}
-            >
+            <Text style={[styles.sectionTitle, { color: textColor }]}>
               Choose a Theme
             </Text>
             <ScrollView
@@ -215,12 +234,7 @@ export function VerseImageGenerator({
                       />
                     )}
                   </LinearGradient>
-                  <Text
-                    style={[
-                      styles.themeName,
-                      { color: isDark ? "#fff" : "#000" },
-                    ]}
-                  >
+                  <Text style={[styles.themeName, { color: textColor }]}>
                     {theme.name}
                   </Text>
                 </Pressable>
@@ -265,71 +279,71 @@ export function VerseImageGenerator({
 const styles = StyleSheet.create({
   actionButton: {
     alignItems: "center",
-    borderRadius: 16,
+    borderRadius: borderRadius.xl,
     flex: 1,
     flexDirection: "row",
-    gap: 10,
+    gap: spacing.sm,
     justifyContent: "center",
     minHeight: 56,
     paddingVertical: 18,
   },
   actionButtonText: {
-    color: "#fff",
+    color: colors.text.inverse,
     fontSize: 18,
     fontWeight: "600",
   },
   actions: {
     flexDirection: "row",
-    gap: 16,
+    gap: spacing.md,
   },
   closeButton: {
     alignItems: "center",
     justifyContent: "center",
     minHeight: 48,
     minWidth: 48,
-    padding: 8,
+    padding: spacing.sm,
   },
   header: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 24,
+    marginBottom: spacing.lg,
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: "bold",
   },
   modalContainer: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: colors.dark.scrim,
     flex: 1,
     justifyContent: "flex-end",
   },
   modalContent: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: borderRadius.xl,
+    borderTopRightRadius: borderRadius.xl,
     maxHeight: "90%",
     paddingBottom: 40,
-    paddingHorizontal: 24,
-    paddingTop: 24,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
   },
   previewContainer: {
     alignItems: "center",
-    marginBottom: 24,
+    marginBottom: spacing.lg,
   },
   saveButton: {
-    backgroundColor: "#10b981",
+    backgroundColor: colors.success,
   },
   sectionTitle: {
     fontSize: 22,
     fontWeight: "600",
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   shareButton: {
-    backgroundColor: "#667eea",
+    backgroundColor: colors.primary,
   },
   themeGradient: {
     alignItems: "center",
-    borderRadius: 16,
+    borderRadius: borderRadius.xl,
     height: 80,
     justifyContent: "center",
     marginBottom: 10,
@@ -348,15 +362,15 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
   themesScroll: {
-    marginHorizontal: -24,
-    paddingHorizontal: 24,
+    marginHorizontal: -spacing.lg,
+    paddingHorizontal: spacing.lg,
   },
   themesSection: {
     marginBottom: 28,
   },
   verseCard: {
     alignItems: "center",
-    borderRadius: 20,
+    borderRadius: borderRadius.xl,
     height: 500,
     justifyContent: "center",
     padding: 32,
@@ -374,13 +388,13 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     fontWeight: "600",
     lineHeight: 36,
-    marginBottom: 24,
+    marginBottom: spacing.lg,
     textAlign: "center",
   },
   watermark: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 8,
+    gap: spacing.sm,
     marginTop: 16,
   },
   watermarkText: {

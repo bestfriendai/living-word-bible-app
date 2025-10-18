@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import { useThemeColor } from "./Themed";
 import { theme } from "@/theme";
+import { colors } from "@/theme/colors";
+import { spacing, borderRadius } from "@/theme/spacing";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Haptics from "expo-haptics";
 
@@ -40,12 +42,12 @@ interface VerseHighlighterProps {
 }
 
 const highlightColors = {
-  yellow: { bg: "#FEF3C7", border: "#F59E0B", name: "Promise" },
-  blue: { bg: "#DBEAFE", border: "#3B82F6", name: "Wisdom" },
-  green: { bg: "#D1FAE5", border: "#10B981", name: "Growth" },
-  red: { bg: "#FEE2E2", border: "#EF4444", name: "Salvation" },
-  purple: { bg: "#EDE9FE", border: "#8B5CF6", name: "Prophecy" },
-  orange: { bg: "#FED7AA", border: "#FB923C", name: "Warning" },
+  yellow: { bg: "#FEF3C7", border: colors.warning, name: "Promise" },
+  blue: { bg: "#DBEAFE", border: colors.primary, name: "Wisdom" },
+  green: { bg: "#D1FAE5", border: colors.success, name: "Growth" },
+  red: { bg: "#FEE2E2", border: colors.error, name: "Salvation" },
+  purple: { bg: "#EDE9FE", border: colors.purple, name: "Prophecy" },
+  orange: { bg: "#FED7AA", border: colors.warningLight, name: "Warning" },
 };
 
 export default function VerseHighlighter({
@@ -114,12 +116,13 @@ export default function VerseHighlighter({
       <TouchableOpacity
         style={[
           styles.colorOption,
+          styles.colorOptionBorder,
+          isSelected && styles.colorOptionSelected,
           {
             backgroundColor: colorConfig.bg,
             borderColor: isSelected
               ? colorConfig.border
               : colorConfig.border + "40",
-            borderWidth: isSelected ? 2 : 1,
           },
         ]}
         onPress={() => {
@@ -270,25 +273,25 @@ export default function VerseHighlighter({
 const styles = StyleSheet.create({
   actionButton: {
     alignItems: "center",
-    borderRadius: 8,
+    borderRadius: borderRadius.md,
     flexDirection: "row",
-    gap: 8,
+    gap: spacing.sm,
     justifyContent: "center",
     minWidth: 80,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
   actions: {
-    borderTopColor: "#E5E7EB",
+    borderTopColor: colors.border.light,
     borderTopWidth: 1,
     flexDirection: "row",
-    gap: 12,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
   cancelButton: {
-    backgroundColor: "transparent",
-    borderColor: "#E5E7EB",
+    backgroundColor: colors.transparent,
+    borderColor: colors.border.light,
     borderWidth: 1,
   },
   cancelButtonText: {
@@ -297,13 +300,13 @@ const styles = StyleSheet.create({
   colorDot: {
     borderRadius: 6,
     height: 12,
-    marginRight: 8,
+    marginRight: spacing.sm,
     width: 12,
   },
   colorGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 12,
+    gap: spacing.sm,
   },
   colorLabel: {
     flex: 1,
@@ -312,23 +315,28 @@ const styles = StyleSheet.create({
   },
   colorOption: {
     alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
+    borderRadius: borderRadius.md,
     flexDirection: "row",
     minWidth: (screenWidth - 40 - 24) / 2,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  colorOptionBorder: {
+    borderWidth: 1,
+  },
+  colorOptionSelected: {
+    borderWidth: 2,
   },
   container: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: borderRadius.xl,
+    borderTopRightRadius: borderRadius.xl,
     maxHeight: "80%",
   },
   deleteButton: {
-    backgroundColor: "#EF4444",
+    backgroundColor: colors.error,
   },
   deleteButtonText: {
-    color: "#fff",
+    color: colors.text.inverse,
     fontWeight: "600",
   },
   header: {
@@ -336,8 +344,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
   noteHeader: {
     alignItems: "center",
@@ -345,35 +353,35 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   noteInput: {
-    borderRadius: 8,
+    borderRadius: borderRadius.md,
     borderWidth: 1,
     fontSize: 16,
-    marginTop: 8,
+    marginTop: spacing.sm,
     minHeight: 100,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
   },
   overlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: colors.dark.scrim,
     flex: 1,
     justifyContent: "flex-end",
   },
   saveButton: {
-    backgroundColor: "#10B981",
+    backgroundColor: colors.success,
     flex: 1,
   },
   saveButtonText: {
-    color: "#fff",
+    color: colors.text.inverse,
     fontWeight: "600",
   },
   section: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: "600",
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
   title: {
     fontSize: 18,
@@ -381,8 +389,8 @@ const styles = StyleSheet.create({
   },
   verseReference: {
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
   },
   verseText: {
     fontSize: 16,

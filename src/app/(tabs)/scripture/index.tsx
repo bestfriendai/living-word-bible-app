@@ -21,7 +21,6 @@ import { theme } from "@/theme";
 import { colors } from "@/theme/colors";
 import { appleDesign } from "@/theme/appleDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-// Removed excessive animations for 2025 modern design
 import { geminiService, VerseExplanation } from "@/services/geminiService";
 import { TranslationSwitcher } from "@/components/TranslationSwitcher";
 import { VerseActionsSheet } from "@/components/VerseActionsSheet";
@@ -149,7 +148,7 @@ export default function Scripture() {
             refreshing={refreshing}
             onRefresh={onRefresh}
             tintColor={textColor}
-            colors={["#3b82f6"]}
+            colors={[colors.primary]}
           />
         }
       >
@@ -186,7 +185,7 @@ export default function Scripture() {
               color={textSecondary}
             />
             <Text style={[styles.searchLabel, { color: textSecondary }]}>
-              What's on your heart?
+              What&apos;s on your heart?
             </Text>
           </View>
           <TextInput
@@ -204,7 +203,7 @@ export default function Scripture() {
               style={[
                 styles.micButton,
                 isListening && styles.micButtonActive,
-                isListening && { backgroundColor: "#ef4444" },
+                isListening && { backgroundColor: colors.error },
                 !isListening && { backgroundColor: colors.background.tertiary },
               ]}
               onPress={handleVoiceInput}
@@ -212,7 +211,7 @@ export default function Scripture() {
               <MaterialCommunityIcons
                 name={isListening ? "microphone" : "microphone-outline"}
                 size={20}
-                color={isListening ? "#fff" : textColor}
+                color={isListening ? colors.text.inverse : textColor}
               />
             </TouchableOpacity>
             {searchQuery.trim() && (
@@ -248,7 +247,7 @@ export default function Scripture() {
           disabled={isSearching || !searchQuery.trim()}
         >
           <LinearGradient
-            colors={["#3b82f6", "#2563eb"]}
+            colors={[colors.primary, colors.primaryDark]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={[
@@ -258,13 +257,13 @@ export default function Scripture() {
             ]}
           >
             {isSearching ? (
-              <ActivityIndicator color="#fff" size="large" />
+              <ActivityIndicator color={colors.text.inverse} size="large" />
             ) : (
               <>
                 <MaterialCommunityIcons
                   name="book-search"
                   size={28}
-                  color="#fff"
+                  color={colors.text.inverse}
                 />
                 <Text style={styles.searchButtonText}>Find Scripture</Text>
                 <Text style={styles.searchButtonSubtext}>
@@ -351,10 +350,7 @@ export default function Scripture() {
                   style={[
                     styles.verseCard,
                     { backgroundColor: cardBg },
-                    existingHighlight && {
-                      borderLeftWidth: 4,
-                      borderLeftColor: highlightColors[existingHighlight.color],
-                    },
+                    existingHighlight && styles.highlightedVerse,
                   ]}
                 >
                   <View style={styles.verseHeader}>
@@ -423,7 +419,11 @@ export default function Scripture() {
                           existingHighlight ? "bookmark" : "bookmark-outline"
                         }
                         size={20}
-                        color={existingHighlight ? "#000" : "#fff"}
+                        color={
+                          existingHighlight
+                            ? colors.text.primary
+                            : colors.text.inverse
+                        }
                       />
                     </Pressable>
 
@@ -442,7 +442,7 @@ export default function Scripture() {
                       <MaterialCommunityIcons
                         name="dots-horizontal"
                         size={20}
-                        color="#fff"
+                        color={colors.text.inverse}
                       />
                     </Pressable>
                   </View>
@@ -494,7 +494,7 @@ export default function Scripture() {
 
             {isExplaining ? (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#3b82f6" />
+                <ActivityIndicator size="large" color={colors.primary} />
                 <Text style={[styles.loadingText, { color: textColor }]}>
                   Analyzing scripture...
                 </Text>
@@ -511,7 +511,7 @@ export default function Scripture() {
                     <MaterialCommunityIcons
                       name="history"
                       size={24}
-                      color="#f59e0b"
+                      color={colors.warning}
                     />
                     <Text
                       style={[styles.explanationTitle, { color: textColor }]}
@@ -539,7 +539,7 @@ export default function Scripture() {
                     <MaterialCommunityIcons
                       name="heart"
                       size={24}
-                      color="#ec4899"
+                      color={colors.accentPink}
                     />
                     <Text
                       style={[styles.explanationTitle, { color: textColor }]}
@@ -567,7 +567,7 @@ export default function Scripture() {
                     <MaterialCommunityIcons
                       name="lightbulb-on"
                       size={24}
-                      color="#10b981"
+                      color={colors.success}
                     />
                     <Text
                       style={[styles.explanationTitle, { color: textColor }]}
@@ -596,7 +596,7 @@ export default function Scripture() {
                       <MaterialCommunityIcons
                         name="tag-multiple"
                         size={24}
-                        color="#a855f7"
+                        color={colors.secondary}
                       />
                       <Text
                         style={[styles.explanationTitle, { color: textColor }]}
@@ -633,7 +633,7 @@ export default function Scripture() {
                         <MaterialCommunityIcons
                           name="book-open-variant"
                           size={24}
-                          color="#3b82f6"
+                          color={colors.primary}
                         />
                         <Text
                           style={[
@@ -656,7 +656,7 @@ export default function Scripture() {
                             <MaterialCommunityIcons
                               name="link-variant"
                               size={16}
-                              color="#3b82f6"
+                              color={colors.primary}
                             />
                             <Text
                               style={[
@@ -724,7 +724,7 @@ export default function Scripture() {
 const styles = StyleSheet.create({
   actionButton: {
     alignItems: "center",
-    backgroundColor: "#667eea",
+    backgroundColor: colors.primary,
     borderRadius: appleDesign.borderRadius.xl,
     justifyContent: "center",
     padding: appleDesign.spacing.sm,
@@ -820,6 +820,10 @@ const styles = StyleSheet.create({
     gap: appleDesign.spacing.md,
     justifyContent: "space-between",
   },
+  highlightedVerse: {
+    borderLeftColor: colors.primary,
+    borderLeftWidth: 4,
+  },
   listeningDot: {
     backgroundColor: colors.error,
     borderRadius: 4,
@@ -888,7 +892,7 @@ const styles = StyleSheet.create({
     lineHeight: appleDesign.typography.lineHeight.title3,
   },
   modalVerseGradient: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: colors.primary,
     padding: appleDesign.spacing.xxl,
   },
   modalVerseHeader: {
@@ -897,7 +901,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     ...Platform.select({
       ios: {
-        shadowColor: "#3b82f6",
+        shadowColor: colors.primary,
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.3,
         shadowRadius: 16,
@@ -908,7 +912,7 @@ const styles = StyleSheet.create({
     }),
   },
   modalVerseReference: {
-    color: "#fff",
+    color: colors.text.inverse,
     fontSize: appleDesign.typography.fontSize.callout,
     fontWeight: appleDesign.typography.fontWeight.bold,
     lineHeight: appleDesign.typography.lineHeight.callout,
@@ -916,13 +920,13 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   modalVerseText: {
-    color: "#fff",
+    color: colors.text.inverse,
     fontSize: appleDesign.typography.fontSize.title3,
     fontWeight: appleDesign.typography.fontWeight.medium,
     lineHeight: 30,
   },
   moreButton: {
-    backgroundColor: "#6b7280",
+    backgroundColor: colors.text.secondary,
   },
   relatedVerseTag: {
     alignItems: "center",
@@ -933,7 +937,7 @@ const styles = StyleSheet.create({
     paddingVertical: appleDesign.spacing.md,
   },
   relatedVerseTagBackground: {
-    backgroundColor: "#3b82f620",
+    backgroundColor: colors.primaryGlow,
   },
   relatedVerseText: {
     fontSize: appleDesign.typography.fontSize.subheadline,
@@ -941,7 +945,7 @@ const styles = StyleSheet.create({
     lineHeight: appleDesign.typography.lineHeight.subheadline,
   },
   relatedVerseTextColor: {
-    color: "#3b82f6",
+    color: colors.primary,
   },
   relatedVersesList: {
     gap: appleDesign.spacing.sm,
@@ -1001,7 +1005,7 @@ const styles = StyleSheet.create({
     marginTop: appleDesign.spacing.xs,
   },
   searchButtonText: {
-    color: "#fff",
+    color: colors.text.inverse,
     fontSize: appleDesign.typography.fontSize.title2,
     fontWeight: appleDesign.typography.fontWeight.bold,
     lineHeight: appleDesign.typography.lineHeight.title2,
@@ -1069,7 +1073,7 @@ const styles = StyleSheet.create({
     paddingVertical: appleDesign.spacing.sm,
   },
   themeTagBackground: {
-    backgroundColor: "#a855f720",
+    backgroundColor: colors.secondaryGlow,
   },
   themeText: {
     fontSize: appleDesign.typography.fontSize.subheadline,
@@ -1077,7 +1081,7 @@ const styles = StyleSheet.create({
     lineHeight: appleDesign.typography.lineHeight.subheadline,
   },
   themeTextColor: {
-    color: "#a855f7",
+    color: colors.secondary,
   },
   themesList: {
     flexDirection: "row",
@@ -1101,7 +1105,7 @@ const styles = StyleSheet.create({
     padding: appleDesign.spacing.xl,
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: colors.text.secondary,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.04,
         shadowRadius: 8,

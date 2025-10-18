@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useThemeColor } from "./Themed";
 import { theme } from "@/theme";
+import { colors } from "@/theme/colors";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "danger";
@@ -41,7 +42,6 @@ export function ThemedButton({
   textStyle,
 }: ThemedButtonProps) {
   const textColor = useThemeColor(theme.color.text);
-  const backgroundColor = useThemeColor(theme.color.backgroundSecondary);
   const borderColor = useThemeColor(theme.color.border);
 
   const getButtonStyles = (): ViewStyle => {
@@ -58,29 +58,29 @@ export function ThemedButton({
       case "primary":
         return {
           ...baseStyle,
-          backgroundColor: "#667eea",
+          backgroundColor: colors.primary,
         };
       case "secondary":
         return {
           ...baseStyle,
-          backgroundColor: "#a855f7",
+          backgroundColor: colors.secondary,
         };
       case "outline":
         return {
           ...baseStyle,
-          backgroundColor: "transparent",
+          backgroundColor: colors.transparent,
           borderWidth: 2,
           borderColor: borderColor,
         };
       case "ghost":
         return {
           ...baseStyle,
-          backgroundColor: "transparent",
+          backgroundColor: colors.transparent,
         };
       case "danger":
         return {
           ...baseStyle,
-          backgroundColor: "#ef4444",
+          backgroundColor: colors.error,
         };
       default:
         return baseStyle;
@@ -91,7 +91,7 @@ export function ThemedButton({
     if (variant === "outline" || variant === "ghost") {
       return textColor;
     }
-    return "#FFFFFF";
+    return colors.text.inverse;
   };
 
   const getTextStyles = (): TextStyle => {
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: colors.dark.shadow,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,

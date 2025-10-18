@@ -1,4 +1,4 @@
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import React from "react";
 import {
   View,
@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   Switch,
   Platform,
-  Dimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeColor } from "@/components/Themed";
@@ -18,11 +17,11 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { ThemeMode } from "@/contexts/ThemeContext";
 import { hapticPatterns } from "@/utils/haptics";
-import { LinearGradient } from "expo-linear-gradient";
+import { colors } from "@/theme/colors";
 
 export default function Settings() {
   const insets = useSafeAreaInsets();
-  const router = useRouter();
+
   const backgroundColor = useThemeColor(theme.color.background);
   const textColor = useThemeColor(theme.color.text);
   const textSecondary = useThemeColor(theme.color.textSecondary);
@@ -76,7 +75,7 @@ export default function Settings() {
                 <MaterialCommunityIcons
                   name={isDark ? "weather-night" : "weather-sunny"}
                   size={24}
-                  color={isDark ? "#a855f7" : "#f59e0b"}
+                  color={isDark ? colors.purpleLight : colors.warning}
                 />
                 <View style={styles.settingText}>
                   <Text style={[styles.settingTitle, { color: textColor }]}>
@@ -93,11 +92,15 @@ export default function Settings() {
                 value={themeMode === "dark"}
                 onValueChange={handleToggleTheme}
                 trackColor={{
-                  false: "#767577",
-                  true: "#a855f7",
+                  false: colors.text.secondary,
+                  true: colors.purpleLight,
                 }}
-                thumbColor={Platform.OS === "ios" ? "#FFFFFF" : "#f4f3f4"}
-                ios_backgroundColor="#3e3e3e"
+                thumbColor={
+                  Platform.OS === "ios"
+                    ? colors.white
+                    : colors.background.tertiary
+                }
+                ios_backgroundColor={colors.dark.border}
               />
             </View>
           </View>
@@ -105,7 +108,11 @@ export default function Settings() {
           {/* Theme Mode Options */}
           <View style={[styles.card, { backgroundColor: cardBg }]}>
             <Text
-              style={[styles.cardTitle, { color: textColor, marginBottom: 16 }]}
+              style={[
+                styles.cardTitle,
+                { color: textColor },
+                styles.themeSectionTitle,
+              ]}
             >
               Theme Preference
             </Text>
@@ -121,7 +128,7 @@ export default function Settings() {
               <MaterialCommunityIcons
                 name="weather-sunny"
                 size={28}
-                color="#f59e0b"
+                color={colors.warning}
               />
               <View style={styles.themeOptionText}>
                 <Text style={[styles.themeOptionTitle, { color: textColor }]}>
@@ -137,7 +144,7 @@ export default function Settings() {
                 <MaterialCommunityIcons
                   name="check-circle"
                   size={24}
-                  color="#10b981"
+                  color={colors.success}
                 />
               )}
             </TouchableOpacity>
@@ -153,7 +160,7 @@ export default function Settings() {
               <MaterialCommunityIcons
                 name="weather-night"
                 size={28}
-                color="#a855f7"
+                color={colors.purpleLight}
               />
               <View style={styles.themeOptionText}>
                 <Text style={[styles.themeOptionTitle, { color: textColor }]}>
@@ -169,7 +176,7 @@ export default function Settings() {
                 <MaterialCommunityIcons
                   name="check-circle"
                   size={24}
-                  color="#10b981"
+                  color={colors.success}
                 />
               )}
             </TouchableOpacity>
@@ -185,7 +192,7 @@ export default function Settings() {
               <MaterialCommunityIcons
                 name="brightness-auto"
                 size={28}
-                color="#3b82f6"
+                color={colors.primary}
               />
               <View style={styles.themeOptionText}>
                 <Text style={[styles.themeOptionTitle, { color: textColor }]}>
@@ -201,7 +208,7 @@ export default function Settings() {
                 <MaterialCommunityIcons
                   name="check-circle"
                   size={24}
-                  color="#10b981"
+                  color={colors.success}
                 />
               )}
             </TouchableOpacity>
@@ -218,7 +225,7 @@ export default function Settings() {
                 <MaterialCommunityIcons
                   name="information-outline"
                   size={24}
-                  color="#3b82f6"
+                  color={colors.primary}
                 />
                 <View style={styles.settingText}>
                   <Text style={[styles.settingTitle, { color: textColor }]}>
@@ -261,15 +268,13 @@ export default function Settings() {
   );
 }
 
-const { width } = Dimensions.get("window");
-
 const styles = StyleSheet.create({
   card: {
     borderRadius: borderRadius.xl,
     elevation: 2,
     marginBottom: spacing.md,
     padding: spacing.lg,
-    shadowColor: "#000",
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
@@ -277,6 +282,9 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: fontSize.md,
     fontWeight: fontWeight.bold,
+  },
+  themeSectionTitle: {
+    marginBottom: spacing.md,
   },
   container: {
     flex: 1,
@@ -327,8 +335,8 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   themeOptionSelected: {
-    backgroundColor: "rgba(16, 185, 129, 0.05)",
-    borderColor: "#10b981",
+    backgroundColor: colors.successGlow,
+    borderColor: colors.success,
   },
   themeOptionSubtitle: {
     fontSize: fontSize.sm,

@@ -502,7 +502,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: colors.text.secondary,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.08,
         shadowRadius: 12,
@@ -624,7 +624,7 @@ const styles = StyleSheet.create({
     padding: appleDesign.spacing.xl,
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: colors.text.secondary,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.06,
         shadowRadius: 8,
@@ -721,7 +721,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     ...Platform.select({
       ios: {
-        shadowColor: "#667eea",
+        shadowColor: colors.primary,
         shadowOffset: { width: 0, height: 16 },
         shadowOpacity: 0.15,
         shadowRadius: 32,
@@ -788,7 +788,7 @@ const styles = StyleSheet.create({
     width: appleDesign.button.height.medium,
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: colors.text.secondary,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.06,
         shadowRadius: 6,

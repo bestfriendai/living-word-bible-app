@@ -20,7 +20,6 @@ import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
 import { appleDesign } from "@/theme/appleDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-
 import { geminiService } from "@/services/geminiService";
 import { useSpeechToText } from "@/utils/speechToText";
 import { socialSharingService } from "@/services/socialSharingService";

@@ -22,7 +22,7 @@ import { bibleApiService } from "@/services/bibleApiService";
 import { geminiService } from "@/services/geminiService";
 import { logEnvValidation } from "@/utils/validateEnv";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { ThemeProvider } from "@/contexts/ThemeContext";
+import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 
 SplashScreen.setOptions({
   duration: 200,
@@ -43,8 +43,7 @@ function InnerLayout() {
   const router = useRouter();
   const pathName = usePathname();
 
-  // Now we can import and use our theme context
-  const { useTheme } = require("@/contexts/ThemeContext");
+  // Now we can use our theme context
   const { isDark } = useTheme();
 
   useEffect(() => {

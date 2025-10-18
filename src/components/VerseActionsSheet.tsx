@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Modal,
   Pressable,
-  useColorScheme,
   Platform,
   Alert,
 } from "react-native";
@@ -14,6 +13,9 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MotiView } from "moti";
 import { hapticPatterns } from "@/utils/haptics";
 import { socialSharingService } from "@/services/socialSharingService";
+import { colors, getColorWithOpacity } from "@/theme/colors";
+import { useThemeColor } from "./Themed";
+import { theme } from "@/theme";
 
 interface VerseActionsSheetProps {
   visible: boolean;
@@ -39,8 +41,8 @@ export function VerseActionsSheet({
   onExplain,
   onMemorize,
 }: VerseActionsSheetProps) {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const textColor = useThemeColor(theme.color.text);
+  const cardBg = useThemeColor(theme.color.backgroundSecondary);
 
   if (!verse) return null;
 
@@ -102,35 +104,35 @@ export function VerseActionsSheet({
     {
       icon: "bookmark-outline",
       label: "Save Verse",
-      color: "#10b981",
+      color: colors.success,
       onPress: handleSave,
       show: !!onSave,
     },
     {
       icon: "lightbulb-on-outline",
       label: "Deep Dive",
-      color: "#f59e0b",
+      color: colors.warning,
       onPress: handleExplain,
       show: !!onExplain,
     },
     {
       icon: "brain",
       label: "Memorize",
-      color: "#a855f7",
+      color: colors.purple,
       onPress: handleMemorize,
       show: !!onMemorize,
     },
     {
       icon: "content-copy",
       label: "Copy",
-      color: "#3b82f6",
+      color: colors.primary,
       onPress: handleCopy,
       show: true,
     },
     {
       icon: "share-variant",
       label: "Share",
-      color: "#ec4899",
+      color: colors.accentPink,
       onPress: handleShare,
       show: true,
     },
@@ -163,7 +165,7 @@ export function VerseActionsSheet({
             <View
               style={[
                 StyleSheet.absoluteFill,
-                { backgroundColor: "rgba(0,0,0,0.4)" },
+                { backgroundColor: colors.dark.scrim },
               ]}
             />
           </MotiView>
@@ -181,46 +183,25 @@ export function VerseActionsSheet({
           }}
           style={styles.sheetContainer}
         >
-          <BlurView
-            intensity={isDark ? 90 : 70}
-            tint={isDark ? "dark" : "light"}
-            style={styles.sheet}
-          >
-            <View
-              style={[
-                styles.sheetContent,
-                {
-                  backgroundColor: isDark
-                    ? "rgba(28,28,30,0.95)"
-                    : "rgba(255,255,255,0.95)",
-                },
-              ]}
-            >
+          <BlurView intensity={90} style={styles.sheet}>
+            <View style={[styles.sheetContent, { backgroundColor: cardBg }]}>
               {/* Handle */}
               <View style={styles.handleContainer}>
                 <View
                   style={[
                     styles.handle,
-                    { backgroundColor: isDark ? "#48484a" : "#d1d1d6" },
+                    { backgroundColor: colors.border.light },
                   ]}
                 />
               </View>
 
               {/* Verse Preview */}
               <View style={styles.versePreview}>
-                <Text
-                  style={[
-                    styles.verseReference,
-                    { color: isDark ? "#ffffff" : "#000000" },
-                  ]}
-                >
+                <Text style={[styles.verseReference, { color: textColor }]}>
                   {verse.reference}
                 </Text>
                 <Text
-                  style={[
-                    styles.verseText,
-                    { color: isDark ? "#e5e5e7" : "#1c1c1e" },
-                  ]}
+                  style={[styles.verseText, { color: textColor }]}
                   numberOfLines={2}
                 >
                   &quot;{verse.text}&quot;
@@ -252,9 +233,10 @@ export function VerseActionsSheet({
                         style={[
                           styles.actionIconContainer,
                           {
-                            backgroundColor: isDark
-                              ? `${item.color}20`
-                              : `${item.color}15`,
+                            backgroundColor: getColorWithOpacity(
+                              item.color,
+                              0.2,
+                            ),
                           },
                         ]}
                       >
@@ -264,12 +246,7 @@ export function VerseActionsSheet({
                           color={item.color}
                         />
                       </View>
-                      <Text
-                        style={[
-                          styles.actionLabel,
-                          { color: isDark ? "#ffffff" : "#000000" },
-                        ]}
-                      >
+                      <Text style={[styles.actionLabel, { color: textColor }]}>
                         {item.label}
                       </Text>
                     </Pressable>
@@ -285,20 +262,11 @@ export function VerseActionsSheet({
                 }}
                 style={({ pressed }) => [
                   styles.cancelButton,
-                  {
-                    backgroundColor: isDark
-                      ? "rgba(72,72,74,0.5)"
-                      : "rgba(142,142,147,0.15)",
-                  },
+                  { backgroundColor: colors.border.light },
                   pressed && { opacity: 0.7 },
                 ]}
               >
-                <Text
-                  style={[
-                    styles.cancelButtonText,
-                    { color: isDark ? "#ffffff" : "#000000" },
-                  ]}
-                >
+                <Text style={[styles.cancelButtonText, { color: textColor }]}>
                   Cancel
                 </Text>
               </Pressable>
@@ -373,7 +341,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: colors.dark.shadow,
         shadowOffset: { width: 0, height: -4 },
         shadowOpacity: 0.15,
         shadowRadius: 16,

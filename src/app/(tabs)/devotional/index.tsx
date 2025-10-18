@@ -20,13 +20,6 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { VerseImageGenerator } from "@/components/VerseImageGenerator";
 import { ttsService } from "@/utils/textToSpeech";
 
-// Color constants
-const COLOR_ORANGE = "#f97316";
-const COLOR_WHITE = "#fff";
-const COLOR_RED = "#ef4444";
-const COLOR_PURPLE = "#8b5cf6";
-const COLOR_BLUE = "#3b82f6";
-
 export default function Devotional() {
   const insets = useSafeAreaInsets();
   const backgroundColor = useThemeColor(theme.color.background);
@@ -109,7 +102,7 @@ export default function Devotional() {
             refreshing={refreshing}
             onRefresh={onRefresh}
             tintColor={textSecondary}
-            colors={[COLOR_ORANGE]}
+            colors={[colors.warning]}
           />
         }
       >
@@ -161,7 +154,7 @@ export default function Devotional() {
                   <MaterialCommunityIcons
                     name="meditation"
                     size={24}
-                    color={COLOR_ORANGE}
+                    color={colors.warning}
                   />
                 </View>
                 <Text style={[styles.titleCardLabel, { color: textSecondary }]}>
@@ -176,7 +169,7 @@ export default function Devotional() {
             {/* Enhanced Verse Card */}
             <View style={styles.verseCard}>
               <LinearGradient
-                colors={[COLOR_ORANGE, "#ea580c"]}
+                colors={[colors.warning, colors.warningLight]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.verseGradient}
@@ -186,7 +179,7 @@ export default function Devotional() {
                     <MaterialCommunityIcons
                       name="book-open-variant"
                       size={16}
-                      color={COLOR_WHITE}
+                      color={colors.text.inverse}
                     />
                     <Text style={styles.verseBadgeText}>SCRIPTURE</Text>
                   </View>
@@ -199,7 +192,7 @@ export default function Devotional() {
                     <MaterialCommunityIcons
                       name="bookmark-outline"
                       size={20}
-                      color={COLOR_WHITE}
+                      color={colors.text.inverse}
                     />
                   </TouchableOpacity>
                 </View>
@@ -230,7 +223,7 @@ export default function Devotional() {
                   <MaterialCommunityIcons
                     name={isPlaying ? "stop" : "volume-high"}
                     size={28}
-                    color={COLOR_WHITE}
+                    color={colors.text.inverse}
                   />
                   <Text style={styles.actionButtonText}>
                     {isPlaying ? "Stop" : "Listen"}
@@ -249,7 +242,7 @@ export default function Devotional() {
                   <MaterialCommunityIcons
                     name="share-variant"
                     size={28}
-                    color={COLOR_WHITE}
+                    color={colors.text.inverse}
                   />
                   <Text style={styles.actionButtonText}>Share</Text>
                 </View>
@@ -268,7 +261,7 @@ export default function Devotional() {
                   <MaterialCommunityIcons
                     name="pencil-outline"
                     size={28}
-                    color={COLOR_WHITE}
+                    color={colors.text.inverse}
                   />
                   <Text style={styles.actionButtonText}>Notes</Text>
                 </View>
@@ -284,7 +277,7 @@ export default function Devotional() {
                   <MaterialCommunityIcons
                     name="lightbulb-on"
                     size={24}
-                    color={COLOR_PURPLE}
+                    color={colors.secondary}
                   />
                 </View>
                 <Text style={[styles.reflectionTitle, { color: textColor }]}>
@@ -313,7 +306,7 @@ export default function Devotional() {
               <MaterialCommunityIcons
                 name="book-open-page-variant"
                 size={48}
-                color={COLOR_ORANGE}
+                color={colors.warning}
               />
             </View>
             <Text style={[styles.loadingText, { color: textColor + "70" }]}>
@@ -354,7 +347,7 @@ const styles = StyleSheet.create({
     paddingVertical: appleDesign.spacing.lg,
   },
   actionButtonText: {
-    color: COLOR_WHITE,
+    color: colors.text.inverse,
     fontSize: appleDesign.typography.fontSize.callout,
     fontWeight: appleDesign.typography.fontWeight.semibold,
     lineHeight: appleDesign.typography.lineHeight.callout,
@@ -366,10 +359,10 @@ const styles = StyleSheet.create({
   },
   audioButton: {},
   audioButtonActive: {
-    backgroundColor: COLOR_RED,
+    backgroundColor: colors.error,
   },
   audioButtonInactive: {
-    backgroundColor: COLOR_PURPLE,
+    backgroundColor: colors.secondary,
   },
   container: {
     flex: 1,
@@ -408,7 +401,7 @@ const styles = StyleSheet.create({
   },
   loadingIcon: {
     alignItems: "center",
-    backgroundColor: COLOR_ORANGE + "20",
+    backgroundColor: colors.warningLightBg,
     borderRadius: appleDesign.borderRadius.round,
     height: 96,
     justifyContent: "center",
@@ -435,7 +428,7 @@ const styles = StyleSheet.create({
   },
   notesButton: {},
   notesButtonInner: {
-    backgroundColor: COLOR_BLUE,
+    backgroundColor: colors.primary,
   },
   prayerPrompt: {
     backgroundColor: colors.background.tertiary,
@@ -456,7 +449,7 @@ const styles = StyleSheet.create({
   },
   reflectionIcon: {
     alignItems: "center",
-    backgroundColor: COLOR_PURPLE + "20",
+    backgroundColor: colors.secondaryGlow,
     borderRadius: appleDesign.borderRadius.md,
     height: 40,
     justifyContent: "center",
@@ -487,7 +480,7 @@ const styles = StyleSheet.create({
   },
   shareButton: {},
   shareButtonInner: {
-    backgroundColor: COLOR_BLUE,
+    backgroundColor: colors.primary,
   },
   subtitle: {
     fontSize: appleDesign.typography.fontSize.subheadline,
@@ -515,7 +508,7 @@ const styles = StyleSheet.create({
   },
   titleCardIcon: {
     alignItems: "center",
-    backgroundColor: COLOR_ORANGE + "20",
+    backgroundColor: colors.warningLightBg,
     borderRadius: appleDesign.borderRadius.sm,
     height: 32,
     justifyContent: "center",
@@ -543,7 +536,7 @@ const styles = StyleSheet.create({
     paddingVertical: appleDesign.spacing.xs,
   },
   verseBadgeText: {
-    color: COLOR_WHITE,
+    color: colors.text.inverse,
     fontSize: appleDesign.typography.fontSize.caption1,
     fontWeight: appleDesign.typography.fontWeight.bold,
     letterSpacing: appleDesign.typography.letterSpacing.wide,
@@ -575,7 +568,7 @@ const styles = StyleSheet.create({
     marginBottom: appleDesign.spacing.lg,
   },
   verseReference: {
-    color: COLOR_WHITE,
+    color: colors.text.inverse,
     fontSize: appleDesign.typography.fontSize.callout,
     fontWeight: appleDesign.typography.fontWeight.bold,
     letterSpacing: appleDesign.typography.letterSpacing.wide,
@@ -584,7 +577,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   verseText: {
-    color: COLOR_WHITE,
+    color: colors.text.inverse,
     fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
     fontSize: appleDesign.typography.fontSize.title2,
     fontStyle: "italic",

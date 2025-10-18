@@ -12,12 +12,11 @@ import {
   KeyboardAvoidingView,
   Modal,
   ActivityIndicator,
-  Dimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
-import { appleDesign } from "@/theme/appleDesign";
+import { colors } from "@/theme/colors";
 import { spacing, borderRadius, fontSize, fontWeight } from "@/theme/spacing";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import {
@@ -306,13 +305,13 @@ export default function Memorization() {
   const getLevelColor = (level: string) => {
     switch (level) {
       case "Mastered":
-        return "#10b981";
+        return colors.success;
       case "Mature":
-        return "#3b82f6";
+        return colors.primary;
       case "Young":
-        return "#f59e0b";
+        return colors.warning;
       default:
-        return "#ef4444";
+        return colors.error;
     }
   };
 
@@ -347,7 +346,10 @@ export default function Memorization() {
           style={styles.scrollView}
           contentContainerStyle={[
             styles.scrollContent,
-            { paddingTop: 20, paddingBottom: insets.bottom + 20 },
+            {
+              paddingTop: spacing.lg,
+              paddingBottom: insets.bottom + spacing.lg,
+            },
           ]}
           showsVerticalScrollIndicator={false}
         >
@@ -365,19 +367,27 @@ export default function Memorization() {
               style={styles.addButton}
               onPress={() => setShowAddVerse(true)}
             >
-              <MaterialCommunityIcons name="plus" size={24} color="#fff" />
+              <MaterialCommunityIcons
+                name="plus"
+                size={24}
+                color={colors.white}
+              />
             </TouchableOpacity>
           </View>
 
           {/* Streak Display */}
           {streak.currentStreak > 0 && (
             <LinearGradient
-              colors={["#ff6b6b", "#ff5252"]}
+              colors={[colors.error, colors.errorLight]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.streakCard}
             >
-              <MaterialCommunityIcons name="fire" size={32} color="#fff" />
+              <MaterialCommunityIcons
+                name="fire"
+                size={32}
+                color={colors.white}
+              />
               <View style={styles.streakInfo}>
                 <Text style={styles.streakNumber}>{streak.currentStreak}</Text>
                 <Text style={styles.streakLabel}>Day Streak!</Text>
@@ -388,7 +398,7 @@ export default function Memorization() {
           {/* Stats Cards */}
           <View style={styles.statsContainer}>
             <TouchableOpacity
-              style={[styles.statCard, { backgroundColor: "#10b981" }]}
+              style={[styles.statCard, { backgroundColor: colors.success }]}
               onPress={() => setShowStats(true)}
             >
               <Text style={styles.statNumber}>
@@ -397,17 +407,21 @@ export default function Memorization() {
               <Text style={styles.statLabel}>Mastered</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.statCard, { backgroundColor: "#f59e0b" }]}
+              style={[styles.statCard, { backgroundColor: colors.warning }]}
               onPress={() => setShowStats(true)}
             >
               <Text style={styles.statNumber}>{versesDueForReview.length}</Text>
               <Text style={styles.statLabel}>Due Today</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.statCard, { backgroundColor: "#a855f7" }]}
+              style={[styles.statCard, { backgroundColor: colors.purpleLight }]}
               onPress={() => setShowAchievements(true)}
             >
-              <MaterialCommunityIcons name="trophy" size={32} color="#fff" />
+              <MaterialCommunityIcons
+                name="trophy"
+                size={32}
+                color={colors.text.inverse}
+              />
               <Text style={styles.statLabel}>Achievements</Text>
             </TouchableOpacity>
           </View>
@@ -429,7 +443,7 @@ export default function Memorization() {
                     styles.exerciseTypeButton,
                     {
                       backgroundColor:
-                        exerciseType === type.type ? "#667eea" : cardBg,
+                        exerciseType === type.type ? colors.primary : cardBg,
                     },
                   ]}
                   onPress={() => setExerciseType(type.type)}
@@ -437,13 +451,20 @@ export default function Memorization() {
                   <MaterialCommunityIcons
                     name={type.icon as any}
                     size={24}
-                    color={exerciseType === type.type ? "#fff" : textColor}
+                    color={
+                      exerciseType === type.type
+                        ? colors.text.inverse
+                        : textColor
+                    }
                   />
                   <Text
                     style={[
                       styles.exerciseTypeLabel,
                       {
-                        color: exerciseType === type.type ? "#fff" : textColor,
+                        color:
+                          exerciseType === type.type
+                            ? colors.text.inverse
+                            : textColor,
                       },
                     ]}
                   >
@@ -511,7 +532,7 @@ export default function Memorization() {
                     <View
                       style={[
                         styles.reviewButtonInner,
-                        { backgroundColor: "#667eea" },
+                        { backgroundColor: colors.primary },
                       ]}
                     >
                       <Text style={styles.reviewButtonText}>Review Now</Text>
@@ -578,7 +599,7 @@ export default function Memorization() {
                     <View
                       style={[
                         styles.reviewButtonInner,
-                        { backgroundColor: "#667eea" },
+                        { backgroundColor: colors.primary },
                       ]}
                     >
                       <Text style={styles.reviewButtonText}>Practice</Text>
@@ -647,7 +668,7 @@ export default function Memorization() {
               <MaterialCommunityIcons
                 name="lightbulb-outline"
                 size={28}
-                color={showAnswer ? "#f59e0b" : textColor}
+                color={showAnswer ? colors.warning : textColor}
               />
             </TouchableOpacity>
           </View>
@@ -703,8 +724,8 @@ export default function Memorization() {
                     {userAnswer.length > 0 && (
                       <View
                         style={[
-                          styles.userAnswerBox,
-                          { backgroundColor: cardBg },
+                          styles.reviewButtonInner,
+                          { backgroundColor: colors.primary },
                         ]}
                       >
                         <Text
@@ -720,7 +741,7 @@ export default function Memorization() {
                           key={index}
                           style={[
                             styles.scrambleWord,
-                            { backgroundColor: "#667eea" },
+                            { backgroundColor: colors.primary },
                           ]}
                           onPress={() => handleWordTap(word, index)}
                         >
@@ -881,12 +902,12 @@ export default function Memorization() {
                 disabled={isLoadingVerse}
               >
                 {isLoadingVerse ? (
-                  <ActivityIndicator color="#fff" />
+                  <ActivityIndicator color={colors.white} />
                 ) : (
                   <MaterialCommunityIcons
                     name="magnify"
                     size={24}
-                    color="#fff"
+                    color={colors.white}
                   />
                 )}
               </TouchableOpacity>
@@ -921,7 +942,7 @@ export default function Memorization() {
       >
         <View style={[styles.modalContainer, { backgroundColor }]}>
           <View style={styles.modalHeader}>
-            <View style={{ width: 60 }} />
+            <View style={styles.spacer} />
             <Text style={[styles.modalTitle, { color: textColor }]}>
               Statistics
             </Text>
@@ -940,7 +961,7 @@ export default function Memorization() {
           >
             <View style={styles.statsGrid}>
               <View style={[styles.statBox, { backgroundColor: cardBg }]}>
-                <Text style={[styles.statBoxNumber, { color: "#667eea" }]}>
+                <Text style={[styles.statBoxNumber, { color: colors.primary }]}>
                   {stats.total}
                 </Text>
                 <Text style={[styles.statBoxLabel, { color: textColor }]}>
@@ -948,7 +969,7 @@ export default function Memorization() {
                 </Text>
               </View>
               <View style={[styles.statBox, { backgroundColor: cardBg }]}>
-                <Text style={[styles.statBoxNumber, { color: "#ef4444" }]}>
+                <Text style={[styles.statBoxNumber, { color: colors.error }]}>
                   {stats.learning}
                 </Text>
                 <Text style={[styles.statBoxLabel, { color: textColor }]}>
@@ -956,7 +977,7 @@ export default function Memorization() {
                 </Text>
               </View>
               <View style={[styles.statBox, { backgroundColor: cardBg }]}>
-                <Text style={[styles.statBoxNumber, { color: "#f59e0b" }]}>
+                <Text style={[styles.statBoxNumber, { color: colors.warning }]}>
                   {stats.young}
                 </Text>
                 <Text style={[styles.statBoxLabel, { color: textColor }]}>
@@ -964,7 +985,9 @@ export default function Memorization() {
                 </Text>
               </View>
               <View style={[styles.statBox, { backgroundColor: cardBg }]}>
-                <Text style={[styles.statBoxNumber, { color: "#3b82f6" }]}>
+                <Text
+                  style={[styles.statBoxNumber, { color: colors.primaryLight }]}
+                >
                   {stats.mature}
                 </Text>
                 <Text style={[styles.statBoxLabel, { color: textColor }]}>
@@ -975,7 +998,7 @@ export default function Memorization() {
 
             <View style={[styles.progressSection, { backgroundColor: cardBg }]}>
               <Text style={[styles.progressTitle, { color: textColor }]}>
-                Today's Progress
+                Today&apos;s Progress
               </Text>
               <Text style={[styles.progressStat, { color: textColor }]}>
                 {analytics.versesReviewedToday} verses reviewed
@@ -1000,7 +1023,7 @@ export default function Memorization() {
       >
         <View style={[styles.modalContainer, { backgroundColor }]}>
           <View style={styles.modalHeader}>
-            <View style={{ width: 60 }} />
+            <View style={styles.spacer} />
             <Text style={[styles.modalTitle, { color: textColor }]}>
               Achievements
             </Text>
@@ -1022,10 +1045,8 @@ export default function Memorization() {
                 key={achievement.id}
                 style={[
                   styles.achievementCard,
-                  {
-                    backgroundColor: cardBg,
-                    opacity: achievement.unlocked ? 1 : 0.5,
-                  },
+                  { backgroundColor: cardBg },
+                  !achievement.unlocked && styles.achievementCardLocked,
                 ]}
               >
                 <Text style={styles.achievementIcon}>{achievement.icon}</Text>
@@ -1056,7 +1077,7 @@ export default function Memorization() {
                   <MaterialCommunityIcons
                     name="check-circle"
                     size={32}
-                    color="#10b981"
+                    color={colors.success}
                   />
                 )}
               </View>
@@ -1068,8 +1089,6 @@ export default function Memorization() {
   );
 }
 
-const { width } = Dimensions.get("window");
-
 const styles = StyleSheet.create({
   accuracyText: {
     fontSize: fontSize.sm,
@@ -1080,6 +1099,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: spacing.md,
     padding: spacing.lg,
+  },
+  achievementCardLocked: {
+    opacity: 0.5,
   },
   achievementDescription: {
     fontSize: fontSize.sm,
@@ -1099,12 +1121,12 @@ const styles = StyleSheet.create({
   },
   addButton: {
     alignItems: "center",
-    backgroundColor: "#667eea",
+    backgroundColor: colors.primary,
     borderRadius: 28,
     elevation: 4,
     height: 56,
     justifyContent: "center",
-    shadowColor: "#000",
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -1135,13 +1157,13 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   categoryBadge: {
-    backgroundColor: "#667eea",
+    backgroundColor: colors.primary,
     borderRadius: borderRadius.xl,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
   },
   categoryText: {
-    color: "#fff",
+    color: colors.white,
     fontSize: fontSize.xs,
     fontWeight: fontWeight.semibold,
   },
@@ -1200,7 +1222,7 @@ const styles = StyleSheet.create({
   },
   lookupButton: {
     alignItems: "center",
-    backgroundColor: "#667eea",
+    backgroundColor: colors.primary,
     borderRadius: borderRadius.xl,
     height: 50,
     justifyContent: "center",
@@ -1221,13 +1243,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   modalDone: {
-    color: "#667eea",
+    color: colors.primary,
     fontSize: fontSize.lg,
     fontWeight: fontWeight.semibold,
   },
   modalHeader: {
     alignItems: "center",
-    borderBottomColor: "#00000020",
+    borderBottomColor: colors.black + "20",
     borderBottomWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -1243,14 +1265,14 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.bold,
   },
   progressBar: {
-    backgroundColor: "#00000020",
+    backgroundColor: colors.black + "20",
     borderRadius: borderRadius.sm,
     height: 8,
     marginTop: spacing.sm,
     overflow: "hidden",
   },
   progressFill: {
-    backgroundColor: "#667eea",
+    backgroundColor: colors.primary,
     height: "100%",
   },
   progressSection: {
@@ -1276,7 +1298,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   ratingButtonText: {
-    color: "#fff",
+    color: colors.text.inverse,
     fontSize: fontSize.lg,
     fontWeight: fontWeight.bold,
   },
@@ -1284,22 +1306,22 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   ratingFailed: {
-    backgroundColor: "#ef4444",
+    backgroundColor: colors.error,
   },
   ratingGood: {
-    backgroundColor: "#10b981",
+    backgroundColor: colors.success,
   },
   ratingHard: {
-    backgroundColor: "#f59e0b",
+    backgroundColor: colors.warning,
   },
   ratingPerfect: {
-    backgroundColor: "#8b5cf6",
+    backgroundColor: colors.purple,
   },
   ratingSection: {
     marginTop: spacing.xl,
   },
   ratingSubtext: {
-    color: "#fff",
+    color: colors.text.inverse,
     fontSize: fontSize.sm,
     marginTop: spacing.xs,
     opacity: 0.9,
@@ -1322,25 +1344,25 @@ const styles = StyleSheet.create({
   },
   resetButton: {
     alignItems: "center",
-    backgroundColor: "#ef4444",
+    backgroundColor: colors.error,
     borderRadius: borderRadius.xl,
     marginTop: spacing.md,
     paddingVertical: spacing.md,
   },
   resetButtonText: {
-    color: "#fff",
+    color: colors.text.inverse,
     fontSize: fontSize.md,
     fontWeight: fontWeight.semibold,
   },
   revealButton: {
     alignItems: "center",
-    backgroundColor: "#667eea",
+    backgroundColor: colors.primary,
     borderRadius: borderRadius.xl,
     marginTop: spacing.lg,
     paddingVertical: spacing.md,
   },
   revealButtonText: {
-    color: "#fff",
+    color: colors.text.inverse,
     fontSize: fontSize.md,
     fontWeight: fontWeight.bold,
   },
@@ -1356,7 +1378,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   reviewButtonText: {
-    color: "#fff",
+    color: colors.white,
     fontSize: fontSize.md,
     fontWeight: fontWeight.bold,
   },
@@ -1405,7 +1427,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   scrambleWordText: {
-    color: "#fff",
+    color: colors.text.inverse,
     fontSize: fontSize.md,
     fontWeight: fontWeight.semibold,
   },
@@ -1415,6 +1437,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   scrollContent: {
+    paddingBottom: spacing.xxl,
     paddingHorizontal: spacing.lg,
   },
   scrollView: {
@@ -1427,6 +1450,9 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xl,
     fontWeight: fontWeight.bold,
     marginBottom: spacing.md,
+  },
+  spacer: {
+    width: 60,
   },
   statBox: {
     alignItems: "center",
@@ -1453,13 +1479,13 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   statLabel: {
-    color: "#fff",
+    color: colors.text.inverse,
     fontSize: fontSize.sm,
     fontWeight: fontWeight.semibold,
     marginTop: spacing.xs,
   },
   statNumber: {
-    color: "#fff",
+    color: colors.text.inverse,
     fontSize: fontSize.xxxl,
     fontWeight: fontWeight.bold,
     marginBottom: spacing.xs,
@@ -1485,12 +1511,12 @@ const styles = StyleSheet.create({
     marginLeft: spacing.md,
   },
   streakLabel: {
-    color: "#fff",
+    color: colors.text.inverse,
     fontSize: fontSize.md,
     fontWeight: fontWeight.semibold,
   },
   streakNumber: {
-    color: "#fff",
+    color: colors.text.inverse,
     fontSize: fontSize.xxxl,
     fontWeight: fontWeight.bold,
   },
@@ -1510,12 +1536,7 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.bold,
     marginBottom: spacing.xs,
   },
-  userAnswerBox: {
-    borderRadius: borderRadius.xl,
-    marginBottom: spacing.md,
-    minHeight: 60,
-    padding: spacing.md,
-  },
+
   userAnswerText: {
     fontSize: fontSize.md,
     lineHeight: 24,

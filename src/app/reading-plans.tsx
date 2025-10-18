@@ -7,19 +7,17 @@ import {
   ScrollView,
   TouchableOpacity,
   Platform,
-  Dimensions,
-  Animated,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBibleStore } from "@/store/bibleStore";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
-import { appleDesign } from "@/theme/appleDesign";
 import { spacing, borderRadius, fontSize, fontWeight } from "@/theme/spacing";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { readingPlansData } from "@/data/readingPlans";
 import * as Progress from "react-native-progress";
+import { colors } from "@/theme/colors";
 
 export default function ReadingPlans() {
   const insets = useSafeAreaInsets();
@@ -77,13 +75,13 @@ export default function ReadingPlans() {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case "Beginner":
-        return "#10b981";
+        return colors.success;
       case "Intermediate":
-        return "#f59e0b";
+        return colors.warning;
       case "Advanced":
-        return "#ef4444";
+        return colors.error;
       default:
-        return "#6b7280";
+        return colors.text.secondary;
     }
   };
 
@@ -103,7 +101,7 @@ export default function ReadingPlans() {
         style={styles.scrollView}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingTop: 16, paddingBottom: insets.bottom + 20 },
+          { paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.lg },
         ]}
         showsVerticalScrollIndicator={false}
       >
@@ -123,12 +121,15 @@ export default function ReadingPlans() {
             <View style={styles.statsGrid}>
               <View style={styles.statItem}>
                 <View
-                  style={[styles.statIcon, { backgroundColor: "#667eea20" }]}
+                  style={[
+                    styles.statIcon,
+                    { backgroundColor: colors.primaryGlow },
+                  ]}
                 >
                   <MaterialCommunityIcons
                     name="fire"
                     size={20}
-                    color="#667eea"
+                    color={colors.primary}
                   />
                 </View>
                 <Text style={[styles.statValue, { color: textColor }]}>
@@ -140,12 +141,15 @@ export default function ReadingPlans() {
               </View>
               <View style={styles.statItem}>
                 <View
-                  style={[styles.statIcon, { backgroundColor: "#10b98120" }]}
+                  style={[
+                    styles.statIcon,
+                    { backgroundColor: colors.successGlow },
+                  ]}
                 >
                   <MaterialCommunityIcons
                     name="calendar-check"
                     size={20}
-                    color="#10b981"
+                    color={colors.success}
                   />
                 </View>
                 <Text style={[styles.statValue, { color: textColor }]}>
@@ -157,12 +161,15 @@ export default function ReadingPlans() {
               </View>
               <View style={styles.statItem}>
                 <View
-                  style={[styles.statIcon, { backgroundColor: "#f59e0b20" }]}
+                  style={[
+                    styles.statIcon,
+                    { backgroundColor: colors.warningLightBg },
+                  ]}
                 >
                   <MaterialCommunityIcons
                     name="trophy"
                     size={20}
-                    color="#f59e0b"
+                    color={colors.warning}
                   />
                 </View>
                 <Text style={[styles.statValue, { color: textColor }]}>
@@ -185,7 +192,7 @@ export default function ReadingPlans() {
               style={styles.activeCard}
             >
               <LinearGradient
-                colors={["#667eea", "#764ba2"]}
+                colors={[colors.primary, colors.secondary]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.activeGradient}
@@ -195,14 +202,14 @@ export default function ReadingPlans() {
                     <MaterialCommunityIcons
                       name="lightning-bolt"
                       size={12}
-                      color="#FFFFFF"
+                      color={colors.white}
                     />
                     <Text style={styles.activeBadgeText}>ACTIVE</Text>
                   </View>
                   <MaterialCommunityIcons
                     name="chevron-right"
                     size={20}
-                    color="rgba(255,255,255,0.6)"
+                    color={colors.white + "99"}
                   />
                 </View>
                 <Text style={styles.activePlanName}>
@@ -221,7 +228,7 @@ export default function ReadingPlans() {
                     }
                     width={null}
                     height={4}
-                    color="#FFFFFF"
+                    color={colors.white}
                     unfilledColor="rgba(255,255,255,0.25)"
                     borderWidth={0}
                     borderRadius={2}
@@ -340,7 +347,7 @@ export default function ReadingPlans() {
                 <MaterialCommunityIcons
                   name="arrow-right"
                   size={18}
-                  color="#667eea"
+                  color={colors.primary}
                 />
               </TouchableOpacity>
             </View>
@@ -351,13 +358,10 @@ export default function ReadingPlans() {
   );
 }
 
-const { width } = Dimensions.get("window");
-
 const styles = StyleSheet.create({
-  // Active Plan Card
   activeBadge: {
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: colors.background.overlay,
     borderRadius: borderRadius.lg,
     flexDirection: "row",
     gap: spacing.xs,
@@ -365,7 +369,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
   },
   activeBadgeText: {
-    color: "#FFFFFF",
+    color: colors.text.inverse,
     fontSize: fontSize.xs,
     fontWeight: fontWeight.bold,
     letterSpacing: 0.8,
@@ -376,7 +380,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     ...Platform.select({
       ios: {
-        shadowColor: "#667eea",
+        shadowColor: colors.primary,
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.25,
         shadowRadius: 16,
@@ -396,7 +400,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   activePlanName: {
-    color: "#FFFFFF",
+    color: colors.text.inverse,
     fontSize: fontSize.lg,
     fontWeight: fontWeight.semibold,
     letterSpacing: -0.3,
@@ -406,7 +410,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   activeProgressText: {
-    color: "rgba(255,255,255,0.9)",
+    color: colors.text.inverseLight,
     fontSize: fontSize.sm,
   },
   container: {
@@ -438,15 +442,13 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xs,
     fontWeight: fontWeight.medium,
   },
-
-  // Filter Section
   filterChip: {
     borderRadius: 16,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: colors.black,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.03,
         shadowRadius: 4,
@@ -466,14 +468,12 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     fontWeight: fontWeight.medium,
   },
-
-  // Plans List
   planCard: {
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: colors.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.04,
         shadowRadius: 8,
@@ -513,7 +513,7 @@ const styles = StyleSheet.create({
   },
   startButton: {
     alignItems: "center",
-    borderColor: "#667eea",
+    borderColor: colors.primary,
     borderRadius: borderRadius.lg,
     borderWidth: 1.5,
     flexDirection: "row",
@@ -522,19 +522,39 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   startButtonText: {
-    color: "#667eea",
+    color: colors.primary,
     fontSize: fontSize.sm,
     fontWeight: fontWeight.semibold,
   },
-
-  // Stats Section
+  statIcon: {
+    alignItems: "center",
+    borderRadius: borderRadius.lg,
+    height: 48,
+    justifyContent: "center",
+    marginBottom: spacing.sm,
+    width: 48,
+  },
+  statItem: {
+    alignItems: "center",
+    flex: 1,
+  },
+  statLabel: {
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.medium,
+    textAlign: "center",
+  },
+  statValue: {
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.bold,
+    marginBottom: spacing.xs,
+  },
   statsCard: {
     borderRadius: borderRadius.lg,
     marginBottom: spacing.lg,
     padding: spacing.lg,
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: colors.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.04,
         shadowRadius: 8,
@@ -543,6 +563,10 @@ const styles = StyleSheet.create({
         elevation: 1,
       },
     }),
+  },
+  statsGrid: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   statsHeader: {
     alignItems: "center",
@@ -554,31 +578,5 @@ const styles = StyleSheet.create({
     fontSize: fontSize.md,
     fontWeight: fontWeight.semibold,
     letterSpacing: -0.2,
-  },
-  statsGrid: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  statItem: {
-    alignItems: "center",
-    flex: 1,
-  },
-  statIcon: {
-    alignItems: "center",
-    borderRadius: borderRadius.lg,
-    height: 48,
-    justifyContent: "center",
-    marginBottom: spacing.sm,
-    width: 48,
-  },
-  statValue: {
-    fontSize: fontSize.xl,
-    fontWeight: fontWeight.bold,
-    marginBottom: spacing.xs,
-  },
-  statLabel: {
-    fontSize: fontSize.xs,
-    fontWeight: fontWeight.medium,
-    textAlign: "center",
   },
 });

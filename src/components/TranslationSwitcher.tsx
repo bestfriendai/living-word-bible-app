@@ -6,11 +6,14 @@ import {
   Modal,
   Pressable,
   FlatList,
-  useColorScheme,
+  Alert,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { bibleDatabase, BibleTranslation } from "@/services/bibleDatabase";
+import { colors } from "@/theme/colors";
+import { useThemeColor } from "./Themed";
+import { theme } from "@/theme";
 
 interface TranslationSwitcherProps {
   currentTranslation: string;
@@ -25,8 +28,10 @@ export function TranslationSwitcher({
 }: TranslationSwitcherProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [translations, setTranslations] = useState<BibleTranslation[]>([]);
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+
+  const textColor = useThemeColor(theme.color.text);
+  const cardBg = useThemeColor(theme.color.backgroundSecondary);
+  const borderColor = useThemeColor(theme.color.border);
 
   const loadTranslations = useCallback(async () => {
     try {
@@ -43,8 +48,10 @@ export function TranslationSwitcher({
 
   const handleSelect = (translation: BibleTranslation) => {
     if (translation.isPremium && !isPremium) {
-      // Show premium upgrade prompt
-      alert("This translation requires a premium subscription");
+      Alert.alert(
+        "Premium Required",
+        "This translation requires a premium subscription",
+      );
       return;
     }
 
@@ -63,26 +70,21 @@ export function TranslationSwitcher({
     <>
       {/* Translation Button */}
       <Pressable
-        style={[
-          styles.button,
-          { backgroundColor: isDark ? "#2D2D3A" : "#F0F0F5" },
-        ]}
+        style={[styles.button, { backgroundColor: cardBg }]}
         onPress={() => setModalVisible(true)}
       >
         <MaterialCommunityIcons
           name="book-open-variant"
           size={18}
-          color={isDark ? "#FFFFFF" : "#000000"}
+          color={textColor}
         />
-        <Text
-          style={[styles.buttonText, { color: isDark ? "#FFFFFF" : "#000000" }]}
-        >
+        <Text style={[styles.buttonText, { color: textColor }]}>
           {getCurrentTranslationName()}
         </Text>
         <MaterialCommunityIcons
           name="chevron-down"
           size={18}
-          color={isDark ? "#FFFFFF" : "#000000"}
+          color={textColor}
         />
       </Pressable>
 
@@ -99,36 +101,18 @@ export function TranslationSwitcher({
             onPress={() => setModalVisible(false)}
           />
 
-          <BlurView
-            intensity={90}
-            tint={isDark ? "dark" : "light"}
-            style={styles.modalContent}
-          >
-            <View
-              style={[
-                styles.modalInner,
-                {
-                  backgroundColor: isDark
-                    ? "rgba(45,45,58,0.95)"
-                    : "rgba(255,255,255,0.95)",
-                },
-              ]}
-            >
+          <BlurView intensity={90} style={styles.modalContent}>
+            <View style={[styles.modalInner, { backgroundColor: cardBg }]}>
               {/* Modal Header */}
               <View style={styles.modalHeader}>
-                <Text
-                  style={[
-                    styles.modalTitle,
-                    { color: isDark ? "#FFFFFF" : "#000000" },
-                  ]}
-                >
+                <Text style={[styles.modalTitle, { color: textColor }]}>
                   Select Translation
                 </Text>
                 <Pressable onPress={() => setModalVisible(false)}>
                   <MaterialCommunityIcons
                     name="close"
                     size={24}
-                    color={isDark ? "#FFFFFF" : "#000000"}
+                    color={textColor}
                   />
                 </Pressable>
               </View>
@@ -143,7 +127,7 @@ export function TranslationSwitcher({
                       styles.translationItem,
                       currentTranslation === item.abbreviation &&
                         styles.selectedItem,
-                      { borderBottomColor: isDark ? "#3D3D4A" : "#E0E0E5" },
+                      { borderBottomColor: borderColor },
                     ]}
                     onPress={() => handleSelect(item)}
                   >
@@ -152,7 +136,7 @@ export function TranslationSwitcher({
                         <Text
                           style={[
                             styles.translationAbbr,
-                            { color: isDark ? "#FFFFFF" : "#000000" },
+                            { color: textColor },
                             currentTranslation === item.abbreviation &&
                               styles.selectedText,
                           ]}
@@ -164,7 +148,7 @@ export function TranslationSwitcher({
                             <MaterialCommunityIcons
                               name="crown"
                               size={12}
-                              color="#FFD700"
+                              color={colors.warning}
                             />
                             <Text style={styles.premiumText}>Premium</Text>
                           </View>
@@ -173,7 +157,7 @@ export function TranslationSwitcher({
                       <Text
                         style={[
                           styles.translationName,
-                          { color: isDark ? "#AAAAAA" : "#666666" },
+                          { color: colors.text.secondary },
                         ]}
                       >
                         {item.name}
@@ -184,7 +168,7 @@ export function TranslationSwitcher({
                       <MaterialCommunityIcons
                         name="check-circle"
                         size={24}
-                        color="#4CAF50"
+                        color={colors.success}
                       />
                     )}
                   </Pressable>
@@ -198,7 +182,7 @@ export function TranslationSwitcher({
                   <Text
                     style={[
                       styles.footerText,
-                      { color: isDark ? "#AAAAAA" : "#666666" },
+                      { color: colors.text.secondary },
                     ]}
                   >
                     Unlock all translations with Premium
@@ -217,17 +201,14 @@ export function TranslationSwitcher({
 }
 
 const styles = StyleSheet.create({
-  // Modal styles
   backdrop: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: colors.dark.scrim,
     bottom: 0,
     left: 0,
     position: "absolute",
     right: 0,
     top: 0,
   },
-
-  // Button styles
   button: {
     alignItems: "center",
     borderRadius: 20,
@@ -240,11 +221,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
   },
-
-  // Footer styles
   footer: {
     alignItems: "center",
-    borderTopColor: "#E0E0E5",
+    borderTopColor: colors.border.light,
     borderTopWidth: 1,
     gap: 12,
     marginTop: 20,
@@ -279,11 +258,9 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
   },
-
-  // Premium badge styles
   premiumBadge: {
     alignItems: "center",
-    backgroundColor: "rgba(255, 215, 0, 0.1)",
+    backgroundColor: colors.warningLightBg,
     borderRadius: 12,
     flexDirection: "row",
     gap: 5,
@@ -291,21 +268,19 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   premiumText: {
-    color: "#FFD700",
+    color: colors.warning,
     fontSize: 12,
     fontWeight: "600",
   },
   selectedItem: {
-    backgroundColor: "rgba(76, 175, 80, 0.1)",
+    backgroundColor: colors.successGlow,
     borderRadius: 12,
     marginHorizontal: -12,
     paddingHorizontal: 12,
   },
   selectedText: {
-    color: "#4CAF50",
+    color: colors.success,
   },
-
-  // Translation item styles
   translationAbbr: {
     fontSize: 17,
     fontWeight: "700",
@@ -332,7 +307,7 @@ const styles = StyleSheet.create({
   },
   upgradeButton: {
     alignItems: "center",
-    backgroundColor: "#667eea",
+    backgroundColor: colors.primary,
     borderRadius: 20,
     justifyContent: "center",
     minHeight: 48,
@@ -340,7 +315,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   upgradeButtonText: {
-    color: "#FFFFFF",
+    color: colors.text.inverse,
     fontSize: 16,
     fontWeight: "bold",
   },

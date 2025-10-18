@@ -5,8 +5,6 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
-  Animated,
 } from "react-native";
 import { useBibleStore } from "@/store/bibleStore";
 import { ThemedCard } from "@/components/ThemedCard";
@@ -17,7 +15,6 @@ import { LinearGradient } from "expo-linear-gradient";
 
 import type { Achievement } from "@/data/achievements";
 import { colors } from "@/theme/colors";
-import { appleDesign } from "@/theme/appleDesign";
 import { spacing, borderRadius, fontSize, fontWeight } from "@/theme/spacing";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
@@ -49,9 +46,10 @@ export default function AchievementsScreen() {
     }
   };
 
-  const { width } = Dimensions.get("window");
-
   const styles = StyleSheet.create({
+    achievementActions: {
+      alignItems: "flex-end",
+    },
     achievementCard: {
       borderColor: isDark ? colors.dark.border : colors.border.default,
       borderRadius: borderRadius.xl,
@@ -59,6 +57,9 @@ export default function AchievementsScreen() {
       marginBottom: spacing.md,
       marginHorizontal: spacing.lg,
       padding: spacing.lg,
+    },
+    achievementContent: {
+      flex: 1,
     },
     achievementDescription: {
       color: isDark ? colors.dark.textSecondary : colors.text.secondary,
@@ -96,6 +97,9 @@ export default function AchievementsScreen() {
       marginBottom: spacing.md,
       paddingHorizontal: spacing.lg,
     },
+    checkIcon: {
+      marginRight: spacing.xs,
+    },
     container: {
       backgroundColor: isDark
         ? colors.dark.background
@@ -106,6 +110,21 @@ export default function AchievementsScreen() {
       alignItems: "center",
       padding: spacing.lg,
       paddingTop: spacing.xl,
+    },
+    iconContainer: {
+      alignItems: "center",
+      backgroundColor: isDark ? colors.dark.card : colors.background.card,
+      borderRadius: borderRadius.lg,
+      height: 60,
+      justifyContent: "center",
+      marginRight: spacing.md,
+      width: 60,
+    },
+    iconContainerUnlocked: {
+      opacity: 1,
+    },
+    iconContainerLocked: {
+      opacity: 0.5,
     },
     lockedText: {
       color: isDark ? colors.dark.textSecondary : colors.text.secondary,
@@ -124,7 +143,7 @@ export default function AchievementsScreen() {
       paddingVertical: spacing.md,
     },
     pointsText: {
-      color: "white",
+      color: colors.white,
       fontSize: fontSize.lg,
       fontWeight: fontWeight.bold,
     },
@@ -140,6 +159,14 @@ export default function AchievementsScreen() {
       borderRadius: borderRadius.sm,
       height: "100%",
     },
+    progressIcon: {
+      marginBottom: spacing.xs,
+    },
+    progressStatus: {
+      alignItems: "center",
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
     shareButton: {
       padding: spacing.sm,
     },
@@ -151,7 +178,7 @@ export default function AchievementsScreen() {
       flex: 1,
       marginHorizontal: spacing.sm,
       padding: spacing.lg,
-      shadowColor: "#000",
+      shadowColor: colors.black,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.05,
       shadowRadius: 8,
@@ -180,11 +207,25 @@ export default function AchievementsScreen() {
       marginBottom: spacing.md,
       textAlign: "center",
     },
+    targetIcon: {
+      marginBottom: spacing.xs,
+    },
     title: {
       color: isDark ? colors.dark.text : colors.text.primary,
       fontSize: fontSize.xxxl + 4,
       fontWeight: fontWeight.bold,
       marginBottom: spacing.sm,
+    },
+    totalPointsLabel: {
+      color: colors.text.inverseLight,
+      fontSize: fontSize.sm,
+    },
+    trophyIcon: {
+      marginBottom: spacing.xs,
+    },
+    unlockedStatus: {
+      alignItems: "center",
+      flexDirection: "row",
     },
     unlockedText: {
       color: colors.success,
@@ -226,13 +267,16 @@ export default function AchievementsScreen() {
       >
         <View style={styles.achievementHeader}>
           <View
-            style={{
-              opacity: unlocked ? 1 : 0.5,
-            }}
+            style={[
+              styles.iconContainer,
+              unlocked
+                ? styles.iconContainerUnlocked
+                : styles.iconContainerLocked,
+            ]}
           >
             <Text style={styles.achievementIcon}>{achievement.icon}</Text>
           </View>
-          <View style={{ flex: 1 }}>
+          <View style={styles.achievementContent}>
             <Text
               style={[
                 styles.achievementTitle,
@@ -245,7 +289,7 @@ export default function AchievementsScreen() {
               {achievement.description}
             </Text>
           </View>
-          <View style={{ alignItems: "flex-end" }}>
+          <View style={styles.achievementActions}>
             <Text style={styles.achievementPoints}>+{achievement.points}</Text>
             {unlocked && (
               <TouchableOpacity
@@ -270,20 +314,14 @@ export default function AchievementsScreen() {
           </View>
         )}
 
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+        <View style={styles.progressStatus}>
           {unlocked ? (
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={styles.unlockedStatus}>
               <MaterialCommunityIcons
                 name="check-circle"
                 size={16}
                 color={colors.success}
-                style={{ marginRight: spacing.xs }}
+                style={styles.checkIcon}
               />
               <Text style={styles.unlockedText}>
                 Unlocked {new Date(unlockedDate!).toLocaleDateString()}
@@ -312,18 +350,14 @@ export default function AchievementsScreen() {
           Track your spiritual journey and milestones
         </Text>
         <LinearGradient
-          colors={["#667eea", "#764ba2"]}
+          colors={[colors.primary, colors.secondary]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.pointsContainer}
         >
           <View>
             <Text style={styles.pointsText}>{totalPoints}</Text>
-            <Text
-              style={{ color: "rgba(255,255,255,0.8)", fontSize: fontSize.sm }}
-            >
-              Total Points
-            </Text>
+            <Text style={styles.totalPointsLabel}>Total Points</Text>
           </View>
           <TouchableOpacity
             onPress={handleShareProgress}
@@ -332,7 +366,7 @@ export default function AchievementsScreen() {
             <MaterialCommunityIcons
               name="share-variant"
               size={24}
-              color="white"
+              color={colors.white}
             />
           </TouchableOpacity>
         </LinearGradient>
@@ -344,7 +378,7 @@ export default function AchievementsScreen() {
             name="trophy"
             size={24}
             color={colors.success}
-            style={{ marginBottom: spacing.xs }}
+            style={styles.trophyIcon}
           />
           <Text style={styles.statNumber}>{unlockedCount}</Text>
           <Text style={styles.statLabel}>Unlocked</Text>
@@ -354,7 +388,7 @@ export default function AchievementsScreen() {
             name="progress-check"
             size={24}
             color={colors.primary}
-            style={{ marginBottom: spacing.xs }}
+            style={styles.progressIcon}
           />
           <Text style={styles.statNumber}>{completionRate}%</Text>
           <Text style={styles.statLabel}>Complete</Text>
@@ -364,7 +398,7 @@ export default function AchievementsScreen() {
             name="target"
             size={24}
             color={colors.warning}
-            style={{ marginBottom: spacing.xs }}
+            style={styles.targetIcon}
           />
           <Text style={styles.statNumber}>{totalCount - unlockedCount}</Text>
           <Text style={styles.statLabel}>Remaining</Text>

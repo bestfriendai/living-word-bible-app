@@ -1,7 +1,8 @@
 import React from "react";
-import { View, StyleSheet, useColorScheme } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { MotiView } from "moti";
 import { Skeleton } from "moti/skeleton";
+import { colors } from "../theme/colors";
 
 interface SkeletonLoaderProps {
   width?: number | string;
@@ -20,9 +21,7 @@ export function SkeletonLoader({
   radius = 8,
   colorMode,
 }: SkeletonLoaderProps) {
-  const scheme = useColorScheme();
-  const isDark =
-    colorMode === "dark" || (colorMode === undefined && scheme === "dark");
+  const isDark = colorMode === "dark";
 
   return (
     <Skeleton
@@ -32,8 +31,12 @@ export function SkeletonLoader({
       colorMode={isDark ? "dark" : "light"}
       colors={
         isDark
-          ? ["#1a1a1a", "#2a2a2a", "#1a1a1a"]
-          : ["#f0f0f0", "#e0e0e0", "#f0f0f0"]
+          ? [colors.dark.card, colors.dark.cardHover, colors.dark.card]
+          : [
+              colors.background.tertiary,
+              colors.background.secondary,
+              colors.background.tertiary,
+            ]
       }
     />
   );
@@ -43,18 +46,12 @@ export function SkeletonLoader({
  * Verse card skeleton for scripture search results
  */
 export function VerseCardSkeleton() {
-  const scheme = useColorScheme();
-  const isDark = scheme === "dark";
-
   return (
     <MotiView
       from={{ opacity: 0, translateY: 20 }}
       animate={{ opacity: 1, translateY: 0 }}
       transition={{ type: "timing", duration: 300 }}
-      style={[
-        styles.verseCard,
-        { backgroundColor: isDark ? "#1a1a1a" : "#ffffff" },
-      ]}
+      style={styles.verseCard}
     >
       {/* Reference */}
       <SkeletonLoader width={120} height={24} radius={6} />
@@ -83,9 +80,6 @@ export function VerseCardSkeleton() {
  * Devotional skeleton for daily devotional screen
  */
 export function DevotionalSkeleton() {
-  const scheme = useColorScheme();
-  const isDark = scheme === "dark";
-
   return (
     <MotiView
       from={{ opacity: 0 }}
@@ -107,12 +101,7 @@ export function DevotionalSkeleton() {
       </View>
 
       {/* Verse text */}
-      <View
-        style={[
-          styles.verseBox,
-          { backgroundColor: isDark ? "#2a2a2a" : "#f5f5f5" },
-        ]}
-      >
+      <View style={styles.verseBox}>
         <SkeletonLoader width="100%" height={20} radius={4} />
         <SkeletonLoader width="95%" height={20} radius={4} />
         <SkeletonLoader width="100%" height={20} radius={4} />
@@ -212,6 +201,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   featuredCard: {
+    backgroundColor: colors.background.card,
     borderRadius: 24,
     gap: 16,
     padding: 24,
@@ -225,6 +215,8 @@ const styles = StyleSheet.create({
   },
   listItem: {
     alignItems: "center",
+    backgroundColor: colors.background.card,
+    borderRadius: 16,
     flexDirection: "row",
     gap: 16,
     marginBottom: 16,
@@ -243,12 +235,14 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   verseBox: {
+    backgroundColor: colors.background.secondary,
     borderRadius: 16,
     gap: 12,
     marginTop: 16,
     padding: 20,
   },
   verseCard: {
+    backgroundColor: colors.background.card,
     borderRadius: 20,
     gap: 16,
     marginBottom: 24,

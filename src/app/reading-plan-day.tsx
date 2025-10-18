@@ -8,19 +8,18 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Platform,
-  Dimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBibleStore } from "@/store/bibleStore";
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
-import { appleDesign } from "@/theme/appleDesign";
 import { spacing, borderRadius, fontSize, fontWeight } from "@/theme/spacing";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { bibleApiService } from "@/services/bibleApiService";
 import * as Progress from "react-native-progress";
 import * as Haptics from "expo-haptics";
+import { colors } from "@/theme/colors";
 
 export default function ReadingPlanDay() {
   const insets = useSafeAreaInsets();
@@ -136,13 +135,13 @@ export default function ReadingPlanDay() {
       {showCelebration && (
         <View style={styles.celebrationOverlay}>
           <LinearGradient
-            colors={["rgba(16, 185, 129, 0.95)", "rgba(5, 150, 105, 0.95)"]}
+            colors={[colors.success, colors.success + "cc"]}
             style={styles.celebrationContent}
           >
             <MaterialCommunityIcons
               name="check-circle"
               size={60}
-              color="#FFFFFF"
+              color={colors.white}
             />
             <Text style={styles.celebrationText}>Day Complete!</Text>
             <Text style={styles.celebrationSubtext}>Keep it up</Text>
@@ -179,12 +178,12 @@ export default function ReadingPlanDay() {
             progress={progress}
             showsText
             formatText={() => `${readingPlan.currentDay}`}
-            color="#667eea"
+            color={colors.primary}
             unfilledColor={textTertiary + "20"}
             borderWidth={0}
             thickness={5}
             textStyle={{
-              fontSize: 14,
+              fontSize: fontSize.sm,
               color: textColor,
             }}
           />
@@ -195,7 +194,7 @@ export default function ReadingPlanDay() {
           progress={progress}
           width={null}
           height={4}
-          color="#667eea"
+          color={colors.primary}
           unfilledColor={textTertiary + "15"}
           borderWidth={0}
           borderRadius={2}
@@ -211,7 +210,7 @@ export default function ReadingPlanDay() {
             <MaterialCommunityIcons
               name="book-open-variant"
               size={14}
-              color="#667eea"
+              color={colors.primary}
             />
             <Text style={styles.referenceText}>{currentReading.reference}</Text>
           </View>
@@ -221,7 +220,7 @@ export default function ReadingPlanDay() {
         <View style={[styles.contentCard, { backgroundColor: cardBg }]}>
           {loading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="small" color="#667eea" />
+              <ActivityIndicator size="small" color={colors.primary} />
               <Text style={[styles.loadingText, { color: textSecondary }]}>
                 Loading scripture...
               </Text>
@@ -359,7 +358,7 @@ export default function ReadingPlanDay() {
             activeOpacity={0.8}
           >
             <LinearGradient
-              colors={["#667eea", "#764ba2"]}
+              colors={[colors.primary, colors.secondary]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.completeButtonGradient}
@@ -367,7 +366,7 @@ export default function ReadingPlanDay() {
               <MaterialCommunityIcons
                 name="check-circle-outline"
                 size={22}
-                color="#FFFFFF"
+                color={colors.white}
               />
               <Text style={styles.completeButtonText}>Mark as Complete</Text>
             </LinearGradient>
@@ -389,7 +388,7 @@ export default function ReadingPlanDay() {
                 activeOpacity={0.8}
               >
                 <LinearGradient
-                  colors={["#667eea", "#764ba2"]}
+                  colors={[colors.primary, colors.secondary]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={styles.nextDayGradient}
@@ -398,7 +397,7 @@ export default function ReadingPlanDay() {
                   <MaterialCommunityIcons
                     name="arrow-right"
                     size={18}
-                    color="#FFFFFF"
+                    color={colors.white}
                   />
                 </LinearGradient>
               </TouchableOpacity>
@@ -409,8 +408,6 @@ export default function ReadingPlanDay() {
     </View>
   );
 }
-
-const { width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   actionButton: {
@@ -423,7 +420,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: colors.black,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.03,
         shadowRadius: 4,
@@ -443,7 +440,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   bottomBar: {
-    borderTopColor: "rgba(0,0,0,0.05)",
+    borderTopColor: colors.black + "0d",
     borderTopWidth: 1,
     bottom: 0,
     left: 0,
@@ -452,7 +449,7 @@ const styles = StyleSheet.create({
     right: 0,
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: colors.black,
         shadowOffset: { width: 0, height: -2 },
         shadowOpacity: 0.05,
         shadowRadius: 8,
@@ -481,7 +478,7 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   celebrationSubtext: {
-    color: "rgba(255,255,255,0.9)",
+    color: colors.white + "e6",
     fontSize: fontSize.md,
   },
   celebrationText: {
@@ -523,7 +520,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   completedText: {
-    color: "#10b981",
+    color: colors.success,
     fontSize: fontSize.md,
     fontWeight: fontWeight.semibold,
   },
@@ -537,7 +534,7 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: colors.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.04,
         shadowRadius: 8,
@@ -556,7 +553,7 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
   },
   dot: {
-    backgroundColor: "#9ca3af",
+    backgroundColor: colors.text.tertiary,
     borderRadius: 1.5,
     height: 3,
     width: 3,
@@ -586,7 +583,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   nextDayText: {
-    color: "#FFFFFF",
+    color: colors.text.inverse,
     fontSize: fontSize.sm,
     fontWeight: fontWeight.semibold,
   },
@@ -600,7 +597,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   progressDivider: {
-    backgroundColor: "#e5e7eb",
+    backgroundColor: colors.border.light,
     height: "70%",
     marginHorizontal: spacing.md,
     width: 1,
@@ -615,7 +612,7 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: colors.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.04,
         shadowRadius: 8,
@@ -673,7 +670,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   referenceText: {
-    color: "#667eea",
+    color: colors.primary,
     fontSize: fontSize.sm,
     fontWeight: fontWeight.medium,
   },

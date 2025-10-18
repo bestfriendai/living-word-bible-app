@@ -17,12 +17,11 @@ import {
   useColorScheme,
   Modal,
 } from "react-native";
-
 import { useThemeColor } from "@/components/Themed";
 import { theme } from "@/theme";
 import { appleDesign } from "@/theme/appleDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import Animated, { FadeInDown, FadeIn } from "react-native-reanimated";
+
 import { geminiService, ChatMessage } from "@/services/geminiService";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import * as Clipboard from "expo-clipboard";
@@ -1772,7 +1771,7 @@ const styles = StyleSheet.create({
     padding: 24,
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: colors.text.secondary,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.08,
         shadowRadius: 4,
